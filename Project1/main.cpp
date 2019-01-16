@@ -3,12 +3,13 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <fstream>
 
 typedef sf::Vector2<float> Vector2;
 
 sf::Font font;
 
-const std::string gameName = "SPACE BATTLE";			//Ale gówniana nazwa - serio trzeba wymyœliæ coœ lepszego
+const std::string gameName = "Space Gosciniak";			//Ale gówniana nazwa - serio trzeba wymyœliæ coœ lepszego
 
 class button {
 	sf::RectangleShape _box;
@@ -70,6 +71,14 @@ int menu(sf::RenderWindow& window)
 							window.close();
 							return -2;
 						}
+						if ((*it)->_txt == "Play")
+						{
+							return 1;
+						}
+						if ((*it)->_txt == "Credits")
+						{
+							return 2;
+						}
 						std::cout << (*it)->_txt << "\n";
 					}
 
@@ -84,10 +93,59 @@ int menu(sf::RenderWindow& window)
 	return 0;
 }
 
+int play(sf::RenderWindow& window)
+{
+	return 0;
+}
+
+int credits(sf::RenderWindow& window)
+{
+	std::vector<sf::Drawable*> vect;
+	std::ifstream creditsFile;
+	creditsFile.open("../credits.txt", std::ifstream::in);
+	std::string creditsStr, temp;
+	while (!creditsFile.eof())
+	{
+		std::getline(creditsFile, temp);
+		creditsStr += temp + '\n';
+	}
+	sf::Text creditsText;
+	creditsText = sf::Text(creditsStr, font, 20);
+	creditsText.setPosition((window.getSize().x - creditsText.getLocalBounds().width - creditsText.getLocalBounds().left) / 2, 75);
+	creditsText.setFillColor(sf::Color(0, 204, 0, 255));
+	vect.push_back(&creditsText);
+	sf::Texture bgMenuT;
+	bgMenuT.loadFromFile("../img/bg_menu.png");
+	sf::Sprite bgMenu;
+	bgMenu.setTexture(bgMenuT);
+	vect.push_back(&bgMenu);						//W sumie to nie wiem czemu nie wyœwietla tekstu
+	button b1(Vector2(300, 475), "Back", Vector2(200, 75), vect);
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+			{
+				if (event.mouseButton.x >= b1._pos.x && event.mouseButton.x <= b1._pos.x + b1._size.x && event.mouseButton.y >= b1._pos.y && event.mouseButton.y <= b1._pos.y + b1._size.y)
+				{
+					return 0;
+				}
+			}
+		}
+		window.clear();
+		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
+			window.draw(**it);
+		window.display();
+	}
+}
+
 int main()
 {
 	font.loadFromFile("../arial.ttf");
-	int state = 0;																	// 0 - menu, -1 b³¹d, -2 zamknij
+	int state = 0;																	// 0 - menu, 1 - gra, 2 - credits, -1 b³¹d, -2 zamknij
 	sf::RenderWindow window(sf::VideoMode(800, 600), gameName);
 	sf::Clock clock;
 	while (state >= 0)
@@ -97,6 +155,11 @@ int main()
 		case 0:
 			state = menu(window);
 			break;
+		case 1:
+			state = play(window);
+			break;
+		case 2:
+			state = credits(window);
 		}
 	}
 	return 0;
