@@ -3,11 +3,12 @@
 #include <vector>
 #include <string>
 #include <iostream>
-#include <typeinfo>
 
 typedef sf::Vector2<float> Vector2;
 
 sf::Font font;
+
+const std::string gameName = "SPACE BATTLE";			//Ale gówniana nazwa - serio trzeba wymyœliæ coœ lepszego
 
 class button {
 	sf::RectangleShape _box;
@@ -15,14 +16,14 @@ class button {
 public:
 	Vector2 _pos, _size;
 	std::string _txt;
-	button(Vector2 pos, std::string txt, Vector2 size, std::vector<sf::Drawable*>& vect) : _pos(pos), _size(size),_txt(txt)
+	button(Vector2 pos, std::string txt, Vector2 size, std::vector<sf::Drawable*>& vect) : _pos(pos), _size(size), _txt(txt)
 	{
 		_box = sf::RectangleShape(_size);
 		_box.setPosition(pos);
 		_box.setFillColor(sf::Color(170, 170, 170, 255));
 		_text = sf::Text(txt, font, 40);
 		auto bounds = _text.getLocalBounds();
-		_text.setPosition(pos.x+(_size.x-bounds.width - bounds.left)/2, pos.y + (_size.y- bounds.height - bounds.top)/2);	//Center
+		_text.setPosition(pos.x + (_size.x - bounds.width - bounds.left) / 2, pos.y + (_size.y - bounds.height - bounds.top) / 2);	//Center
 		//std::cout << x.left << "\n" << x.height << "\n" << x.top << "\n" << x.width;
 		_text.setFillColor(sf::Color(0, 0, 0, 255));
 		vect.push_back(&_box);
@@ -34,12 +35,23 @@ int menu(sf::RenderWindow& window)
 {
 	std::vector<sf::Drawable*> vect;
 	std::vector<button*> bvect;
+	sf::Texture bgMenuT;
+	bgMenuT.loadFromFile("../img/bg_menu.png");
+	sf::Sprite bgMenu;
+	bgMenu.setTexture(bgMenuT);
+	vect.push_back(&bgMenu);
 	button b1(Vector2(300, 225), "Play", Vector2(200, 75), vect);
 	button b2(Vector2(300, 350), "Credits", Vector2(200, 75), vect);
 	button b3(Vector2(300, 475), "Quit", Vector2(200, 75), vect);
 	bvect.push_back(&b1);
 	bvect.push_back(&b2);
 	bvect.push_back(&b3);
+	sf::Text logo;
+	logo = sf::Text(gameName,font,70);
+	logo.setStyle(sf::Text::Bold);
+	logo.setPosition((window.getSize().x - logo.getLocalBounds().width - logo.getLocalBounds().left) / 2, 75);
+	logo.setFillColor(sf::Color(0, 204, 0, 255));	//Dosyæ zielony
+	vect.push_back(&logo);
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -74,12 +86,18 @@ int menu(sf::RenderWindow& window)
 
 int main()
 {
-	font.loadFromFile("C:/Users/Tobiasz/Desktop/smiesznagradlagosciniak/SpaceGosciniak/arial.ttf");
+	font.loadFromFile("../arial.ttf");
 	int state = 0;																	// 0 - menu, -1 b³¹d, -2 zamknij
-	sf::RenderWindow window(sf::VideoMode(800, 600), "GAME_NAME_PLACEHOLDER");
+	sf::RenderWindow window(sf::VideoMode(800, 600), gameName);
 	sf::Clock clock;
-	while(state>=0)
-		if(state==0)
-			state=menu(window);
+	while (state >= 0)
+	{
+		switch (state)
+		{
+		case 0:
+			state = menu(window);
+			break;
+		}
+	}
 	return 0;
 }
