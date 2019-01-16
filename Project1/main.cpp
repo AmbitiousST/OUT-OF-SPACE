@@ -9,7 +9,49 @@ typedef sf::Vector2<float> Vector2;
 sf::Font font;
 
 const std::string gameName = "SPACE BATTLE";			//Ale gówniana nazwa - serio trzeba wymyœliæ coœ lepszego
+class enemy {
+	Vector2 _dir;
+	sf::Sprite texture;
+	Vector2 _dist;
+	float side=1;
+public:
+	static sf::Texture stexture;
+	static Vector2 spos;
+	static Vector2 sdir;
+	static Vector2 size;
+	static Vector2 dist;
+	Vector2 _pos;
+	enemy(std::vector<sf::Drawable*>& vect): _pos(spos)
+	{
+		_pos = spos;
+		_dir.x = sdir.x;
+		_dir.y = 0;
+		texture.setTexture(stexture);
+		vect.push_back(&texture);
+	}
+	void move() 
+	{
+		_pos += _dir;
+		texture.setPosition(_pos);
+		_dist.x += fabs(_dir.x);
+		_dist.y += fabs(_dir.y);
+		if (_dist.x > dist.x) 
+		{
+			_dist.x = 0;
+			_dir.x = 0;
+			_dir.y = sdir.y;
+			side *= -1;
+		}
+		if (_dist.y > dist.y)
+		{
+			_dist.y = 0;
+			_dir.y = 0;
+			_dir.x = side * sdir.x;
+		}
 
+
+	}
+};
 class button {
 	sf::RectangleShape _box;
 	sf::Text _text;
@@ -132,10 +174,16 @@ int game(sf::RenderWindow& window)
 	//narazie tak to nie wygl¹da
 	std::vector<sf::Drawable*> vect;
 	std::vector<button*> bvect;
+	std::vector<enemy*> evect;
 	button b1(Vector2(300, 475), "Return", Vector2(200, 75), vect);
 	bvect.push_back(&b1);
+	auto en1 = enemy(vect);
+	evect.push_back(&en1);
 	while (window.isOpen())
 	{
+		for (auto it = evect.begin(); it != evect.end(); it++) {
+			(*it)->move();
+		}
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -166,6 +214,10 @@ int game(sf::RenderWindow& window)
 }
 int main()
 {
+	enemy::dist=Vector2(500, 50);
+	enemy::sdir = Vector2(10, 10);
+	enemy::spos = Vector2(10, 10);
+	enemy::stexture;
 	font.loadFromFile("../arial.ttf");
 	int state = 0;																	// 0 - menu, -1 b³¹d, -2 zamknij
 	sf::RenderWindow window(sf::VideoMode(800, 600), gameName);
