@@ -1,4 +1,4 @@
-#include <SFML/Graphics.hpp>
+ï»¿#include <SFML/Graphics.hpp>
 #include <cmath>
 #include <vector>
 #include <string>
@@ -9,7 +9,7 @@ typedef sf::Vector2<float> Vector2;
 
 sf::Font font;
 
-const std::string gameName = "Space Gosciniak";			//Ale gówniana nazwa - serio trzeba wymyœliæ coœ lepszego
+const std::string gameName = "Space Gosciniak";			//Ale gÃ³wniana nazwa - serio trzeba wymyÅ›liÄ‡ coÅ› lepszego
 
 class button {
 	sf::RectangleShape _box;
@@ -51,7 +51,7 @@ int menu(sf::RenderWindow& window)
 	logo = sf::Text(gameName,font,70);
 	logo.setStyle(sf::Text::Bold);
 	logo.setPosition((window.getSize().x - logo.getLocalBounds().width - logo.getLocalBounds().left) / 2, 75);
-	logo.setFillColor(sf::Color(0, 204, 0, 255));	//Dosyæ zielony
+	logo.setFillColor(sf::Color(0, 204, 0, 255));	//DosyÄ‡ zielony
 	vect.push_back(&logo);
 	while (window.isOpen())
 	{
@@ -71,11 +71,11 @@ int menu(sf::RenderWindow& window)
 							window.close();
 							return -2;
 						}
-						if ((*it)->_txt == "Play")
+						if ((*it)->_txt == "Credits")
 						{
 							return 1;
 						}
-						if ((*it)->_txt == "Credits")
+						if ((*it)->_txt == "Play")
 						{
 							return 2;
 						}
@@ -90,11 +90,6 @@ int menu(sf::RenderWindow& window)
 			window.draw(**it);
 		window.display();
 	}
-	return 0;
-}
-
-int play(sf::RenderWindow& window)
-{
 	return 0;
 }
 
@@ -113,13 +108,15 @@ int credits(sf::RenderWindow& window)
 	creditsText = sf::Text(creditsStr, font, 20);
 	creditsText.setPosition((window.getSize().x - creditsText.getLocalBounds().width - creditsText.getLocalBounds().left) / 2, 75);
 	creditsText.setFillColor(sf::Color(0, 204, 0, 255));
-	vect.push_back(&creditsText);
 	sf::Texture bgMenuT;
 	bgMenuT.loadFromFile("../img/bg_menu.png");
 	sf::Sprite bgMenu;
 	bgMenu.setTexture(bgMenuT);
-	vect.push_back(&bgMenu);						//W sumie to nie wiem czemu nie wyœwietla tekstu
+	vect.push_back(&bgMenu);
+	vect.push_back(&creditsText);
+	std::vector<button*> bvect;
 	button b1(Vector2(300, 475), "Back", Vector2(200, 75), vect);
+	bvect.push_back(&b1);
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -129,9 +126,16 @@ int credits(sf::RenderWindow& window)
 				window.close();
 			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 			{
-				if (event.mouseButton.x >= b1._pos.x && event.mouseButton.x <= b1._pos.x + b1._size.x && event.mouseButton.y >= b1._pos.y && event.mouseButton.y <= b1._pos.y + b1._size.y)
+				for (std::vector<button*>::iterator it = bvect.begin(); it != bvect.end(); it++)
 				{
-					return 0;
+					if (event.mouseButton.x >= (*it)->_pos.x && event.mouseButton.x <= (*it)->_pos.x + (*it)->_size.x && event.mouseButton.y >= (*it)->_pos.y && event.mouseButton.y <= (*it)->_pos.y + (*it)->_size.y)
+					{
+						if ((*it)->_txt == "Back")
+						{
+							return 0;
+						}
+						std::cout << (*it)->_txt << "\n";
+					}
 				}
 			}
 		}
@@ -140,12 +144,51 @@ int credits(sf::RenderWindow& window)
 			window.draw(**it);
 		window.display();
 	}
+	return 0;
+}
+
+int game(sf::RenderWindow& window)
+{
+	//narazie tak to nie wyglÂ¹da
+	std::vector<sf::Drawable*> vect;
+	std::vector<button*> bvect;
+	button b1(Vector2(300, 475), "Return", Vector2(200, 75), vect);
+	bvect.push_back(&b1);
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+			{
+				for (std::vector<button*>::iterator it = bvect.begin(); it != bvect.end(); it++)
+				{
+					if (event.mouseButton.x >= (*it)->_pos.x && event.mouseButton.x <= (*it)->_pos.x + (*it)->_size.x && event.mouseButton.y >= (*it)->_pos.y && event.mouseButton.y <= (*it)->_pos.y + (*it)->_size.y)
+					{
+						if ((*it)->_txt == "Return")
+						{
+							return 0;
+						}
+						std::cout << (*it)->_txt << "\n";
+					}
+
+				}
+			}
+		}
+		window.clear();
+		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
+			window.draw(**it);
+		window.display();
+	}
+	return 0;
 }
 
 int main()
 {
 	font.loadFromFile("../arial.ttf");
-	int state = 0;																	// 0 - menu, 1 - gra, 2 - credits, -1 b³¹d, -2 zamknij
+	int state = 0;																	// 0 - menu, 1 - gra, 2 - credits, -1 bÅ‚Ä…d, -2 zamknij
 	sf::RenderWindow window(sf::VideoMode(800, 600), gameName);
 	sf::Clock clock;
 	while (state >= 0)
@@ -156,10 +199,11 @@ int main()
 			state = menu(window);
 			break;
 		case 1:
-			state = play(window);
+			state = credits(window);
 			break;
 		case 2:
-			state = credits(window);
+			state = game(window);
+			break;
 		}
 	}
 	return 0;
