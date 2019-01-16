@@ -21,11 +21,14 @@ public:
 	{
 		_box = sf::RectangleShape(_size);
 		_box.setPosition(pos);
-		_box.setFillColor(sf::Color(170, 170, 170, 255));
+		//_box.setFillColor(sf::Color(170, 170, 170, 255));
+		_box.setFillColor(sf::Color(170, 170, 170, 0));
 		_text = sf::Text(txt, font, 40);
+		_text.setFillColor(sf::Color(0, 0, 0, 255));
+		_text.setOutlineColor(sf::Color(255, 255, 255, 255));
+		_text.setOutlineThickness(2);
 		auto bounds = _text.getLocalBounds();
 		_text.setPosition(pos.x + (_size.x - bounds.width - bounds.left) / 2, pos.y + (_size.y - bounds.height - bounds.top) / 2);	//Center
-		//std::cout << x.left << "\n" << x.height << "\n" << x.top << "\n" << x.width;
 		_text.setFillColor(sf::Color(0, 0, 0, 255));
 		vect.push_back(&_box);
 		vect.push_back(&_text);
@@ -51,7 +54,10 @@ int menu(sf::RenderWindow& window)
 	logo = sf::Text(gameName,font,70);
 	logo.setStyle(sf::Text::Bold);
 	logo.setPosition((window.getSize().x - logo.getLocalBounds().width - logo.getLocalBounds().left) / 2, 75);
-	logo.setFillColor(sf::Color(0, 204, 0, 255));	//Dosyć zielony
+	//logo.setFillColor(sf::Color(0, 204, 0, 255));	//Dosyć zielony
+	logo.setFillColor(sf::Color(0, 0, 0, 255));
+	logo.setOutlineColor(sf::Color(255, 255, 255, 255));
+	logo.setOutlineThickness(4);
 	vect.push_back(&logo);
 	while (window.isOpen())
 	{
@@ -107,7 +113,10 @@ int credits(sf::RenderWindow& window)
 	sf::Text creditsText;
 	creditsText = sf::Text(creditsStr, font, 20);
 	creditsText.setPosition((window.getSize().x - creditsText.getLocalBounds().width - creditsText.getLocalBounds().left) / 2, 75);
-	creditsText.setFillColor(sf::Color(0, 204, 0, 255));
+	//creditsText.setFillColor(sf::Color(0, 204, 0, 255));
+	creditsText.setFillColor(sf::Color(0, 0, 0, 255));
+	creditsText.setOutlineColor(sf::Color(255, 255, 255, 255));
+	creditsText.setOutlineThickness(1.5);
 	sf::Texture bgMenuT;
 	bgMenuT.loadFromFile("../img/bg_menu.png");
 	sf::Sprite bgMenu;
