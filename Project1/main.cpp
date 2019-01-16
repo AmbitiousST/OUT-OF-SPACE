@@ -70,6 +70,14 @@ int menu(sf::RenderWindow& window)
 							window.close();
 							return -2;
 						}
+						if ((*it)->_txt == "Credits")
+						{
+							return 1;
+						}
+						if ((*it)->_txt == "Play")
+						{
+							return 2;
+						}
 						std::cout << (*it)->_txt << "\n";
 					}
 
@@ -83,7 +91,79 @@ int menu(sf::RenderWindow& window)
 	}
 	return 0;
 }
+int credits(sf::RenderWindow& window)
+{
+	std::vector<sf::Drawable*> vect;
+	std::vector<button*> bvect;
+	button b1(Vector2(300, 475), "Return", Vector2(200, 75), vect);
+	bvect.push_back(&b1);
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+			{
+				for (std::vector<button*>::iterator it = bvect.begin(); it != bvect.end(); it++)
+				{
+					if (event.mouseButton.x >= (*it)->_pos.x && event.mouseButton.x <= (*it)->_pos.x + (*it)->_size.x && event.mouseButton.y >= (*it)->_pos.y && event.mouseButton.y <= (*it)->_pos.y + (*it)->_size.y)
+					{
+						if ((*it)->_txt == "Return")
+						{
+							return 0;
+						}
+						std::cout << (*it)->_txt << "\n";
+					}
 
+				}
+			}
+		}
+		window.clear();
+		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
+			window.draw(**it);
+		window.display();
+	}
+	return 0;
+}
+int game(sf::RenderWindow& window)
+{
+	//narazie tak to nie wygl¹da
+	std::vector<sf::Drawable*> vect;
+	std::vector<button*> bvect;
+	button b1(Vector2(300, 475), "Return", Vector2(200, 75), vect);
+	bvect.push_back(&b1);
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
+			{
+				for (std::vector<button*>::iterator it = bvect.begin(); it != bvect.end(); it++)
+				{
+					if (event.mouseButton.x >= (*it)->_pos.x && event.mouseButton.x <= (*it)->_pos.x + (*it)->_size.x && event.mouseButton.y >= (*it)->_pos.y && event.mouseButton.y <= (*it)->_pos.y + (*it)->_size.y)
+					{
+						if ((*it)->_txt == "Return")
+						{
+							return 0;
+						}
+						std::cout << (*it)->_txt << "\n";
+					}
+
+				}
+			}
+		}
+		window.clear();
+		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
+			window.draw(**it);
+		window.display();
+	}
+	return 0;
+}
 int main()
 {
 	font.loadFromFile("../arial.ttf");
@@ -96,6 +176,12 @@ int main()
 		{
 		case 0:
 			state = menu(window);
+			break;
+		case 1:
+			state = credits(window);
+			break;
+		case 2:
+			state = game(window);
 			break;
 		}
 	}
