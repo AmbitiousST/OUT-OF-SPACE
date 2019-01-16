@@ -35,6 +35,15 @@ public:
 	}
 };
 
+class cursor
+{
+	Vector2 _pos;
+	sf::Texture _texture;
+	sf::Sprite _leftSpritie, _rightSprite;
+public:
+	cursor()		//Ja to dokończe nie pytaj co to XD
+};
+
 int menu(sf::RenderWindow& window)
 {
 	std::vector<sf::Drawable*> vect;
