@@ -313,7 +313,7 @@ int credits(sf::RenderWindow& window)
 
 int game(sf::RenderWindow& window)
 {
-	const float speedChange = 0.2;
+	const float speedChange = 0.2f;
 	std::vector<sf::Drawable*> vect;
 	sf::Texture bgGameTex;
 	bgGameTex.loadFromFile("../img/bg_game0.jpg");
@@ -328,7 +328,7 @@ int game(sf::RenderWindow& window)
 	for (int i = 0; i < 5; i++)
 	{
 		sf::Texture tex;
-		tex.loadFromFile("../img/player_spritesheet.png", sf::IntRect(i*41,0,41,52));
+		tex.loadFromFile("../img/player_spritesheet.png", sf::IntRect(i * 41, 0, 41, 52));
 		playerTextures.push_back(tex);
 	}
 	player Player(playerTextures, Vector2(400, 500), vect);
@@ -360,13 +360,13 @@ int game(sf::RenderWindow& window)
 		{
 			playerProjectiles.push_back(projectile(playerProjectileTex, Player._pos, Vector2(Player._speed.x, Player._speed.y + 3)));
 			playerProjectiles[playerProjectiles.size() - 1].addToVector(vect);	//Mało eleganckie
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-		{
-			return 0;
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			{
+				return 0;
+			}
 		}
 		window.clear();
 		Player.update();
-
 		for (std::vector<projectile>::iterator it = playerProjectiles.begin(); it != playerProjectiles.end(); it++)
 			it->update();
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
