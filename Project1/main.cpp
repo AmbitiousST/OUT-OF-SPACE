@@ -15,12 +15,12 @@ const std::string gameName = "Space Gosciniak";
 
 class projectile
 {
-	sf::Sprite _sprite;
 	sf::Texture _texture;
-	Vector2 _pos;
 	Vector2 _speed;
 
 public:
+	Vector2 _pos;
+	sf::Sprite _sprite;
 	projectile(sf::Texture tex, Vector2 pos, Vector2 speed) : _texture(tex), _pos(pos), _speed(speed)
 	{
 		_sprite.setTexture(_texture);
@@ -69,7 +69,10 @@ int menu(sf::RenderWindow& window)
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
+			{
 				window.close();
+				return -2;
+			}
 			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 			{
 				for (std::vector<button*>::iterator it = bvect.begin(); it != bvect.end(); it++)
@@ -157,7 +160,10 @@ int credits(sf::RenderWindow& window)
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
+			{
 				window.close();
+				return -2;
+			}
 			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 			{
 				for (std::vector<button*>::iterator it = bvect.begin(); it != bvect.end(); it++)
@@ -205,16 +211,17 @@ int game(sf::RenderWindow& window)
 	bgGame.setTexture(bgGameTex);
 	vect.push_back(&bgGame);
 	std::vector<sf::Texture> playerTextures;
-	std::vector<projectile> playerProjectiles;
+	std::vector<projectile*> playerProjectiles;
 	sf::Texture playerProjectileTex;
 	playerProjectileTex.loadFromFile("../img/player_proc.png");
-	std::vector<projectile> enemyProjectiles;
+	std::vector<projectile*> enemyProjectiles;
 	for (int i = 0; i < 5; i++)
 	{
 		sf::Texture tex;
 		tex.loadFromFile("../img/player_spritesheet.png", sf::IntRect(i * 41, 0, 41, 52));
 		playerTextures.push_back(tex);
 	}
+	bool shot = 1;
 	player Player(playerTextures, Vector2(400, 500), vect);
 	while (window.isOpen())
 	{
@@ -240,19 +247,32 @@ int game(sf::RenderWindow& window)
 		{
 			Player.changeSpeed(Vector2(0, speedChange));
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)&&shot)
 		{
-			playerProjectiles.push_back(projectile(playerProjectileTex, Player._pos, Vector2(Player._speed.x, Player._speed.y + 3)));
-			playerProjectiles[playerProjectiles.size() - 1].addToVector(vect);	//Mało eleganckie
+			playerProjectiles.push_back(new projectile(playerProjectileTex, Player._pos, Vector2(Player._speed.x, Player._speed.y - 0.5)));
 		}
+		shot = !sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		{
 			return 0;
 		}
 		window.clear();
 		Player.update();
-		for (std::vector<projectile>::iterator it = playerProjectiles.begin(); it != playerProjectiles.end(); it++)
-			it->update();
+		for (auto it = playerProjectiles.begin(); it != playerProjectiles.end();)
+		{
+				(*it)->update();
+				if ((*it)->_pos.y < 0)
+				{
+					delete (*it);
+					it = playerProjectiles.erase(it);
+				}
+				else
+				{
+					it++;
+					window.draw((*it)->_sprite);
+				}
+					
+		}
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
 		window.display();
