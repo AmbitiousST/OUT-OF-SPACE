@@ -71,20 +71,22 @@ public:
 
 class ship
 {
-	sf::Texture _texture;
-	sf::Sprite _sprite;		//Zmienić na animated sprite: https://github.com/SFML/SFML/wiki/Source%3A-AnimatedSprite
+	std::vector<sf::Texture> _textures;
+	sf::Sprite _sprite;
 	Vector2 _pos;
+	std::vector<sf::Texture>::iterator _it;
 
 public:
 	int _health;
 	Vector2 _speed;
 
-	ship(sf::Texture tex, Vector2 pos, std::vector<sf::Drawable*>& vect) : _texture(tex), _pos(pos)
+	ship(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect) : _textures(tex), _pos(pos)
 	{
-		_sprite.setTexture(_texture);
+		_sprite.setTexture(_textures[0]);
 		_speed = Vector2(0, 0);
 		_sprite.setPosition(_pos);
 		vect.push_back(&_sprite);
+		_it = _textures.begin();
 	}
 
 	void render(bool a)
@@ -93,18 +95,37 @@ public:
 		_sprite.setColor(sf::Color(255, 255, 255, a ? 255 : 0));
 	}
 
-	void updatePos()
+	void update()
 	{
+		sf::FloatRect rect = _sprite.getGlobalBounds();
 		_pos.x += _speed.x;
 		_pos.y += _speed.y;
+		if (_pos.x + rect.width >= 800)
+			_pos.x = 800 - rect.width;
+		if (_pos.x <= 0)
+			_pos.x = 0;
+		if (_pos.y + rect.height >= 600)
+			_pos.y = 600 - rect.height;
+		if (_pos.y <= 0)
+			_pos.y = 0;
+		_speed = Vector2(0, 0);
+		_sprite.setTexture(*_it);
+		if (++_it == _textures.end())
+			_it = _textures.begin();
 		_sprite.setPosition(_pos);
+	}
+	
+	void changeSpeed(Vector2 s)
+	{
+		_speed.x += s.x;
+		_speed.y += s.y;
 	}
 };
 
 class player : public ship
 {
 public:
-	player(sf::Texture tex, Vector2 pos, std::vector<sf::Drawable*>& vect) : ship(tex, pos, vect)
+	player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect) : ship(tex, pos, vect)
 	{
 
 	}
@@ -264,15 +285,16 @@ int credits(sf::RenderWindow& window)
 
 int game(sf::RenderWindow& window)
 {
+	const float speedChange = 0.2;
 	std::vector<sf::Drawable*> vect;
-	/*
-	std::vector<button*> bvect;
-	button b1(Vector2(300, 475), "Return", Vector2(200, 75), vect);
-	bvect.push_back(&b1);
-	*/
-	sf::Texture playerTex;
-	playerTex.loadFromFile("../img/player.png");
-	player Player(playerTex, Vector2(0, 0), vect);
+	std::vector<sf::Texture> playerTextures;
+	for (int i = 0; i < 5; i++)
+	{
+		sf::Texture tex;
+		tex.loadFromFile("../img/player_spritesheet.png", sf::IntRect(i*41,0,41,52));
+		playerTextures.push_back(tex);
+	}
+	player Player(playerTextures, Vector2(400, 500), vect);
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -298,7 +320,24 @@ int game(sf::RenderWindow& window)
 			}
 			*/
 		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+		{
+			Player.changeSpeed(Vector2(speedChange*-1, 0));
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		{
+			Player.changeSpeed(Vector2(speedChange, 0));
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+		{
+			Player.changeSpeed(Vector2(0, speedChange*-1));
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+		{
+			Player.changeSpeed(Vector2(0, speedChange));
+		}
 		window.clear();
+		Player.update();
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
 		window.display();
