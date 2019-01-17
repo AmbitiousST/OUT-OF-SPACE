@@ -130,12 +130,12 @@ public:
 
 class projectile
 {
-	sf::Sprite _sprite;
 	sf::Texture _texture;
-	Vector2 _pos;
 	Vector2 _speed;
 
 public:
+	Vector2 _pos;
+	sf::Sprite _sprite;
 	projectile(sf::Texture tex, Vector2 pos, Vector2 speed) : _texture(tex), _pos(pos), _speed(speed)
 	{
 		_sprite.setTexture(_texture);
@@ -359,8 +359,7 @@ int game(sf::RenderWindow& window)
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)&&shot)
 		{
-			playerProjectiles.push_back(new projectile(playerProjectileTex, Player._pos, Vector2(Player._speed.x, Player._speed.y - 3)));
-			playerProjectiles[playerProjectiles.size() - 1]->addToVector(vect);	//Mało eleganckie
+			playerProjectiles.push_back(new projectile(playerProjectileTex, Player._pos, Vector2(Player._speed.x, Player._speed.y - 0.5)));
 		}
 		shot = !sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
@@ -369,9 +368,20 @@ int game(sf::RenderWindow& window)
 		}
 		window.clear();
 		Player.update();
-		for (auto it = playerProjectiles.begin(); it != playerProjectiles.end(); it++)
+		for (auto it = playerProjectiles.begin(); it != playerProjectiles.end();)
 		{
-			(*it)->update();
+				(*it)->update();
+				if ((*it)->_pos.y < 0)
+				{
+					delete (*it);
+					it = playerProjectiles.erase(it);
+				}
+				else
+				{
+					it++;
+					window.draw((*it)->_sprite);
+				}
+					
 		}
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
