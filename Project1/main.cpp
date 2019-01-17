@@ -214,12 +214,10 @@ int game(sf::RenderWindow& window)
 	bgGameTex.loadFromFile("../img/bg_game0.jpg");
 	sf::Sprite bgGame;
 	bgGame.setTexture(bgGameTex);
-	//vect.push_back(&bgGame);
 	std::vector<sf::Texture> playerTextures;
 	std::list<projectile*> playerProjectiles;
 	sf::Texture playerProjectileTex;
 	playerProjectileTex.loadFromFile("../img/player_proc.png");
-	std::list<projectile*> enemyProjectiles;
 	for (int i = 0; i < 5; i++)
 	{
 		sf::Texture tex;
@@ -228,6 +226,17 @@ int game(sf::RenderWindow& window)
 	}
 	int shot = 0;
 	player Player(playerTextures, Vector2(400, 500), vect);
+	std::list<projectile*> enemyProjectiles;
+	std::vector<sf::Texture> enemyTextures;
+	sf::Texture enemyProjectileTex;
+	enemyProjectileTex.loadFromFile("../img/enemy_proc.png");
+	for (int i = 0; i < 5; i++)
+	{
+		sf::Texture tex;
+		tex.loadFromFile("../img/enemy1.png", sf::IntRect(i * 35, 0, 35, 48));
+		enemyTextures.push_back(tex);
+	}
+	enemy Enemy(enemyTextures, Vector2(100, 100), vect);
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -268,6 +277,7 @@ int game(sf::RenderWindow& window)
 		window.clear();
 		window.draw(bgGame);
 		Player.update();
+		Enemy.update();
 		for (auto it = playerProjectiles.begin(); it != playerProjectiles.end();)
 		{
 			(*it)->update();
