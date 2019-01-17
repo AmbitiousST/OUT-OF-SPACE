@@ -4,129 +4,14 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include "ship.h"
+#include "utility.h"
 
 typedef sf::Vector2<float> Vector2;
 
 sf::Font font;
 
-const std::string gameName = "Space Gosciniak";			//Ale gówniana nazwa - serio trzeba wymyślić coś lepszego
-
-class button {
-	sf::RectangleShape _box;
-	sf::Text _text;
-public:
-	Vector2 _pos, _size;
-	std::string _txt;
-	button(Vector2 pos, std::string txt, Vector2 size, std::vector<sf::Drawable*>& vect) : _pos(pos), _size(size), _txt(txt)
-	{
-		_box = sf::RectangleShape(_size);
-		_box.setPosition(pos);
-		_box.setFillColor(sf::Color(170, 170, 170, 0));
-		_text = sf::Text(txt, font, 40);
-		_text.setFillColor(sf::Color(0, 0, 0, 255));
-		_text.setOutlineColor(sf::Color(255, 255, 255, 255));
-		_text.setOutlineThickness(2);
-		auto bounds = _text.getLocalBounds();
-		_text.setPosition(pos.x + (_size.x - bounds.width - bounds.left) / 2, pos.y + (_size.y - bounds.height - bounds.top) / 2);	//Center
-		_text.setFillColor(sf::Color(0, 0, 0, 255));
-		vect.push_back(&_box);
-		vect.push_back(&_text);
-	}
-};
-
-class cursor
-{
-	sf::Texture _texture;
-	sf::Sprite _leftSprite, _rightSprite;
-public:
-	Vector2 _pos;
-	cursor(Vector2 pos, std::vector<sf::Drawable*>& vect) : _pos(pos)
-	{
-		_texture.loadFromFile("../img/cursor.png");
-		_leftSprite.setTexture(_texture);
-		_leftSprite.setPosition(pos);
-		_leftSprite.setScale(2, 2);
-		_rightSprite.setTexture(_texture);
-		_rightSprite.scale(-2, 2);
-		_rightSprite.setPosition(pos.x + 250, pos.y);
-		vect.push_back(&_leftSprite);
-		vect.push_back(&_rightSprite);
-	}
-
-	void render(bool a)
-	{
-		//Smieszny patent na pokazywanie/chowanie sprite'ów
-		_leftSprite.setColor(sf::Color(255, 255, 255, a ? 255 : 0));
-		_rightSprite.setColor(sf::Color(255, 255, 255, a ? 255 : 0));
-	}
-
-	void setPos(Vector2 pos)
-	{
-		_pos = pos;
-		_leftSprite.setPosition(pos);
-		_rightSprite.setPosition(pos.x + 250, pos.y);
-	}
-};
-
-class ship
-{
-	std::vector<sf::Texture> _textures;
-	sf::Sprite _sprite;
-	std::vector<sf::Texture>::iterator _it;
-
-public:
-	int _health;
-	Vector2 _pos;
-	Vector2 _speed;
-
-	ship(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect) : _textures(tex), _pos(pos)
-	{
-		_sprite.setTexture(_textures[0]);
-		_speed = Vector2(0, 0);
-		_sprite.setPosition(_pos);
-		vect.push_back(&_sprite);
-		_it = _textures.begin();
-	}
-
-	void render(bool a)
-	{
-		_sprite.setColor(sf::Color(255, 255, 255, a ? 255 : 0));
-	}
-
-	void update()
-	{
-		sf::FloatRect rect = _sprite.getGlobalBounds();
-		_pos += _speed;
-		if (_pos.x + rect.width >= 800)
-			_pos.x = 800 - rect.width;
-		if (_pos.x <= 0)
-			_pos.x = 0;
-		if (_pos.y + rect.height >= 600)
-			_pos.y = 600 - rect.height;
-		if (_pos.y <= 0)
-			_pos.y = 0;
-		_speed = Vector2(0, 0);
-		_sprite.setTexture(*_it);
-		if (++_it == _textures.end())
-			_it = _textures.begin();
-		_sprite.setPosition(_pos);
-	}
-	
-	void changeSpeed(Vector2 s)
-	{
-		_speed.x += s.x;
-		_speed.y += s.y;
-	}
-};
-
-class player : public ship
-{
-public:
-	player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect) : ship(tex, pos, vect)
-	{
-
-	}
-};
+const std::string gameName = "Space Gosciniak";
 
 class projectile
 {
@@ -204,7 +89,6 @@ int menu(sf::RenderWindow& window)
 						{
 							return 2;
 						}
-						std::cout << (*it)->_txt << "\n";
 					}
 
 				}
