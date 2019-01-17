@@ -43,3 +43,8 @@ player::player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawa
 {
 
 }
+
+enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect) : ship(tex, pos, vect)
+{
+
+}

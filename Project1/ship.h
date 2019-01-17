@@ -30,3 +30,9 @@ class player : public ship
 public:
 	player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);// : ship(tex, pos, vect) {}
 };
+
+class enemy : public ship
+{
+public:
+	enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);
+};
