@@ -218,11 +218,35 @@ int credits(sf::RenderWindow& window)
 	std::ifstream creditsFile;
 	creditsFile.open("../credits.txt", std::ifstream::in);
 	std::string creditsStr, temp;
+	std::vector<sf::Text*> Tvect;
+	std::vector<std::string> Svect;
+	float y = 75;
 	while (!creditsFile.eof())
 	{
 		std::getline(creditsFile, temp);
-		creditsStr += temp + '\n';
+		Svect.push_back(temp);
 	}
+	sf::Texture bgMenuT;
+	bgMenuT.loadFromFile("../img/bg_menu.png");
+	sf::Sprite bgMenu;
+	bgMenu.setTexture(bgMenuT);
+	vect.push_back(&bgMenu);
+	for (auto it = Svect.begin(); it != Svect.end(); it++)
+	{
+		std::cout << *it << "\n";
+		auto tmp = new sf::Text;
+		tmp->setString(*it);
+		tmp->setFont(font);
+		tmp->setCharacterSize(20);
+		tmp->setFillColor(sf::Color(0, 0, 0, 255));
+		tmp->setOutlineColor(sf::Color(255, 255, 255, 255));
+		tmp->setOutlineThickness(1.5);
+		tmp->setPosition((window.getSize().x - tmp->getLocalBounds().width - tmp->getLocalBounds().left) / 2, y);
+		y += tmp->getLocalBounds().height + tmp->getLocalBounds().top + 5;
+		Tvect.push_back(tmp);
+		vect.push_back(tmp);
+	}
+	/*
 	sf::Text creditsText;
 	creditsText = sf::Text(creditsStr, font, 20);
 	creditsText.setPosition((window.getSize().x - creditsText.getLocalBounds().width - creditsText.getLocalBounds().left) / 2, 75);
@@ -230,12 +254,9 @@ int credits(sf::RenderWindow& window)
 	creditsText.setFillColor(sf::Color(0, 0, 0, 255));
 	creditsText.setOutlineColor(sf::Color(255, 255, 255, 255));
 	creditsText.setOutlineThickness(1.5);
-	sf::Texture bgMenuT;
-	bgMenuT.loadFromFile("../img/bg_menu.png");
-	sf::Sprite bgMenu;
-	bgMenu.setTexture(bgMenuT);
-	vect.push_back(&bgMenu);
-	vect.push_back(&creditsText);
+	*/
+
+	//vect.push_back(&creditsText);
 	std::vector<button*> bvect;
 	button b1(Vector2(300, 475), "Back", Vector2(200, 75), vect);
 	bvect.push_back(&b1);
@@ -255,6 +276,8 @@ int credits(sf::RenderWindow& window)
 					{
 						if ((*it)->_txt == "Back")
 						{
+							for (auto it = Tvect.begin(); it != Tvect.end(); it++)
+								delete *it;
 							return 0;
 						}
 						std::cout << (*it)->_txt << "\n";
@@ -274,7 +297,6 @@ int credits(sf::RenderWindow& window)
 				break;
 			}
 		}
-		window.clear();
 		window.clear();
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
@@ -335,6 +357,10 @@ int game(sf::RenderWindow& window)
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 		{
 			Player.changeSpeed(Vector2(0, speedChange));
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+		{
+			return 0;
 		}
 		window.clear();
 		Player.update();
