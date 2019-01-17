@@ -1,5 +1,6 @@
 Menu & credits background by StumpyStrust opengameart.org
 Ships and cursor design by Stephen Challener (Redshrike), hosted by OpenGameArt.org
 Ship engines light and lasers by Rawdanitsu opengameart.org
+Game screen background by Rawdanitsu opengameart.org
 
 Code: Tobiasz "AmbitiousST" Szulc, Andrzej "Pojemnik" Gauza
