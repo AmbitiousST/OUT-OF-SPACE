@@ -46,5 +46,44 @@ player::player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawa
 
 enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect) : ship(tex, pos, vect)
 {
+	dist = 0;
+	side = 1;
+}
+void enemy::move() 
+{
+	
+	if (_pos.x + 70 >= 800 && side == 1)
+	{
+		side = 0;
+	}
+		
+	if(	_pos.x-50<0 && side == -1)
+	{
+		side = 0;
+	}
+
+	if (dist > 50) 
+	{
+		dist = 0;
+		if (_pos.x  < 400)
+			side = 1;
+		else
+			side = -1;
+	}
+	switch (side)
+	{
+	case 0:
+		changeSpeed(Vector2(0, 0.05));
+		dist += 0.05;
+		break;
+	case 1:
+		changeSpeed(Vector2(0.05,0));
+		break;
+	case -1:
+		changeSpeed(Vector2(-0.05,0));
+		break;
+	default:
+		break;
+	}
 
 }

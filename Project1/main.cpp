@@ -208,6 +208,7 @@ int credits(sf::RenderWindow& window)
 
 int game(sf::RenderWindow& window)
 {
+	int timer = 0;
 	const float speedChange = 0.2f;
 	std::vector<sf::Drawable*> vect;
 	sf::Texture bgGameTex;
@@ -241,6 +242,12 @@ int game(sf::RenderWindow& window)
 	evect.push_back(&Enemy);
 	while (window.isOpen())
 	{
+		timer++;
+		if (timer == 10000) 
+		{
+			timer = 0;
+			evect.push_back(new enemy(enemyTextures, Vector2(100, 0), vect));
+		}
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -289,7 +296,7 @@ int game(sf::RenderWindow& window)
 		window.clear();
 		window.draw(bgGame);
 		Player.update();
-		Enemy.update();
+		//Enemy.update();
 		for (auto it = playerProjectiles.begin(); it != playerProjectiles.end();)
 		{
 			(*it)->update();
@@ -303,10 +310,12 @@ int game(sf::RenderWindow& window)
 				window.draw((*it)->_sprite);
 				it++;
 			}
-
+			
 		}
 		for (auto it = evect.begin(); it != evect.end(); it++) {
 			(*it)->shot++;
+			(*it)->move();
+			(*it)->update();
 			(*it)->shot %= 4096;
 			if((*it)->shot==1)
 			{

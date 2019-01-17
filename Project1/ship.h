@@ -33,7 +33,10 @@ public:
 
 class enemy : public ship
 {
+	float dist;
+	int side=1;
 public:
 	int shot = 0;
 	enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);
+	void move();
 };
