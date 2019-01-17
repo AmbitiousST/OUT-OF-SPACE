@@ -69,6 +69,47 @@ public:
 	}
 };
 
+class ship
+{
+	sf::Texture _texture;
+	sf::Sprite _sprite;		//Zmienić na animated sprite: https://github.com/SFML/SFML/wiki/Source%3A-AnimatedSprite
+	Vector2 _pos;
+
+public:
+	int _health;
+	Vector2 _speed;
+
+	ship(sf::Texture tex, Vector2 pos, std::vector<sf::Drawable*>& vect) : _texture(tex), _pos(pos)
+	{
+		_sprite.setTexture(_texture);
+		_speed = Vector2(0, 0);
+		_sprite.setPosition(_pos);
+		vect.push_back(&_sprite);
+	}
+
+	void render(bool a)
+	{
+		//Smieszny patent na pokazywanie/chowanie sprite'ów
+		_sprite.setColor(sf::Color(255, 255, 255, a ? 255 : 0));
+	}
+
+	void updatePos()
+	{
+		_pos.x += _speed.x;
+		_pos.y += _speed.y;
+		_sprite.setPosition(_pos);
+	}
+};
+
+class player : public ship
+{
+public:
+	player(sf::Texture tex, Vector2 pos, std::vector<sf::Drawable*>& vect) : ship(tex, pos, vect)
+	{
+
+	}
+};
+
 int menu(sf::RenderWindow& window)
 {
 	std::vector<sf::Drawable*> vect;
@@ -223,11 +264,15 @@ int credits(sf::RenderWindow& window)
 
 int game(sf::RenderWindow& window)
 {
-	//narazie tak to nie wygl¹da
 	std::vector<sf::Drawable*> vect;
+	/*
 	std::vector<button*> bvect;
 	button b1(Vector2(300, 475), "Return", Vector2(200, 75), vect);
 	bvect.push_back(&b1);
+	*/
+	sf::Texture playerTex;
+	playerTex.loadFromFile("../img/player.png");
+	player Player(playerTex, Vector2(0, 0), vect);
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -235,6 +280,7 @@ int game(sf::RenderWindow& window)
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
+			/*
 			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 			{
 				for (std::vector<button*>::iterator it = bvect.begin(); it != bvect.end(); it++)
@@ -250,6 +296,7 @@ int game(sf::RenderWindow& window)
 
 				}
 			}
+			*/
 		}
 		window.clear();
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
