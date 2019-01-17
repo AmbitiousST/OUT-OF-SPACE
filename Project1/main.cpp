@@ -21,7 +21,6 @@ public:
 	{
 		_box = sf::RectangleShape(_size);
 		_box.setPosition(pos);
-		//_box.setFillColor(sf::Color(170, 170, 170, 255));
 		_box.setFillColor(sf::Color(170, 170, 170, 0));
 		_text = sf::Text(txt, font, 40);
 		_text.setFillColor(sf::Color(0, 0, 0, 255));
@@ -91,7 +90,6 @@ public:
 
 	void render(bool a)
 	{
-		//Smieszny patent na pokazywanie/chowanie sprite'ów
 		_sprite.setColor(sf::Color(255, 255, 255, a ? 255 : 0));
 	}
 
@@ -175,7 +173,6 @@ int menu(sf::RenderWindow& window)
 	logo = sf::Text(gameName, font, 70);
 	logo.setStyle(sf::Text::Bold);
 	logo.setPosition((window.getSize().x - logo.getLocalBounds().width - logo.getLocalBounds().left) / 2, 75);
-	//logo.setFillColor(sf::Color(0, 204, 0, 255));	//Dosyć zielony
 	logo.setFillColor(sf::Color(0, 0, 0, 255));
 	logo.setOutlineColor(sf::Color(255, 255, 255, 255));
 	logo.setOutlineThickness(4);
@@ -234,33 +231,38 @@ int menu(sf::RenderWindow& window)
 }
 
 int credits(sf::RenderWindow& window)
-/*
-	Trzebaby każdą linijkę dać do osobnego sf::Text.
-	Wtedy możnaby to wyśrodkować, bo narazie wygląda kiepsko.
-*/
 {
 	std::vector<sf::Drawable*> vect;
 	std::ifstream creditsFile;
 	creditsFile.open("../credits.txt", std::ifstream::in);
 	std::string creditsStr, temp;
+	std::vector<sf::Text*> Tvect;
+	std::vector<std::string> Svect;
+	float y = 75;
 	while (!creditsFile.eof())
 	{
 		std::getline(creditsFile, temp);
-		creditsStr += temp + '\n';
+		Svect.push_back(temp);
 	}
-	sf::Text creditsText;
-	creditsText = sf::Text(creditsStr, font, 20);
-	creditsText.setPosition((window.getSize().x - creditsText.getLocalBounds().width - creditsText.getLocalBounds().left) / 2, 75);
-	//creditsText.setFillColor(sf::Color(0, 204, 0, 255));
-	creditsText.setFillColor(sf::Color(0, 0, 0, 255));
-	creditsText.setOutlineColor(sf::Color(255, 255, 255, 255));
-	creditsText.setOutlineThickness(1.5);
 	sf::Texture bgMenuT;
 	bgMenuT.loadFromFile("../img/bg_menu.png");
 	sf::Sprite bgMenu;
 	bgMenu.setTexture(bgMenuT);
 	vect.push_back(&bgMenu);
-	vect.push_back(&creditsText);
+	for (auto it = Svect.begin(); it != Svect.end(); it++)
+	{
+		auto tmp = new sf::Text;
+		tmp->setString(*it);
+		tmp->setFont(font);
+		tmp->setCharacterSize(20);
+		tmp->setFillColor(sf::Color(0, 0, 0, 255));
+		tmp->setOutlineColor(sf::Color(255, 255, 255, 255));
+		tmp->setOutlineThickness(1.5);
+		tmp->setPosition((window.getSize().x - tmp->getLocalBounds().width - tmp->getLocalBounds().left) / 2, y);
+		y += tmp->getLocalBounds().height + tmp->getLocalBounds().top + 5;
+		Tvect.push_back(tmp);
+		vect.push_back(tmp);
+	}
 	std::vector<button*> bvect;
 	button b1(Vector2(300, 475), "Back", Vector2(200, 75), vect);
 	bvect.push_back(&b1);
@@ -280,6 +282,8 @@ int credits(sf::RenderWindow& window)
 					{
 						if ((*it)->_txt == "Back")
 						{
+							for (auto it = Tvect.begin(); it != Tvect.end(); it++)
+								delete *it;
 							return 0;
 						}
 						std::cout << (*it)->_txt << "\n";
@@ -299,7 +303,6 @@ int credits(sf::RenderWindow& window)
 				break;
 			}
 		}
-		window.clear();
 		window.clear();
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
@@ -357,6 +360,9 @@ int game(sf::RenderWindow& window)
 		{
 			playerProjectiles.push_back(projectile(playerProjectileTex, Player._pos, Vector2(Player._speed.x, Player._speed.y + 3)));
 			playerProjectiles[playerProjectiles.size() - 1].addToVector(vect);	//Mało eleganckie
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+		{
+			return 0;
 		}
 		window.clear();
 		Player.update();
