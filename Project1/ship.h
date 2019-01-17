@@ -34,5 +34,6 @@ public:
 class enemy : public ship
 {
 public:
+	int shot = 0;
 	enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);
 };

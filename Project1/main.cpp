@@ -217,6 +217,7 @@ int game(sf::RenderWindow& window)
 	//vect.push_back(&bgGame);
 	std::vector<sf::Texture> playerTextures;
 	std::list<projectile*> playerProjectiles;
+	std::list<enemy*> evect;
 	sf::Texture playerProjectileTex;
 	playerProjectileTex.loadFromFile("../img/player_proc.png");
 	std::list<projectile*> enemyProjectiles;
@@ -261,6 +262,10 @@ int game(sf::RenderWindow& window)
 			shot++;
 			shot %= 2048;
 		}
+		else
+		{
+			shot = 0;
+		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		{
 			return 0;
@@ -275,6 +280,32 @@ int game(sf::RenderWindow& window)
 			{
 				delete (*it);
 				it = playerProjectiles.erase(it);
+			}
+			else
+			{
+				window.draw((*it)->_sprite);
+				it++;
+			}
+
+		}
+		for (auto it = evect.begin(); it != evect.end(); it++) {
+			if (Player._pos.x + 41 > (*it)->_pos.x&& Player._pos.x < (*it)->_pos.x + 35)
+			{
+				(*it)->shot++;
+				(*it)->shot %= 2048;
+			}
+			if((*it)->shot==1)
+			{
+				enemyProjectiles.push_back(new projectile(playerProjectileTex, Vector2((*it)->_pos.x + 12, (*it)->_pos.y), Vector2((*it)->_speed.x, (*it)->_speed.y + 0.5)));
+			}
+		}
+		for (auto it = enemyProjectiles.begin(); it != enemyProjectiles.end();)
+		{
+			(*it)->update();
+			if ((*it)->_pos.y < 0)
+			{
+				delete (*it);
+				it = enemyProjectiles.erase(it);
 			}
 			else
 			{
