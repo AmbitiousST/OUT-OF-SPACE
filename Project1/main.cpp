@@ -321,16 +321,17 @@ int game(sf::RenderWindow& window)
 	bgGame.setTexture(bgGameTex);
 	vect.push_back(&bgGame);
 	std::vector<sf::Texture> playerTextures;
-	std::vector<projectile> playerProjectiles;
+	std::vector<projectile*> playerProjectiles;
 	sf::Texture playerProjectileTex;
 	playerProjectileTex.loadFromFile("../img/player_proc.png");
-	std::vector<projectile> enemyProjectiles;
+	std::vector<projectile*> enemyProjectiles;
 	for (int i = 0; i < 5; i++)
 	{
 		sf::Texture tex;
 		tex.loadFromFile("../img/player_spritesheet.png", sf::IntRect(i * 41, 0, 41, 52));
 		playerTextures.push_back(tex);
 	}
+	bool shot = 1;
 	player Player(playerTextures, Vector2(400, 500), vect);
 	while (window.isOpen())
 	{
@@ -356,19 +357,22 @@ int game(sf::RenderWindow& window)
 		{
 			Player.changeSpeed(Vector2(0, speedChange));
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)&&shot)
 		{
-			playerProjectiles.push_back(projectile(playerProjectileTex, Player._pos, Vector2(Player._speed.x, Player._speed.y + 3)));
-			playerProjectiles[playerProjectiles.size() - 1].addToVector(vect);	//Mało eleganckie
+			playerProjectiles.push_back(new projectile(playerProjectileTex, Player._pos, Vector2(Player._speed.x, Player._speed.y - 3)));
+			playerProjectiles[playerProjectiles.size() - 1]->addToVector(vect);	//Mało eleganckie
 		}
+		shot = !sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		{
 			return 0;
 		}
 		window.clear();
 		Player.update();
-		for (std::vector<projectile>::iterator it = playerProjectiles.begin(); it != playerProjectiles.end(); it++)
-			it->update();
+		for (auto it = playerProjectiles.begin(); it != playerProjectiles.end(); it++)
+		{
+			(*it)->update();
+		}
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
 		window.display();
