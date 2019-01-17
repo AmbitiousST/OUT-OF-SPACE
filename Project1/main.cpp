@@ -238,13 +238,19 @@ int game(sf::RenderWindow& window)
 		enemyTextures.push_back(tex);
 	}
 	enemy Enemy(enemyTextures, Vector2(100, 100), vect);
+	evect.push_back(&Enemy);
 	while (window.isOpen())
 	{
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
+			{
 				window.close();
+				return-2;
+			}
+				
+			
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
@@ -271,9 +277,10 @@ int game(sf::RenderWindow& window)
 			shot++;
 			shot %= 2048;
 		}
-		else
+		else if(shot>0)
 		{
-			shot = 0;
+			shot++;
+			shot %= 2048;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		{
@@ -299,11 +306,8 @@ int game(sf::RenderWindow& window)
 
 		}
 		for (auto it = evect.begin(); it != evect.end(); it++) {
-			if (Player._pos.x + 41 > (*it)->_pos.x&& Player._pos.x < (*it)->_pos.x + 35)
-			{
-				(*it)->shot++;
-				(*it)->shot %= 2048;
-			}
+			(*it)->shot++;
+			(*it)->shot %= 4096;
 			if((*it)->shot==1)
 			{
 				enemyProjectiles.push_back(new projectile(playerProjectileTex, Vector2((*it)->_pos.x + 12, (*it)->_pos.y), Vector2((*it)->_speed.x, (*it)->_speed.y + 0.5)));
