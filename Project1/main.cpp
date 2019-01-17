@@ -1,6 +1,7 @@
 ﻿#include <SFML/Graphics.hpp>
 #include <cmath>
 #include <vector>
+#include <list>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -181,6 +182,10 @@ int credits(sf::RenderWindow& window)
 				}
 			}
 		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)|| sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)|| sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		{
+			return 0;
+		}
 		c1.render(false);
 		for (std::vector<button*>::iterator it = bvect.begin(); it != bvect.end(); it++)
 		{
@@ -211,17 +216,17 @@ int game(sf::RenderWindow& window)
 	bgGame.setTexture(bgGameTex);
 	//vect.push_back(&bgGame);
 	std::vector<sf::Texture> playerTextures;
-	std::vector<projectile*> playerProjectiles;
+	std::list<projectile*> playerProjectiles;
 	sf::Texture playerProjectileTex;
 	playerProjectileTex.loadFromFile("../img/player_proc.png");
-	std::vector<projectile*> enemyProjectiles;
+	std::list<projectile*> enemyProjectiles;
 	for (int i = 0; i < 5; i++)
 	{
 		sf::Texture tex;
 		tex.loadFromFile("../img/player_spritesheet.png", sf::IntRect(i * 41, 0, 41, 52));
 		playerTextures.push_back(tex);
 	}
-	bool shot = 1;
+	int shot = 0;
 	player Player(playerTextures, Vector2(400, 500), vect);
 	while (window.isOpen())
 	{
@@ -247,11 +252,15 @@ int game(sf::RenderWindow& window)
 		{
 			Player.changeSpeed(Vector2(0, speedChange));
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)&&shot)
+		if (shot==1)
 		{
 			playerProjectiles.push_back(new projectile(playerProjectileTex, Vector2(Player._pos.x+12,Player._pos.y), Vector2(Player._speed.x, Player._speed.y - 0.5)));
 		}
-		shot = !sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) 
+		{
+			shot++;
+			shot %= 2048;
+		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		{
 			return 0;
