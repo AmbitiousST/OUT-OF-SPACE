@@ -360,10 +360,10 @@ int game(sf::RenderWindow& window)
 		{
 			playerProjectiles.push_back(projectile(playerProjectileTex, Player._pos, Vector2(Player._speed.x, Player._speed.y + 3)));
 			playerProjectiles[playerProjectiles.size() - 1].addToVector(vect);	//Mało eleganckie
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-			{
-				return 0;
-			}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+		{
+			return 0;
 		}
 		window.clear();
 		Player.update();
