@@ -1,3 +1,5 @@
 Menu & credits background by StumpyStrust opengameart.org
 
+Ships and cursor design by Stephen Challener (Redshrike), hosted by OpenGameArt.org
+
 Code: Tobiasz "AmbitiousST" Szulc, Andrzej "Pojemnik" Gauza

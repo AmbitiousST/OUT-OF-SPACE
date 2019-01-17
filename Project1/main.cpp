@@ -37,11 +37,36 @@ public:
 
 class cursor
 {
-	Vector2 _pos;
 	sf::Texture _texture;
-	sf::Sprite _leftSpritie, _rightSprite;
+	sf::Sprite _leftSprite, _rightSprite;
 public:
-	cursor()		//Ja to dokończe nie pytaj co to XD
+	Vector2 _pos;
+	cursor(Vector2 pos, std::vector<sf::Drawable*>& vect) : _pos(pos)
+	{
+		_texture.loadFromFile("../img/cursor.png");
+		_leftSprite.setTexture(_texture);
+		_leftSprite.setPosition(pos);
+		_leftSprite.setScale(2, 2);
+		_rightSprite.setTexture(_texture);
+		_rightSprite.scale(-2, 2);
+		_rightSprite.setPosition(pos.x + 250, pos.y);
+		vect.push_back(&_leftSprite);
+		vect.push_back(&_rightSprite);
+	}
+
+	void render(bool a)
+	{
+		//Smieszny patent na pokazywanie/chowanie sprite'ów
+		_leftSprite.setColor(sf::Color(255, 255, 255, a ? 255 : 0));
+		_rightSprite.setColor(sf::Color(255, 255, 255, a ? 255 : 0));
+	}
+
+	void setPos(Vector2 pos)
+	{
+		_pos = pos;
+		_leftSprite.setPosition(pos);
+		_rightSprite.setPosition(pos.x + 250, pos.y);
+	}
 };
 
 int menu(sf::RenderWindow& window)
@@ -60,7 +85,7 @@ int menu(sf::RenderWindow& window)
 	bvect.push_back(&b2);
 	bvect.push_back(&b3);
 	sf::Text logo;
-	logo = sf::Text(gameName,font,70);
+	logo = sf::Text(gameName, font, 70);
 	logo.setStyle(sf::Text::Bold);
 	logo.setPosition((window.getSize().x - logo.getLocalBounds().width - logo.getLocalBounds().left) / 2, 75);
 	//logo.setFillColor(sf::Color(0, 204, 0, 255));	//Dosyć zielony
@@ -68,6 +93,7 @@ int menu(sf::RenderWindow& window)
 	logo.setOutlineColor(sf::Color(255, 255, 255, 255));
 	logo.setOutlineThickness(4);
 	vect.push_back(&logo);
+	cursor c1 = cursor(Vector2(0, 0), vect);
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -100,6 +126,18 @@ int menu(sf::RenderWindow& window)
 				}
 			}
 		}
+		c1.render(false);
+		for (std::vector<button*>::iterator it = bvect.begin(); it != bvect.end(); it++)
+		{
+			sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+			Vector2 bPos = (*it)->_pos;
+			if (mousePos.x >= bPos.x && mousePos.x <= bPos.x + (*it)->_size.x && mousePos.y >= bPos.y && mousePos.y <= bPos.y + (*it)->_size.y)
+			{
+				c1.setPos(Vector2(bPos.x - 25, bPos.y + 30));
+				c1.render(true);
+				break;
+			}
+		}
 		window.clear();
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
@@ -109,6 +147,10 @@ int menu(sf::RenderWindow& window)
 }
 
 int credits(sf::RenderWindow& window)
+/*
+	Trzebaby każdą linijkę dać do osobnego sf::Text.
+	Wtedy możnaby to wyśrodkować, bo narazie wygląda kiepsko.
+*/
 {
 	std::vector<sf::Drawable*> vect;
 	std::ifstream creditsFile;
@@ -135,6 +177,7 @@ int credits(sf::RenderWindow& window)
 	std::vector<button*> bvect;
 	button b1(Vector2(300, 475), "Back", Vector2(200, 75), vect);
 	bvect.push_back(&b1);
+	cursor c1 = cursor(Vector2(0, 0), vect);
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -157,6 +200,19 @@ int credits(sf::RenderWindow& window)
 				}
 			}
 		}
+		c1.render(false);
+		for (std::vector<button*>::iterator it = bvect.begin(); it != bvect.end(); it++)
+		{
+			sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+			Vector2 bPos = (*it)->_pos;
+			if (mousePos.x >= bPos.x && mousePos.x <= bPos.x + (*it)->_size.x && mousePos.y >= bPos.y && mousePos.y <= bPos.y + (*it)->_size.y)
+			{
+				c1.setPos(Vector2(bPos.x - 25, bPos.y + 30));
+				c1.render(true);
+				break;
+			}
+		}
+		window.clear();
 		window.clear();
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
