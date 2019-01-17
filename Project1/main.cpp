@@ -184,7 +184,10 @@ int menu(sf::RenderWindow& window)
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
+			{
 				window.close();
+				return -2;
+			}
 			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 			{
 				for (std::vector<button*>::iterator it = bvect.begin(); it != bvect.end(); it++)
@@ -273,7 +276,10 @@ int credits(sf::RenderWindow& window)
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
+			{
 				window.close();
+				return -2;
+			}
 			if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
 			{
 				for (std::vector<button*>::iterator it = bvect.begin(); it != bvect.end(); it++)
