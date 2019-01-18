@@ -20,7 +20,7 @@ public:
 
 	ship(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);
 
-	void render(bool a);
+	void visible(bool a);
 
 	void update();
 
@@ -38,6 +38,7 @@ class enemy : public ship
 	float _dist;
 	int _side;
 	int _aiType;
+	float _baseSpeed;
 
 public:
 	int shot;

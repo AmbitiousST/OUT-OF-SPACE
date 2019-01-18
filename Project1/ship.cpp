@@ -10,12 +10,12 @@ ship::ship(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*
 	_collision = Vector2i(0, 0);
 }
 
-void ship::render(bool a)
+void ship::visible(bool a)
 {
 	_sprite.setColor(sf::Color(255, 255, 255, a ? 255 : 0));
 }
 
-void ship::update()
+void ship::update()		//fizyka statków
 {
 	_collision = Vector2i(0, 0);
 	sf::FloatRect rect = _sprite.getGlobalBounds();
@@ -52,8 +52,9 @@ enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawabl
 	_side = 1;
 	shot = 0;
 	_aiType = aiType;	//ca³y ten blok chyba da siê zrobiæ ³adniej, ale nie wiem jak
+	_baseSpeed = 1;
 }
-void enemy::move() 
+void enemy::move()		//ai przeciwnika
 {
 	switch (_aiType)
 	{
@@ -79,14 +80,14 @@ void enemy::move()
 		switch (_side)
 		{
 		case 0:
-			changeSpeed(Vector2(0, 1));
+			changeSpeed(Vector2(0, _baseSpeed));
 			_dist += 1;
 			break;
 		case 1:
-			changeSpeed(Vector2(1, 0));
+			changeSpeed(Vector2(_baseSpeed, 0));
 			break;
 		case -1:
-			changeSpeed(Vector2(-1, 0));
+			changeSpeed(Vector2(_baseSpeed*-1, 0));
 			break;
 		default:
 			break;
@@ -96,12 +97,12 @@ void enemy::move()
 	default:
 		if (_collision.x == 1)
 		{
-			changeSpeed(Vector2(_speed.x*-1, 0));
+			changeSpeed(Vector2(_baseSpeed*-1, 0));
 		}
 
 		if (_collision.x == -1)
 		{
-		changeSpeed(Vector2(_speed.x*-1, 0));
+		changeSpeed(Vector2(_baseSpeed*-1, 0));
 		}
 		break;
 	}

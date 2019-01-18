@@ -28,11 +28,6 @@ public:
 		_sprite.setPosition(_pos);
 	}
 
-	void addToVector(std::vector<sf::Drawable*>& vect)
-	{
-		vect.push_back(&_sprite);
-	}
-
 	void update()
 	{
 		_pos += _speed;
@@ -44,11 +39,13 @@ int menu(sf::RenderWindow& window)
 {
 	std::vector<sf::Drawable*> vect;
 	std::vector<button*> bvect;
+
 	sf::Texture bgMenuT;
 	bgMenuT.loadFromFile("../img/bg_menu.png");
 	sf::Sprite bgMenu;
 	bgMenu.setTexture(bgMenuT);
 	vect.push_back(&bgMenu);
+
 	button b1(Vector2(300, 225), "Play", Vector2(200, 75), vect);
 	button b2(Vector2(300, 350), "Credits", Vector2(200, 75), vect);
 	button b3(Vector2(300, 475), "Quit", Vector2(200, 75), vect);
@@ -98,7 +95,7 @@ int menu(sf::RenderWindow& window)
 				}
 			}
 		}
-		c1.render(false);
+		c1.visible(false);
 		for (std::vector<button*>::iterator it = bvect.begin(); it != bvect.end(); it++)
 		{
 			sf::Vector2i mousePos = sf::Mouse::getPosition(window);
@@ -106,7 +103,7 @@ int menu(sf::RenderWindow& window)
 			if (mousePos.x >= bPos.x && mousePos.x <= bPos.x + (*it)->_size.x && mousePos.y >= bPos.y && mousePos.y <= bPos.y + (*it)->_size.y)
 			{
 				c1.setPos(Vector2(bPos.x - 25, bPos.y + 30));
-				c1.render(true);
+				c1.visible(true);
 				break;
 			}
 		}
@@ -186,7 +183,7 @@ int credits(sf::RenderWindow& window)
 		{
 			return 0;
 		}
-		c1.render(false);
+		c1.visible(false);
 		for (std::vector<button*>::iterator it = bvect.begin(); it != bvect.end(); it++)
 		{
 			sf::Vector2i mousePos = sf::Mouse::getPosition(window);
@@ -194,7 +191,7 @@ int credits(sf::RenderWindow& window)
 			if (mousePos.x >= bPos.x && mousePos.x <= bPos.x + (*it)->_size.x && mousePos.y >= bPos.y && mousePos.y <= bPos.y + (*it)->_size.y)
 			{
 				c1.setPos(Vector2(bPos.x - 25, bPos.y + 30));
-				c1.render(true);
+				c1.visible(true);
 				break;
 			}
 		}
@@ -209,18 +206,21 @@ int credits(sf::RenderWindow& window)
 int game(sf::RenderWindow& window)
 {
 	const int fps = 60;
-	sf::Clock clock;
-	sf::Time time;
-	int timer = 0;
 	const float speedChange = 3;
+	sf::Clock clock;
+	int timer = 0;		//Może da się ładniej?
 	std::vector<sf::Drawable*> vect;
+
+	//Background
 	sf::Texture bgGameTex;
 	bgGameTex.loadFromFile("../img/bg_game0.jpg");
 	sf::Sprite bgGame;
 	bgGame.setTexture(bgGameTex);
+
+
+	//Player
 	std::vector<sf::Texture> playerTextures;
 	std::list<projectile*> playerProjectiles;
-	std::list<enemy*> evect;
 	sf::Texture playerProjectileTex;
 	playerProjectileTex.loadFromFile("../img/player_proc.png");
 	for (int i = 0; i < 5; i++)
@@ -231,8 +231,11 @@ int game(sf::RenderWindow& window)
 	}
 	int shot = 0;
 	player Player(playerTextures, Vector2(400, 500), vect);
+
+	//Enemy
 	std::list<projectile*> enemyProjectiles;
 	std::vector<sf::Texture> enemyTextures;
+	std::list<enemy*> evect;
 	sf::Texture enemyProjectileTex;
 	enemyProjectileTex.loadFromFile("../img/enemy_proc.png");
 	for (int i = 0; i < 5; i++)
@@ -242,8 +245,10 @@ int game(sf::RenderWindow& window)
 		enemyTextures.push_back(tex);
 	}
 	enemy Enemy(enemyTextures, Vector2(100, 100), vect, 1);
-	Enemy.changeSpeed(Vector2(2, 0));
+	Enemy.changeSpeed(Vector2(1, 0));
 	evect.push_back(&Enemy);
+
+	//Loop
 	while (window.isOpen())
 	{
 		clock.restart();
@@ -297,6 +302,8 @@ int game(sf::RenderWindow& window)
 			return 0;
 		}
 		window.clear();
+
+		//Render
 		window.draw(bgGame);
 		Player.update();
 		for (auto it = playerProjectiles.begin(); it != playerProjectiles.end();)
@@ -342,7 +349,7 @@ int game(sf::RenderWindow& window)
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
 		window.display();
-		while (clock.getElapsedTime().asMilliseconds() < 1000/fps);	//Limit fpsów
+		while (clock.getElapsedTime().asMilliseconds() < 1000/fps);	//Fps limiter
 	}
 	return 0;
 }
@@ -352,7 +359,6 @@ int main()
 	font.loadFromFile("../arial.ttf");
 	int state = 0;																	// 0 - menu, 1 - gra, 2 - credits, -1 błąd, -2 zamknij
 	sf::RenderWindow window(sf::VideoMode(800, 600), gameName);
-	sf::Clock clock;
 	while (state >= 0)
 	{
 		switch (state)
