@@ -7,6 +7,7 @@
 #include <fstream>
 #include "ship.h"
 #include "utility.h"
+#include "collision.h"
 
 typedef sf::Vector2<float> Vector2;
 
