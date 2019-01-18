@@ -136,7 +136,7 @@ int credits(sf::RenderWindow& window)
 	vect.push_back(&bgMenu);
 	for (auto it = Svect.begin(); it != Svect.end(); it++)
 	{
-		auto tmp = new sf::Text;
+		auto tmp = new sf::Text;	//no to już jest przgięcie z tym auto :/ sf::Text* nie gryzie
 		tmp->setString(*it);
 		tmp->setFont(font);
 		tmp->setCharacterSize(20);
@@ -248,6 +248,16 @@ int game(sf::RenderWindow& window)
 	Enemy.changeSpeed(Vector2(1, 0));
 	evect.push_back(&Enemy);
 
+	//Health bar
+	std::vector<sf::Texture> hpBarTextures;
+	for (int i = 0; i < 5; i++)
+	{
+		sf::Texture tex;
+		tex.loadFromFile("../img/hp_bar.png", sf::IntRect(i*26, 0, 26, 10));	//WTF czemu ucina prawe piksele?
+		hpBarTextures.push_back(tex);
+	}
+	hpBar HpBar(hpBarTextures, vect, &Player);
+
 	//Loop
 	while (window.isOpen())
 	{
@@ -285,7 +295,7 @@ int game(sf::RenderWindow& window)
 		}
 		if (shot==1)
 		{
-			playerProjectiles.push_back(new projectile(playerProjectileTex, Vector2(Player._pos.x+12,Player._pos.y), Vector2(0,-4)));
+			playerProjectiles.push_back(new projectile(playerProjectileTex, Vector2(Player.pos.x+12,Player.pos.y), Vector2(0,-4)));
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) 
 		{
@@ -306,6 +316,7 @@ int game(sf::RenderWindow& window)
 		//Render
 		window.draw(bgGame);
 		Player.update();
+		HpBar.update();
 		for (auto it = playerProjectiles.begin(); it != playerProjectiles.end();)
 		{
 			(*it)->update();
@@ -328,7 +339,7 @@ int game(sf::RenderWindow& window)
 			(*it)->shot %= 64;
 			if((*it)->shot==1)
 			{
-				enemyProjectiles.push_back(new projectile(enemyProjectileTex, Vector2((*it)->_pos.x + 12, (*it)->_pos.y), Vector2(0,4)));
+				enemyProjectiles.push_back(new projectile(enemyProjectileTex, Vector2((*it)->pos.x + 12, (*it)->pos.y), Vector2(0,4)));
 			}
 		}
 		for (auto it = enemyProjectiles.begin(); it != enemyProjectiles.end();)

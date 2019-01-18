@@ -1,13 +1,28 @@
 #include "ship.h"
 
-ship::ship(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect) : _textures(tex), _pos(pos)
+hpBar::hpBar(std::vector<sf::Texture> &tex, std::vector<sf::Drawable*>& vect, ship* ship) : _textures(tex), _ship(ship)
+{
+	update();
+	vect.push_back(&_sprite);
+}
+
+void hpBar::update()
+{
+	sf::FloatRect b = _ship->_sprite.getGlobalBounds();
+	_pos.x = _ship->pos.x+((b.width-26)/2);		//hpBar width = 26
+	_pos.y = _ship->pos.y + 50;
+	_sprite.setPosition(_pos);
+	_sprite.setTexture(_textures[5-(_ship->health)]);	//Potencjalne wyj¹tki
+}
+
+ship::ship(std::vector<sf::Texture> &tex, Vector2 p, std::vector<sf::Drawable*>& vect) : _textures(tex), pos(p)
 {
 	_sprite.setTexture(_textures[0]);
-	_speed = Vector2(0, 0);
-	_sprite.setPosition(_pos);
+	speed = Vector2(0, 0);
+	_sprite.setPosition(p);
 	vect.push_back(&_sprite);
 	_it = _textures.begin();
-	_collision = Vector2i(0, 0);
+	collision = Vector2i(0, 0);
 }
 
 void ship::visible(bool a)
@@ -17,33 +32,33 @@ void ship::visible(bool a)
 
 void ship::update()		//fizyka statków
 {
-	_collision = Vector2i(0, 0);
+	collision = Vector2i(0, 0);
 	sf::FloatRect rect = _sprite.getGlobalBounds();
-	_pos += _speed;
-	if (_pos.x + rect.width >= 800)
-		_pos.x = 800 - rect.width, _collision.x = 1;
-	if (_pos.x <= 0)
-		_pos.x = 0, _collision.x = -1;
-	if (_pos.y + rect.height >= 600)
-		_pos.y = 600 - rect.height, _collision.y = 1;
-	if (_pos.y <= 0)
-		_pos.y = 0, _collision.y = -1;
-	_speed = Vector2(0, 0);
+	pos += speed;
+	if (pos.x + rect.width >= 800)
+		pos.x = 800 - rect.width, collision.x = 1;
+	if (pos.x <= 0)
+		pos.x = 0, collision.x = -1;
+	if (pos.y + rect.height >= 600)
+		pos.y = 600 - rect.height, collision.y = 1;
+	if (pos.y <= 0)
+		pos.y = 0, collision.y = -1;
+	speed = Vector2(0, 0);
 	_sprite.setTexture(*_it);
 	if (++_it == _textures.end())
 		_it = _textures.begin();
-	_sprite.setPosition(_pos);
+	_sprite.setPosition(pos);
 }
 
 void ship::changeSpeed(Vector2 s)
 {
-	_speed.x += s.x;
-	_speed.y += s.y;
+	speed.x += s.x;
+	speed.y += s.y;
 }
 
 player::player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect) : ship(tex, pos, vect)
 {
-
+	health = 5;
 }
 
 enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, int aiType) : ship(tex, pos, vect)
@@ -59,12 +74,12 @@ void enemy::move()		//ai przeciwnika
 	switch (_aiType)
 	{
 	case(1):
-		if (_collision.x == 1 && _side == 1)//(_pos.x + 70 >= 800 && _side == 1)
+		if (collision.x == 1 && _side == 1)//(pos.x + 70 >= 800 && _side == 1)
 		{
 			_side = 0;
 		}
 
-		if (_collision.x == -1 && _side == -1)//(	_pos.x-50<0 && _side == -1)
+		if (collision.x == -1 && _side == -1)//(	pos.x-50<0 && _side == -1)
 		{
 			_side = 0;
 		}
@@ -72,7 +87,7 @@ void enemy::move()		//ai przeciwnika
 		if (_dist > 50)						//Co to ma na celu?
 		{
 			_dist = 0;
-			if (_pos.x < 400)
+			if (pos.x < 400)
 				_side = 1;
 			else
 				_side = -1;
@@ -95,12 +110,12 @@ void enemy::move()		//ai przeciwnika
 		break;
 
 	default:
-		if (_collision.x == 1)
+		if (collision.x == 1)
 		{
 			changeSpeed(Vector2(_baseSpeed*-1, 0));
 		}
 
-		if (_collision.x == -1)
+		if (collision.x == -1)
 		{
 		changeSpeed(Vector2(_baseSpeed*-1, 0));
 		}

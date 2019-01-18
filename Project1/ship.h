@@ -12,18 +12,16 @@ class ship
 	sf::Sprite _sprite;
 	std::vector<sf::Texture>::iterator _it;
 
+	friend class hpBar;	//pierwszy raz tego u¿ywam
+
 public:
-	int _health;
-	Vector2 _pos;
-	Vector2 _speed;
-	Vector2i _collision;
+	int health;
+	Vector2 pos, speed;
+	Vector2i collision;
 
 	ship(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);
-
 	void visible(bool a);
-
 	void update();
-
 	void changeSpeed(Vector2 s);
 };
 
@@ -35,15 +33,23 @@ public:
 
 class enemy : public ship
 {
-	float _dist;
-	int _side;
-	int _aiType;
-	float _baseSpeed;
+	float _dist, _baseSpeed;
+	int _side, _aiType;
 
 public:
 	int shot;
-
 	enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, int aiType);
-
 	void move();
+};
+
+class hpBar
+{
+	std::vector<sf::Texture> _textures;
+	sf::Sprite _sprite;
+	Vector2 _pos;
+	ship *_ship;
+
+public:
+	hpBar(std::vector<sf::Texture> &tex, std::vector<sf::Drawable*>& vect, ship* ship);
+	void update();
 };

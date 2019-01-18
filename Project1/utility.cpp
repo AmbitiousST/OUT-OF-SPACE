@@ -6,7 +6,7 @@ button::button(Vector2 pos, std::string txt, Vector2 size, std::vector<sf::Drawa
 	_text.setFillColor(sf::Color(0, 0, 0, 255));
 	_text.setOutlineColor(sf::Color(255, 255, 255, 255));
 	_text.setOutlineThickness(2);
-	auto bounds = _text.getLocalBounds();
+	sf::FloatRect bounds = _text.getLocalBounds();
 	_text.setPosition(pos.x + (_size.x - bounds.width - bounds.left) / 2, pos.y + (_size.y - bounds.height - bounds.top) / 2);	//Center
 	_text.setFillColor(sf::Color(0, 0, 0, 255));
 	vect.push_back(&_text);
@@ -27,7 +27,6 @@ cursor::cursor(Vector2 pos, std::vector<sf::Drawable*>& vect) : _pos(pos)
 
 void cursor::visible(bool a)
 {
-	//Smieszny patent na pokazywanie/chowanie sprite'ów
 	_leftSprite.setColor(sf::Color(255, 255, 255, a ? 255 : 0));
 	_rightSprite.setColor(sf::Color(255, 255, 255, a ? 255 : 0));
 }
