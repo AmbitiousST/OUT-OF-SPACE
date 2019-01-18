@@ -5,7 +5,6 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <Windows.h>  // weź mi to (potrzebne do Sleep)
 #include "ship.h"
 #include "utility.h"
 
@@ -209,6 +208,7 @@ int credits(sf::RenderWindow& window)
 
 int game(sf::RenderWindow& window)
 {
+	const int fps = 60;
 	sf::Clock clock;
 	sf::Time time;
 	int timer = 0;
@@ -241,7 +241,8 @@ int game(sf::RenderWindow& window)
 		tex.loadFromFile("../img/enemy1.png", sf::IntRect(i * 35, 0, 35, 48));
 		enemyTextures.push_back(tex);
 	}
-	enemy Enemy(enemyTextures, Vector2(100, 100), vect);
+	enemy Enemy(enemyTextures, Vector2(100, 100), vect, 1);
+	Enemy.changeSpeed(Vector2(2, 0));
 	evect.push_back(&Enemy);
 	while (window.isOpen())
 	{
@@ -250,7 +251,7 @@ int game(sf::RenderWindow& window)
 		if (timer == 500) 
 		{
 			timer = 0;
-			evect.push_back(new enemy(enemyTextures, Vector2(100, 0), vect));
+			evect.push_back(new enemy(enemyTextures, Vector2(100, 0), vect, 1));
 		}
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -260,8 +261,6 @@ int game(sf::RenderWindow& window)
 				window.close();
 				return-2;
 			}
-				
-			
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
@@ -281,7 +280,7 @@ int game(sf::RenderWindow& window)
 		}
 		if (shot==1)
 		{
-			playerProjectiles.push_back(new projectile(playerProjectileTex, Vector2(Player._pos.x+12,Player._pos.y), Vector2(Player._speed.x, Player._speed.y - 4)));
+			playerProjectiles.push_back(new projectile(playerProjectileTex, Vector2(Player._pos.x+12,Player._pos.y), Vector2(0,-4)));
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) 
 		{
@@ -300,7 +299,6 @@ int game(sf::RenderWindow& window)
 		window.clear();
 		window.draw(bgGame);
 		Player.update();
-		//Enemy.update();
 		for (auto it = playerProjectiles.begin(); it != playerProjectiles.end();)
 		{
 			(*it)->update();
@@ -323,7 +321,7 @@ int game(sf::RenderWindow& window)
 			(*it)->shot %= 64;
 			if((*it)->shot==1)
 			{
-				enemyProjectiles.push_back(new projectile(enemyProjectileTex, Vector2((*it)->_pos.x + 12, (*it)->_pos.y), Vector2((*it)->_speed.x, (*it)->_speed.y + 4)));
+				enemyProjectiles.push_back(new projectile(enemyProjectileTex, Vector2((*it)->_pos.x + 12, (*it)->_pos.y), Vector2(0,4)));
 			}
 		}
 		for (auto it = enemyProjectiles.begin(); it != enemyProjectiles.end();)
@@ -344,10 +342,7 @@ int game(sf::RenderWindow& window)
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
 		window.display();
-		time = clock.getElapsedTime();
-		//std::cout << time.asMilliseconds()<<"\n";
-		if(time.asMilliseconds()<40)
-			Sleep(40 - time.asMilliseconds());
+		while (clock.getElapsedTime().asMilliseconds() < 1000/fps);	//Limit fpsów
 	}
 	return 0;
 }

@@ -3,7 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
-typedef sf::Vector2<float> Vector2;
+typedef sf::Vector2f Vector2;
+typedef sf::Vector2i Vector2i;
 
 class ship
 {
@@ -15,6 +16,7 @@ public:
 	int _health;
 	Vector2 _pos;
 	Vector2 _speed;
+	Vector2i _collision;
 
 	ship(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);
 
@@ -28,15 +30,19 @@ public:
 class player : public ship
 {
 public:
-	player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);// : ship(tex, pos, vect) {}
+	player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);
 };
 
 class enemy : public ship
 {
-	float dist;
-	int side=1;
+	float _dist;
+	int _side;
+	int _aiType;
+
 public:
-	int shot = 0;
-	enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);
+	int shot;
+
+	enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, int aiType);
+
 	void move();
 };
