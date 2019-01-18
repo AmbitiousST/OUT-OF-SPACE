@@ -56,6 +56,13 @@ void ship::changeSpeed(Vector2 s)
 	speed.y += s.y;
 }
 
+void ship::takeDamage(int amount)	//funkcja roku
+{
+	health -= amount;
+	if (health < 0)
+		health = 0;
+}
+
 player::player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect) : ship(tex, pos, vect)
 {
 	health = 5;
@@ -63,18 +70,20 @@ player::player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawa
 
 enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, int aiType) : ship(tex, pos, vect)
 {
+	//ca³y ten blok chyba da siê zrobiæ ³adniej, ale nie wiem jak
 	_dist = 0;
 	_side = 1;
 	shot = 0;
-	_aiType = aiType;	//ca³y ten blok chyba da siê zrobiæ ³adniej, ale nie wiem jak
+	_aiType = aiType;
 	_baseSpeed = 1;
 }
+
 void enemy::move()		//ai przeciwnika
 {
 	switch (_aiType)
 	{
 	case(1):
-		if (collision.x == 1 && _side == 1)//(pos.x + 70 >= 800 && _side == 1)
+		if (collision.x == 1 && _side == 1)//(pos.x + 70 >= 800 && _side == 1) zostawi³em twój kod gdybyœ chcia³
 		{
 			_side = 0;
 		}
@@ -84,7 +93,7 @@ void enemy::move()		//ai przeciwnika
 			_side = 0;
 		}
 
-		if (_dist > 50)						//Co to ma na celu?
+		if (_dist > 50)//Co to ma na celu?
 		{
 			_dist = 0;
 			if (pos.x < 400)

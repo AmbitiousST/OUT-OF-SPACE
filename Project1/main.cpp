@@ -28,7 +28,12 @@ public:
 		_sprite.setTexture(_texture);
 		_sprite.setPosition(_pos);
 	}
-
+	/*					Całkiem przydatne do sprawdzania, czy obiekty są usuwane
+	~projectile()
+	{
+		std::cout << "destruktor" << std::endl;
+	}
+	*/
 	void update()
 	{
 		_pos += _speed;
@@ -137,7 +142,7 @@ int credits(sf::RenderWindow& window)
 	vect.push_back(&bgMenu);
 	for (auto it = Svect.begin(); it != Svect.end(); it++)
 	{
-		auto tmp = new sf::Text;	//no to już jest przgięcie z tym auto :/ sf::Text* nie gryzie
+		auto tmp = new sf::Text;	//no to już jest przgięcie z tym auto :( sf::Text* nie gryzie
 		tmp->setString(*it);
 		tmp->setFont(font);
 		tmp->setCharacterSize(20);
@@ -254,7 +259,8 @@ int game(sf::RenderWindow& window)
 	for (int i = 0; i < 5; i++)
 	{
 		sf::Texture tex;
-		tex.loadFromFile("../img/hp_bar.png", sf::IntRect(i*26, 0, 26, 10));	//WTF czemu ucina prawe piksele?
+		tex.loadFromFile("../img/hp_bar.png", sf::IntRect(i*27, 0, 27, 10));
+		//Szybka sztuczka na naprawę znikających pikseli - szerokość powinna być 26, ale wtedy nie działa :/
 		hpBarTextures.push_back(tex);
 	}
 	hpBar HpBar(hpBarTextures, vect, &Player);
@@ -346,6 +352,17 @@ int game(sf::RenderWindow& window)
 		for (auto it = enemyProjectiles.begin(); it != enemyProjectiles.end();)
 		{
 			(*it)->update();
+			if (Collision::PixelPerfectTest((*it)->_sprite, Player._sprite, 128))	//To 128 jest tak od czapy. Można zmienić
+			{
+				delete (*it);
+				it = enemyProjectiles.erase(it);
+				Player.takeDamage(1);
+				if (Player.health == 0)
+				{
+					return 0;	//Zmienić na jakieś lepsze game over
+				}
+				continue;
+			}
 			if ((*it)->_pos.y < 0)
 			{
 				delete (*it);
@@ -369,7 +386,7 @@ int game(sf::RenderWindow& window)
 int main()
 {
 	font.loadFromFile("../arial.ttf");
-	int state = 0;																	// 0 - menu, 1 - gra, 2 - credits, -1 błąd, -2 zamknij
+	int state = 0;								// 0 - menu, 1 - gra, 2 - credits, -1 błąd, -2 zamknij
 	sf::RenderWindow window(sf::VideoMode(800, 600), gameName);
 	while (state >= 0)
 	{

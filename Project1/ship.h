@@ -9,7 +9,6 @@ typedef sf::Vector2i Vector2i;
 class ship
 {
 	std::vector<sf::Texture> _textures;
-	sf::Sprite _sprite;
 	std::vector<sf::Texture>::iterator _it;
 
 	friend class hpBar;	//pierwszy raz tego u¿ywam
@@ -18,11 +17,13 @@ public:
 	int health;
 	Vector2 pos, speed;
 	Vector2i collision;
+	sf::Sprite _sprite;
 
 	ship(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);
 	void visible(bool a);
 	void update();
 	void changeSpeed(Vector2 s);
+	void takeDamage(int amount);
 };
 
 class player : public ship
