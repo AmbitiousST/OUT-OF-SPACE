@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <Windows.h>  // weź mi to (potrzebne do Sleep)
 #include "ship.h"
 #include "utility.h"
 
@@ -208,8 +209,10 @@ int credits(sf::RenderWindow& window)
 
 int game(sf::RenderWindow& window)
 {
+	sf::Clock clock;
+	sf::Time time;
 	int timer = 0;
-	const float speedChange = 0.2f;
+	const float speedChange = 3;
 	std::vector<sf::Drawable*> vect;
 	sf::Texture bgGameTex;
 	bgGameTex.loadFromFile("../img/bg_game0.jpg");
@@ -242,8 +245,9 @@ int game(sf::RenderWindow& window)
 	evect.push_back(&Enemy);
 	while (window.isOpen())
 	{
+		clock.restart();
 		timer++;
-		if (timer == 10000) 
+		if (timer == 500) 
 		{
 			timer = 0;
 			evect.push_back(new enemy(enemyTextures, Vector2(100, 0), vect));
@@ -277,17 +281,17 @@ int game(sf::RenderWindow& window)
 		}
 		if (shot==1)
 		{
-			playerProjectiles.push_back(new projectile(playerProjectileTex, Vector2(Player._pos.x+12,Player._pos.y), Vector2(Player._speed.x, Player._speed.y - 0.5)));
+			playerProjectiles.push_back(new projectile(playerProjectileTex, Vector2(Player._pos.x+12,Player._pos.y), Vector2(Player._speed.x, Player._speed.y - 4)));
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) 
 		{
 			shot++;
-			shot %= 2048;
+			shot %= 32;
 		}
 		else if(shot>0)
 		{
 			shot++;
-			shot %= 2048;
+			shot %= 32;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 		{
@@ -316,10 +320,10 @@ int game(sf::RenderWindow& window)
 			(*it)->shot++;
 			(*it)->move();
 			(*it)->update();
-			(*it)->shot %= 4096;
+			(*it)->shot %= 64;
 			if((*it)->shot==1)
 			{
-				enemyProjectiles.push_back(new projectile(playerProjectileTex, Vector2((*it)->_pos.x + 12, (*it)->_pos.y), Vector2((*it)->_speed.x, (*it)->_speed.y + 0.5)));
+				enemyProjectiles.push_back(new projectile(enemyProjectileTex, Vector2((*it)->_pos.x + 12, (*it)->_pos.y), Vector2((*it)->_speed.x, (*it)->_speed.y + 4)));
 			}
 		}
 		for (auto it = enemyProjectiles.begin(); it != enemyProjectiles.end();)
@@ -340,6 +344,10 @@ int game(sf::RenderWindow& window)
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
 		window.display();
+		time = clock.getElapsedTime();
+		//std::cout << time.asMilliseconds()<<"\n";
+		if(time.asMilliseconds()<40)
+			Sleep(40 - time.asMilliseconds());
 	}
 	return 0;
 }

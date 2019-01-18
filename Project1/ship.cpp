@@ -73,14 +73,14 @@ void enemy::move()
 	switch (side)
 	{
 	case 0:
-		changeSpeed(Vector2(0, 0.05));
-		dist += 0.05;
+		changeSpeed(Vector2(0, 1));
+		dist += 1;
 		break;
 	case 1:
-		changeSpeed(Vector2(0.05,0));
+		changeSpeed(Vector2(1,0));
 		break;
 	case -1:
-		changeSpeed(Vector2(-0.05,0));
+		changeSpeed(Vector2(-1,0));
 		break;
 	default:
 		break;
