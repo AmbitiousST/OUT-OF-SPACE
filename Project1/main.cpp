@@ -14,7 +14,6 @@ typedef sf::Vector2<float> Vector2;
 sf::Font font;
 
 const std::string gameName = "Space Gosciniak";
-
 class projectile
 {
 	sf::Texture _texture;
@@ -40,7 +39,99 @@ public:
 		_sprite.setPosition(_pos);
 	}
 };
-
+class playerProjectilesContainer
+{
+	std::list<projectile*> pvect;
+public:
+	sf::Texture texture;
+	Vector2 speed;
+	void addProjectile(Vector2 pos)
+	{
+		pvect.push_back(new projectile(texture, pos, speed));
+	}
+	void update(sf::RenderWindow& window, std::list<enemy*>& evect)
+	{
+		int x = 0;
+		for (auto it = pvect.begin(); it != pvect.end();)
+		{
+			x = 0;
+			(*it)->update();
+			for (auto it2 = evect.begin(); it2 != evect.end();)
+			{
+				if (Collision::PixelPerfectTest((*it)->_sprite, (*it2)->_sprite, 128))
+				{
+					delete *it;
+					it = pvect.erase(it);
+					delete *it2; // ten sam błąd
+					it2 = evect.erase(it2);
+					x = 1;
+					break;
+				}
+				else
+				{
+					it2++;
+				}
+			}
+			if (x)
+				continue;
+			if ((*it)->_pos.y < 0)
+			{
+				delete *it;
+				it = pvect.erase(it);
+			}
+			else
+			{
+				window.draw((*it)->_sprite);
+				it++;
+			}
+		}
+	}
+	~playerProjectilesContainer()
+	{
+		for (auto it = pvect.begin(); it != pvect.end(); it++)
+			delete *it;
+	}
+};
+class enemyProjectilesContainer
+{
+	std::list<projectile*> pvect;
+public:
+	sf::Texture texture;
+	Vector2 speed;
+	void addProjectile(Vector2 pos)
+	{
+		pvect.push_back(new projectile(texture, pos, speed));
+	}
+	void update(sf::RenderWindow& window, player& Player)
+	{
+		for (auto it = pvect.begin(); it != pvect.end();)
+		{
+			(*it)->update();
+			if (Collision::PixelPerfectTest((*it)->_sprite, Player._sprite, 128))
+			{
+				Player.takeDamage(1);
+				delete *it;
+				it = pvect.erase(it);
+				continue;
+			}
+			if ((*it)->_pos.y >600)
+			{
+				delete *it;
+				it = pvect.erase(it);
+			}
+			else
+			{
+				window.draw((*it)->_sprite);
+				it++;
+			}
+		}
+	}
+	~enemyProjectilesContainer()
+	{
+		for (auto it = pvect.begin(); it != pvect.end(); it++)
+			delete *it;
+	}
+};
 int menu(sf::RenderWindow& window)
 {
 	std::vector<sf::Drawable*> vect;
@@ -142,7 +233,7 @@ int credits(sf::RenderWindow& window)
 	vect.push_back(&bgMenu);
 	for (auto it = Svect.begin(); it != Svect.end(); it++)
 	{
-		auto tmp = new sf::Text;	//no to już jest przgięcie z tym auto :( sf::Text* nie gryzie
+		sf::Text* tmp = new sf::Text;	//no to już jest przgięcie z tym auto :( sf::Text* nie gryzie
 		tmp->setString(*it);
 		tmp->setFont(font);
 		tmp->setCharacterSize(20);
@@ -215,6 +306,7 @@ int game(sf::RenderWindow& window)
 	const float speedChange = 3;
 	sf::Clock clock;
 	int timer = 0;		//Może da się ładniej?
+						//to było tak na szybko
 	std::vector<sf::Drawable*> vect;
 
 	//Background
@@ -226,9 +318,9 @@ int game(sf::RenderWindow& window)
 
 	//Player
 	std::vector<sf::Texture> playerTextures;
-	std::list<projectile*> playerProjectiles;
-	sf::Texture playerProjectileTex;
-	playerProjectileTex.loadFromFile("../img/player_proc.png");
+	playerProjectilesContainer ppc;
+	ppc.texture.loadFromFile("../img/player_proc.png");
+	ppc.speed=Vector2(0,-4);
 	for (int i = 0; i < 5; i++)
 	{
 		sf::Texture tex;
@@ -239,11 +331,11 @@ int game(sf::RenderWindow& window)
 	player Player(playerTextures, Vector2(400, 500), vect);
 
 	//Enemy
-	std::list<projectile*> enemyProjectiles;
+	enemyProjectilesContainer epc;
 	std::vector<sf::Texture> enemyTextures;
 	std::list<enemy*> evect;
-	sf::Texture enemyProjectileTex;
-	enemyProjectileTex.loadFromFile("../img/enemy_proc.png");
+	epc.texture.loadFromFile("../img/enemy_proc.png");
+	epc.speed=Vector2(0, 4);
 	for (int i = 0; i < 5; i++)
 	{
 		sf::Texture tex;
@@ -302,7 +394,7 @@ int game(sf::RenderWindow& window)
 		}
 		if (shot==1)
 		{
-			playerProjectiles.push_back(new projectile(playerProjectileTex, Vector2(Player.pos.x+12,Player.pos.y), Vector2(0,-4)));
+			ppc.addProjectile(Vector2(Player.pos.x + 12, Player.pos.y));
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) 
 		{
@@ -324,67 +416,20 @@ int game(sf::RenderWindow& window)
 		window.draw(bgGame);
 		Player.update();
 		HpBar.update();
-
-		for (auto it = playerProjectiles.begin(); it != playerProjectiles.end();)
-		{
-			(*it)->update();
-			for (auto it2 = evect.begin(); it2 != evect.end(); it2++)
-				if (Collision::PixelPerfectTest((*it)->_sprite, (*it2)->_sprite, 128))
-				{
-					delete *it;
-					it = playerProjectiles.erase(it);
-					delete *it2;
-					it2 = evect.erase(it2);//Dlaczego to badziewie rzuca wyjątkami to ja nie wiem
-				}
-			if ((*it)->_pos.y < 0)
-			{
-				delete (*it);
-				it = playerProjectiles.erase(it);
-			}
-			else
-			{
-				window.draw((*it)->_sprite);
-				it++;
-			}
-			
-		}
-
+		ppc.update(window, evect);
 		for (auto it = evect.begin(); it != evect.end(); it++) {
 			(*it)->shot++;
 			(*it)->move();
 			(*it)->update();
 			(*it)->shot %= 64;
-			if((*it)->shot==1)
+			if ((*it)->shot == 1)
 			{
-				enemyProjectiles.push_back(new projectile(enemyProjectileTex, Vector2((*it)->pos.x + 12, (*it)->pos.y), Vector2(0,4)));
+				epc.addProjectile(Vector2((*it)->pos.x + 12, (*it)->pos.y));
 			}
 		}
-		for (auto it = enemyProjectiles.begin(); it != enemyProjectiles.end();)
-		{
-			(*it)->update();
-			if (Collision::PixelPerfectTest((*it)->_sprite, Player._sprite, 128))	//To 128 jest tak od czapy. Można zmienić
-			{
-				delete (*it);
-				it = enemyProjectiles.erase(it);
-				Player.takeDamage(1);
-				if (Player.health == 0)
-				{
-					return 0;	//Zmienić na jakieś lepsze game over
-				}
-				continue;
-			}
-			if ((*it)->_pos.y < 0)
-			{
-				delete (*it);
-				it = enemyProjectiles.erase(it);
-			}
-			else
-			{
-				window.draw((*it)->_sprite);
-				it++;
-			}
-
-		}
+		epc.update(window, Player);
+		if (Player.health < 1)
+			return 0; //zmienić na jakieś lepsze Game Over
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
 		window.display();
