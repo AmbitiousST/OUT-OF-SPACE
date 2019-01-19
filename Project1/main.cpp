@@ -148,7 +148,7 @@ int credits(sf::RenderWindow& window)
 		tmp->setCharacterSize(20);
 		tmp->setFillColor(sf::Color(0, 0, 0, 255));
 		tmp->setOutlineColor(sf::Color(255, 255, 255, 255));
-		tmp->setOutlineThickness(1.5);
+		tmp->setOutlineThickness(3);
 		tmp->setPosition((window.getSize().x - tmp->getLocalBounds().width - tmp->getLocalBounds().left) / 2, y);
 		y += tmp->getLocalBounds().height + tmp->getLocalBounds().top + 5;
 		Tvect.push_back(tmp);
@@ -324,9 +324,18 @@ int game(sf::RenderWindow& window)
 		window.draw(bgGame);
 		Player.update();
 		HpBar.update();
+
 		for (auto it = playerProjectiles.begin(); it != playerProjectiles.end();)
 		{
 			(*it)->update();
+			for (auto it2 = evect.begin(); it2 != evect.end(); it2++)
+				if (Collision::PixelPerfectTest((*it)->_sprite, (*it2)->_sprite, 128))
+				{
+					delete *it;
+					it = playerProjectiles.erase(it);
+					delete *it2;
+					it2 = evect.erase(it2);//Dlaczego to badziewie rzuca wyjątkami to ja nie wiem
+				}
 			if ((*it)->_pos.y < 0)
 			{
 				delete (*it);
@@ -339,6 +348,7 @@ int game(sf::RenderWindow& window)
 			}
 			
 		}
+
 		for (auto it = evect.begin(); it != evect.end(); it++) {
 			(*it)->shot++;
 			(*it)->move();
