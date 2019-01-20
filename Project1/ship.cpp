@@ -21,6 +21,7 @@ ship::ship(std::vector<sf::Texture> &tex, Vector2 p, std::vector<sf::Drawable*>&
 	speed = Vector2(0, 0);
 	_sprite.setPosition(p);
 	vect.push_back(&_sprite);
+	//vectorPos = vect.end() - 1;
 	_it = _textures.begin();
 	collision = Vector2i(0, 0);
 }
@@ -116,6 +117,10 @@ void enemy::move()		//ai przeciwnika
 		default:
 			break;
 		}
+		break;
+
+	case 2:
+		changeSpeed(Vector2(0, 0));
 		break;
 
 	default:

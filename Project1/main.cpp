@@ -14,6 +14,7 @@ typedef sf::Vector2<float> Vector2;
 sf::Font font;
 
 const std::string gameName = "Space Gosciniak";
+
 class projectile
 {
 	sf::Texture _texture;
@@ -22,47 +23,64 @@ class projectile
 public:
 	Vector2 _pos;
 	sf::Sprite _sprite;
+
 	projectile(sf::Texture tex, Vector2 pos, Vector2 speed) : _texture(tex), _pos(pos), _speed(speed)
 	{
 		_sprite.setTexture(_texture);
 		_sprite.setPosition(_pos);
 	}
+
 	/*					Całkiem przydatne do sprawdzania, czy obiekty są usuwane
 	~projectile()
 	{
 		std::cout << "destruktor" << std::endl;
 	}
 	*/
+
 	void update()
 	{
 		_pos += _speed;
 		_sprite.setPosition(_pos);
 	}
 };
+
 class playerProjectilesContainer
 {
-	std::list<projectile*> pvect;
+	std::list<projectile*> pvect;	
+	//$#@%@!#%@ Czemu pvect to wektor pocisków gracza, a evect to wektor obiektów enemy?!
+
 public:
 	sf::Texture texture;
 	Vector2 speed;
+
 	void addProjectile(Vector2 pos)
 	{
 		pvect.push_back(new projectile(texture, pos, speed));
 	}
-	void update(sf::RenderWindow& window, std::list<enemy*>& evect)
+
+	void update(sf::RenderWindow& window, std::list<enemy*>& evect, std::vector<sf::Drawable*>& vect)
 	{
-		int x = 0;
+		int x = 0;	//czemu tu?
 		for (auto it = pvect.begin(); it != pvect.end();)
 		{
-			x = 0;
+			x = 0;	//skoro może być tu?
 			(*it)->update();
 			for (auto it2 = evect.begin(); it2 != evect.end();)
 			{
 				if (Collision::PixelPerfectTest((*it)->_sprite, (*it2)->_sprite, 128))
 				{
+					for (auto it3 = vect.begin(); it3 != vect.end(); it3++)
+					//cała ta konstrukcja jest trochę przerażająca
+					{
+						if (*it3 == &(*it2)->_sprite)//zwłaszcza to
+						{
+							vect.erase(it3);
+							break;
+						}
+					}
 					delete *it;
 					it = pvect.erase(it);
-					delete *it2; // ten sam błąd
+					delete *it2;
 					it2 = evect.erase(it2);
 					x = 1;
 					break;
@@ -73,7 +91,10 @@ public:
 				}
 			}
 			if (x)
-				continue;
+			{
+				if (it == pvect.end())
+					break;
+			}
 			if ((*it)->_pos.y < 0)
 			{
 				delete *it;
@@ -86,12 +107,14 @@ public:
 			}
 		}
 	}
+
 	~playerProjectilesContainer()
 	{
 		for (auto it = pvect.begin(); it != pvect.end(); it++)
 			delete *it;
 	}
 };
+
 class enemyProjectilesContainer
 {
 	std::list<projectile*> pvect;
@@ -132,6 +155,7 @@ public:
 			delete *it;
 	}
 };
+
 int menu(sf::RenderWindow& window)
 {
 	std::vector<sf::Drawable*> vect;
@@ -335,16 +359,19 @@ int game(sf::RenderWindow& window)
 	std::vector<sf::Texture> enemyTextures;
 	std::list<enemy*> evect;
 	epc.texture.loadFromFile("../img/enemy_proc.png");
-	epc.speed=Vector2(0, 4);
+	epc.speed = Vector2(0, 4);
 	for (int i = 0; i < 5; i++)
 	{
 		sf::Texture tex;
 		tex.loadFromFile("../img/enemy1.png", sf::IntRect(i * 35, 0, 35, 48));
 		enemyTextures.push_back(tex);
 	}
-	enemy Enemy(enemyTextures, Vector2(100, 100), vect, 1);
-	Enemy.changeSpeed(Vector2(1, 0));
-	evect.push_back(&Enemy);
+	for (int i = 0; i < 5; i++)
+	{
+		enemy *e = new enemy(enemyTextures, Vector2(50.0f*i, 100.0f), vect, 1);
+		//e->changeSpeed(Vector2(1, 0));
+		evect.push_back(e);
+	}
 
 	//Health bar
 	std::vector<sf::Texture> hpBarTextures;
@@ -357,23 +384,43 @@ int game(sf::RenderWindow& window)
 	}
 	hpBar HpBar(hpBarTextures, vect, &Player);
 
+	//Level text
+	sf::Text* levelText = new sf::Text;
+	*levelText = sf::Text("Level 1", font, 70);
+	levelText->setStyle(sf::Text::Bold);
+	levelText->setPosition((window.getSize().x - levelText->getLocalBounds().width - levelText->getLocalBounds().left) / 2, 75);
+	levelText->setFillColor(sf::Color(0, 0, 0, 255));
+	levelText->setOutlineColor(sf::Color(255, 255, 255, 255));
+	levelText->setOutlineThickness(4);
+	window.clear();
+	window.draw(bgGame);
+	window.draw(*levelText);
+	clock.restart();
+	for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
+		window.draw(**it);
+	window.display();
+	while (clock.getElapsedTime().asMilliseconds() < 500);
+	delete levelText;
+
 	//Loop
 	while (window.isOpen())
 	{
 		clock.restart();
 		timer++;
+		/*
 		if (timer == 500) 
 		{
 			timer = 0;
 			evect.push_back(new enemy(enemyTextures, Vector2(100, 0), vect, 1));
 		}
+		*/
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
 			{
 				window.close();
-				return-2;
+				return -2;
 			}
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
@@ -416,7 +463,7 @@ int game(sf::RenderWindow& window)
 		window.draw(bgGame);
 		Player.update();
 		HpBar.update();
-		ppc.update(window, evect);
+		ppc.update(window, evect, vect);
 		for (auto it = evect.begin(); it != evect.end(); it++) {
 			(*it)->shot++;
 			(*it)->move();

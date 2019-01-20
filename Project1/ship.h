@@ -18,6 +18,7 @@ public:
 	Vector2 pos, speed;
 	Vector2i collision;
 	sf::Sprite _sprite;
+	//std::vector<sf::Drawable*>::iterator vectorPos;
 
 	ship(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);
 	void visible(bool a);
