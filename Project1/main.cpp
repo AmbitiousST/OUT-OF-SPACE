@@ -328,159 +328,176 @@ int game(sf::RenderWindow& window)
 {
 	const int fps = 60;
 	const float speedChange = 3;
-	sf::Clock clock;
-	int timer = 0;		//Może da się ładniej?
-						//to było tak na szybko
-	std::vector<sf::Drawable*> vect;
+	const int levelNum = 1;
 
-	//Background
-	sf::Texture bgGameTex;
-	bgGameTex.loadFromFile("../img/bg_game0.jpg");
-	sf::Sprite bgGame;
-	bgGame.setTexture(bgGameTex);
-
-
-	//Player
-	std::vector<sf::Texture> playerTextures;
-	playerProjectilesContainer ppc;
-	ppc.texture.loadFromFile("../img/player_proc.png");
-	ppc.speed=Vector2(0,-4);
-	for (int i = 0; i < 5; i++)
+	for (int level = 1; level <= levelNum; level++)
 	{
-		sf::Texture tex;
-		tex.loadFromFile("../img/player_spritesheet.png", sf::IntRect(i * 41, 0, 41, 52));
-		playerTextures.push_back(tex);
-	}
-	int shot = 0;
-	player Player(playerTextures, Vector2(400, 500), vect);
+		sf::Clock clock;
+		int timer = 0;		//Może da się ładniej?
+							//to było tak na szybko
+		std::vector<sf::Drawable*> vect;
 
-	//Enemy
-	enemyProjectilesContainer epc;
-	std::vector<sf::Texture> enemyTextures;
-	std::list<enemy*> evect;
-	epc.texture.loadFromFile("../img/enemy_proc.png");
-	epc.speed = Vector2(0, 4);
-	for (int i = 0; i < 5; i++)
-	{
-		sf::Texture tex;
-		tex.loadFromFile("../img/enemy1.png", sf::IntRect(i * 35, 0, 35, 48));
-		enemyTextures.push_back(tex);
-	}
-	for (int i = 0; i < 5; i++)
-	{
-		enemy *e = new enemy(enemyTextures, Vector2(50.0f*i, 100.0f), vect, 1);
-		//e->changeSpeed(Vector2(1, 0));
-		evect.push_back(e);
-	}
+		//Background
+		sf::Texture bgGameTex;
+		bgGameTex.loadFromFile("../img/bg_game0.jpg");
+		sf::Sprite bgGame;
+		bgGame.setTexture(bgGameTex);
 
-	//Health bar
-	std::vector<sf::Texture> hpBarTextures;
-	for (int i = 0; i < 5; i++)
-	{
-		sf::Texture tex;
-		tex.loadFromFile("../img/hp_bar.png", sf::IntRect(i*27, 0, 27, 10));
-		//Szybka sztuczka na naprawę znikających pikseli - szerokość powinna być 26, ale wtedy nie działa :/
-		hpBarTextures.push_back(tex);
-	}
-	hpBar HpBar(hpBarTextures, vect, &Player);
 
-	//Level text
-	sf::Text* levelText = new sf::Text;
-	*levelText = sf::Text("Level 1", font, 70);
-	levelText->setStyle(sf::Text::Bold);
-	levelText->setPosition((window.getSize().x - levelText->getLocalBounds().width - levelText->getLocalBounds().left) / 2, 75);
-	levelText->setFillColor(sf::Color(0, 0, 0, 255));
-	levelText->setOutlineColor(sf::Color(255, 255, 255, 255));
-	levelText->setOutlineThickness(4);
-	window.clear();
-	window.draw(bgGame);
-	window.draw(*levelText);
-	clock.restart();
-	for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
-		window.draw(**it);
-	window.display();
-	while (clock.getElapsedTime().asMilliseconds() < 500);
-	delete levelText;
-
-	//Loop
-	while (window.isOpen())
-	{
-		clock.restart();
-		timer++;
-		/*
-		if (timer == 500) 
+		//Player
+		std::vector<sf::Texture> playerTextures;
+		playerProjectilesContainer ppc;
+		ppc.texture.loadFromFile("../img/player_proc.png");
+		ppc.speed = Vector2(0, -6);
+		for (int i = 0; i < 5; i++)
 		{
-			timer = 0;
-			evect.push_back(new enemy(enemyTextures, Vector2(100, 0), vect, 1));
+			sf::Texture tex;
+			tex.loadFromFile("../img/player_spritesheet.png", sf::IntRect(i * 41, 0, 41, 52));
+			playerTextures.push_back(tex);
 		}
-		*/
-		sf::Event event;
-		while (window.pollEvent(event))
+		int shot = 0;
+		player Player(playerTextures, Vector2(400, 500), vect);
+
+		enemyProjectilesContainer epc;
+		std::list<enemy*> evect;
+		if (level == 1)
 		{
-			if (event.type == sf::Event::Closed)
+			//Enemy
+			std::vector<sf::Texture> enemyTextures;
+			epc.texture.loadFromFile("../img/enemy_proc.png");
+			epc.speed = Vector2(0, 6);
+			for (int i = 0; i < 5; i++)
 			{
-				window.close();
-				return -2;
+				sf::Texture tex;
+				tex.loadFromFile("../img/enemy1.png", sf::IntRect(i * 35, 0, 35, 48));
+				enemyTextures.push_back(tex);
+			}
+			for (int i = 0; i < 5; i++)
+			{
+				enemy *e = new enemy(enemyTextures, Vector2(50.0f*i, 100.0f), vect, 1);
+				/*		To kiedyś będąpaski hp wrogów. Kiedyś...
+				std::vector<sf::Texture> hpBarTextures;
+				for (int i = 0; i < 2; i++)
+				{
+					sf::Texture tex;
+					tex.loadFromFile("../img/hp_bar2.png", sf::IntRect(i * 11, 0, 11, 10));
+					hpBarTextures.push_back(tex);
+				}
+				hpBar HpBar(hpBarTextures, vect, e);
+				*/
+				evect.push_back(e);
 			}
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+		//Health bar
+		std::vector<sf::Texture> hpBarTextures;
+		for (int i = 0; i < 5; i++)
 		{
-			Player.changeSpeed(Vector2(speedChange*-1, 0));
+			sf::Texture tex;
+			tex.loadFromFile("../img/hp_bar.png", sf::IntRect(i * 27, 0, 27, 10));
+			//Szybka sztuczka na naprawę znikających pikseli - szerokość powinna być 26, ale wtedy nie działa :/
+			hpBarTextures.push_back(tex);
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		{
-			Player.changeSpeed(Vector2(speedChange, 0));
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-		{
-			Player.changeSpeed(Vector2(0, speedChange*-1));
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-		{
-			Player.changeSpeed(Vector2(0, speedChange));
-		}
-		if (shot==1)
-		{
-			ppc.addProjectile(Vector2(Player.pos.x + 12, Player.pos.y));
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) 
-		{
-			shot++;
-			shot %= 32;
-		}
-		else if(shot>0)
-		{
-			shot++;
-			shot %= 32;
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-		{
-			return 0;
-		}
+		hpBar HpBar(hpBarTextures, vect, &Player);
+
+		//Level text
+		sf::Text* levelText = new sf::Text;
+		const std::string levelStr = "Level " + std::to_string(level);
+		*levelText = sf::Text(levelStr, font, 70);
+		levelText->setStyle(sf::Text::Bold);
+		levelText->setPosition((window.getSize().x - levelText->getLocalBounds().width - levelText->getLocalBounds().left) / 2, 75);
+		levelText->setFillColor(sf::Color(0, 0, 0, 255));
+		levelText->setOutlineColor(sf::Color(255, 255, 255, 255));
+		levelText->setOutlineThickness(4);
 		window.clear();
-
-		//Render
 		window.draw(bgGame);
-		Player.update();
-		HpBar.update();
-		ppc.update(window, evect, vect);
-		for (auto it = evect.begin(); it != evect.end(); it++) {
-			(*it)->shot++;
-			(*it)->move();
-			(*it)->update();
-			(*it)->shot %= 64;
-			if ((*it)->shot == 1)
-			{
-				epc.addProjectile(Vector2((*it)->pos.x + 12, (*it)->pos.y));
-			}
-		}
-		epc.update(window, Player);
-		if (Player.health < 1)
-			return 0; //zmienić na jakieś lepsze Game Over
+		window.draw(*levelText);
+		clock.restart();
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
 		window.display();
-		while (clock.getElapsedTime().asMilliseconds() < 1000/fps);	//Fps limiter
+		while (clock.getElapsedTime().asMilliseconds() < 500);
+		delete levelText;
+
+		//Loop
+		while (evect.size() > 0 && window.isOpen())
+		{
+			clock.restart();
+			timer++;
+			/*
+			if (timer == 500)
+			{
+				timer = 0;
+				evect.push_back(new enemy(enemyTextures, Vector2(100, 0), vect, 1));
+			}
+			*/
+			sf::Event event;
+			while (window.pollEvent(event))
+			{
+				if (event.type == sf::Event::Closed)
+				{
+					window.close();
+					return -2;
+				}
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+			{
+				Player.changeSpeed(Vector2(speedChange*-1, 0));
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+			{
+				Player.changeSpeed(Vector2(speedChange, 0));
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+			{
+				Player.changeSpeed(Vector2(0, speedChange*-1));
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+			{
+				Player.changeSpeed(Vector2(0, speedChange));
+			}
+			if (shot == 1)
+			{
+				ppc.addProjectile(Vector2(Player.pos.x + 12, Player.pos.y));
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+			{
+				shot++;
+				shot %= 32;
+			}
+			else if (shot > 0)
+			{
+				shot++;
+				shot %= 32;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+			{
+				return 0;
+			}
+			window.clear();
+
+			//Render
+			window.draw(bgGame);
+			Player.update();
+			HpBar.update();
+			ppc.update(window, evect, vect);
+			for (auto it = evect.begin(); it != evect.end(); it++) {
+				(*it)->shot++;
+				(*it)->move();
+				(*it)->update();
+				(*it)->shot %= 64;
+				if ((*it)->shot == 1)
+				{
+					epc.addProjectile(Vector2((*it)->pos.x + 12, (*it)->pos.y));
+				}
+			}
+			epc.update(window, Player);
+			if (Player.health < 1)
+				return 0; //zmienić na jakieś lepsze Game Over
+			for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
+				window.draw(**it);
+			window.display();
+			while (clock.getElapsedTime().asMilliseconds() < 1000 / fps);	//Fps limiter
+		}
 	}
 	return 0;
 }
