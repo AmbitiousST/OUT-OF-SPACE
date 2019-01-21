@@ -13,6 +13,7 @@ class hpBar
 	Vector2 _pos;
 	sf::Sprite* _spritePtr;
 	std::vector<sf::Drawable*>* _vectPtr;
+	int _maxHp;
 
 public:
 	float width;
@@ -54,9 +55,13 @@ class enemy : public ship
 {
 	float _dist, _baseSpeed;
 	int _side, _aiType;
+	hpBar *_bar;
 
 public:
 	int shot;
-	enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, int aiType);
+	enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect,
+		int aiType, int hp, std::vector<sf::Texture> &barTex);
+	~enemy();
+	void update();
 	void move();
 };

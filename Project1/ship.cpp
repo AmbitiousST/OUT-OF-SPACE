@@ -1,6 +1,6 @@
 #include "ship.h"
 
-hpBar::hpBar(std::vector<sf::Texture> &tex, std::vector<sf::Drawable*>& vect, int hp, Vector2 p) : _textures(tex), _vectPtr(&vect)
+hpBar::hpBar(std::vector<sf::Texture> &tex, std::vector<sf::Drawable*>& vect, int hp, Vector2 p) : _textures(tex), _vectPtr(&vect), _maxHp(hp)
 {
 	update(p,hp);
 	vect.push_back(&_sprite);
@@ -12,7 +12,7 @@ void hpBar::update(Vector2 p, int hp)
 	_pos = p;
 	_spritePtr = &_sprite;
 	_sprite.setPosition(_pos);
-	_sprite.setTexture(_textures[5-(hp)]);	//Potencjalne wyj¹tki
+	_sprite.setTexture(_textures[_maxHp-(hp)]);	//Potencjalne wyj¹tki
 }
 
 hpBar::~hpBar()
@@ -92,14 +92,29 @@ void player::update()
 	_bar->update(Vector2(pos.x+(sprite.getGlobalBounds().width-_bar->width)/2, pos.y + 50), health);
 }
 
-enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, int aiType) : ship(tex, pos, vect)
+enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect,
+	int aiType, int hp, std::vector<sf::Texture> &barTex) : ship(tex, pos, vect)
+	//okropnie du¿o tych argumentów. Chyba przesadzi³em
 {
 	//ca³y ten blok chyba da siê zrobiæ ³adniej, ale nie wiem jak
+	health = hp;
 	_dist = 0;
 	_side = 1;
 	shot = 0;
 	_aiType = aiType;
 	_baseSpeed = 1;
+	_bar = new hpBar(barTex, vect, health, Vector2(pos.x, pos.y - 10));
+}
+
+void enemy::update()	//Dok³adzie to samo, co update gracza
+{
+	ship::update();
+	_bar->update(Vector2(pos.x + (sprite.getGlobalBounds().width - _bar->width) / 2, pos.y - 10), health);
+}
+
+enemy::~enemy()			//Dok³adzie to samo, co destruktor gracza
+{
+	delete _bar;
 }
 
 void enemy::move()		//ai przeciwnika

@@ -30,13 +30,6 @@ public:
 		_sprite.setPosition(_pos);
 	}
 
-	/*					Całkiem przydatne do sprawdzania, czy obiekty są usuwane
-	~projectile()
-	{
-		std::cout << "destruktor" << std::endl;
-	}
-	*/
-
 	void update()
 	{
 		_pos += _speed;
@@ -139,7 +132,7 @@ public:
 				it = pvect.erase(it);
 				continue;
 			}
-			if ((*it)->_pos.y >600)
+			if ((*it)->_pos.y > 600)
 			{
 				delete *it;
 				it = pvect.erase(it);
@@ -345,7 +338,6 @@ int game(sf::RenderWindow& window)
 		sf::Sprite bgGame;
 		bgGame.setTexture(bgGameTex);
 
-
 		//Player
 		std::vector<sf::Texture> playerTextures;
 		playerProjectilesContainer ppc;
@@ -382,34 +374,20 @@ int game(sf::RenderWindow& window)
 				tex.loadFromFile("../img/enemy1.png", sf::IntRect(i * 35, 0, 35, 48));
 				enemyTextures.push_back(tex);
 			}
+			std::vector<sf::Texture> hpBarTextures;
+			for (int i = 0; i < 2; i++)
+			{
+				sf::Texture tex;
+				tex.loadFromFile("../img/hp_bar2.png", sf::IntRect(i * 11, 0, 11, 10));
+				hpBarTextures.push_back(tex);
+			}
 			for (int i = 0; i < 5; i++)
 			{
-				enemy *e = new enemy(enemyTextures, Vector2(50.0f*i, 100.0f), vect, 1);
-				/*		To kiedyś będąpaski hp wrogów. Kiedyś...
-				std::vector<sf::Texture> hpBarTextures;
-				for (int i = 0; i < 2; i++)
-				{
-					sf::Texture tex;
-					tex.loadFromFile("../img/hp_bar2.png", sf::IntRect(i * 11, 0, 11, 10));
-					hpBarTextures.push_back(tex);
-				}
-				hpBar HpBar(hpBarTextures, vect, e);
-				*/
+				enemy *e = new enemy(enemyTextures, Vector2(50.0f*i, 100.0f), vect, 1, 1, hpBarTextures);
 				evect.push_back(e);
 			}
 		}
-		//Health bar
-		/*
-		std::vector<sf::Texture> hpBarTextures;
-		for (int i = 0; i < 5; i++)
-		{
-			sf::Texture tex;
-			tex.loadFromFile("../img/hp_bar.png", sf::IntRect(i * 27, 0, 27, 10));
-			//Szybka sztuczka na naprawę znikających pikseli - szerokość powinna być 26, ale wtedy nie działa :/
-			hpBarTextures.push_back(tex);
-		}
-		hpBar HpBar(hpBarTextures, vect, &Player);
-		*/
+
 		//Level text
 		sf::Text* levelText = new sf::Text;
 		const std::string levelStr = "Level " + std::to_string(level);
@@ -422,6 +400,13 @@ int game(sf::RenderWindow& window)
 		window.clear();
 		window.draw(bgGame);
 		window.draw(*levelText);
+		//Jedna runda update'u wszystkiego, żeby paski hp wyglądały po ludzku
+		Player.update();
+		ppc.update(window, evect, vect);
+		for (auto it = evect.begin(); it != evect.end(); it++) {
+			(*it)->update();
+		}
+		epc.update(window, Player);
 		clock.restart();
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
@@ -434,13 +419,6 @@ int game(sf::RenderWindow& window)
 		{
 			clock.restart();
 			timer++;
-			/*
-			if (timer == 500)
-			{
-				timer = 0;
-				evect.push_back(new enemy(enemyTextures, Vector2(100, 0), vect, 1));
-			}
-			*/
 			sf::Event event;
 			while (window.pollEvent(event))
 			{
@@ -489,7 +467,6 @@ int game(sf::RenderWindow& window)
 			//Render
 			window.draw(bgGame);
 			Player.update();
-			//HpBar.update();
 			ppc.update(window, evect, vect);
 			for (auto it = evect.begin(); it != evect.end(); it++) {
 				(*it)->shot++;
