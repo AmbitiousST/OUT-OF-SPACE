@@ -6,19 +6,32 @@
 typedef sf::Vector2f Vector2;
 typedef sf::Vector2i Vector2i;
 
+class hpBar
+{
+	std::vector<sf::Texture> _textures;
+	sf::Sprite _sprite;
+	Vector2 _pos;
+	sf::Sprite* _spritePtr;
+	std::vector<sf::Drawable*>* _vectPtr;
+
+public:
+	float width;
+
+	hpBar(std::vector<sf::Texture> &tex, std::vector<sf::Drawable*>& vect, int hp, Vector2 p);
+	~hpBar();
+	void update(Vector2 p, int hp);
+};
+
 class ship
 {
 	std::vector<sf::Texture> _textures;
 	std::vector<sf::Texture>::iterator _it;
 
-	friend class hpBar;	//pierwszy raz tego u¿ywam
-
 public:
 	int health;
 	Vector2 pos, speed;
 	Vector2i collision;
-	sf::Sprite _sprite;
-	//std::vector<sf::Drawable*>::iterator vectorPos;
+	sf::Sprite sprite;
 
 	ship(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);
 	void visible(bool a);
@@ -29,8 +42,12 @@ public:
 
 class player : public ship
 {
+	hpBar *_bar;
+
 public:
-	player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);
+	player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex);
+	void update();
+	~player();
 };
 
 class enemy : public ship
@@ -42,16 +59,4 @@ public:
 	int shot;
 	enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, int aiType);
 	void move();
-};
-
-class hpBar
-{
-	std::vector<sf::Texture> _textures;
-	sf::Sprite _sprite;
-	Vector2 _pos;
-	ship *_ship;
-
-public:
-	hpBar(std::vector<sf::Texture> &tex, std::vector<sf::Drawable*>& vect, ship* ship);
-	void update();
 };

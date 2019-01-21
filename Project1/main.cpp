@@ -67,12 +67,14 @@ public:
 			(*it)->update();
 			for (auto it2 = evect.begin(); it2 != evect.end();)
 			{
-				if (Collision::PixelPerfectTest((*it)->_sprite, (*it2)->_sprite, 128))
+				if (Collision::PixelPerfectTest((*it)->_sprite, (*it2)->sprite, 128))
 				{
 					for (auto it3 = vect.begin(); it3 != vect.end(); it3++)
 					//cała ta konstrukcja jest trochę przerażająca
+					//a poza tym powinien się tym zajmować destruktor statku
+					//tak jak w hpBar
 					{
-						if (*it3 == &(*it2)->_sprite)//zwłaszcza to
+						if (*it3 == &(*it2)->sprite)//zwłaszcza to
 						{
 							vect.erase(it3);
 							break;
@@ -130,7 +132,7 @@ public:
 		for (auto it = pvect.begin(); it != pvect.end();)
 		{
 			(*it)->update();
-			if (Collision::PixelPerfectTest((*it)->_sprite, Player._sprite, 128))
+			if (Collision::PixelPerfectTest((*it)->_sprite, Player.sprite, 128))
 			{
 				Player.takeDamage(1);
 				delete *it;
@@ -356,7 +358,15 @@ int game(sf::RenderWindow& window)
 			playerTextures.push_back(tex);
 		}
 		int shot = 0;
-		player Player(playerTextures, Vector2(400, 500), vect);
+		std::vector<sf::Texture> hpBarTextures;
+		for (int i = 0; i < 5; i++)
+		{
+			sf::Texture tex;
+			tex.loadFromFile("../img/hp_bar.png", sf::IntRect(i * 27, 0, 27, 10));
+			//Szybka sztuczka na naprawę znikających pikseli - szerokość powinna być 26, ale wtedy nie działa :/
+			hpBarTextures.push_back(tex);
+		}
+		player Player(playerTextures, Vector2(400, 500), vect, hpBarTextures);
 
 		enemyProjectilesContainer epc;
 		std::list<enemy*> evect;
@@ -389,6 +399,7 @@ int game(sf::RenderWindow& window)
 			}
 		}
 		//Health bar
+		/*
 		std::vector<sf::Texture> hpBarTextures;
 		for (int i = 0; i < 5; i++)
 		{
@@ -398,7 +409,7 @@ int game(sf::RenderWindow& window)
 			hpBarTextures.push_back(tex);
 		}
 		hpBar HpBar(hpBarTextures, vect, &Player);
-
+		*/
 		//Level text
 		sf::Text* levelText = new sf::Text;
 		const std::string levelStr = "Level " + std::to_string(level);
@@ -478,7 +489,7 @@ int game(sf::RenderWindow& window)
 			//Render
 			window.draw(bgGame);
 			Player.update();
-			HpBar.update();
+			//HpBar.update();
 			ppc.update(window, evect, vect);
 			for (auto it = evect.begin(); it != evect.end(); it++) {
 				(*it)->shot++;

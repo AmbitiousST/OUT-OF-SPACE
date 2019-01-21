@@ -1,40 +1,51 @@
 #include "ship.h"
 
-hpBar::hpBar(std::vector<sf::Texture> &tex, std::vector<sf::Drawable*>& vect, ship* ship) : _textures(tex), _ship(ship)
+hpBar::hpBar(std::vector<sf::Texture> &tex, std::vector<sf::Drawable*>& vect, int hp, Vector2 p) : _textures(tex), _vectPtr(&vect)
 {
-	update();
+	update(p,hp);
 	vect.push_back(&_sprite);
+	width = _sprite.getGlobalBounds().width;
 }
 
-void hpBar::update()
+void hpBar::update(Vector2 p, int hp)
 {
-	sf::FloatRect b = _ship->_sprite.getGlobalBounds();
-	_pos.x = _ship->pos.x+((b.width-26)/2);		//hpBar width = 26
-	_pos.y = _ship->pos.y + 50;
+	_pos = p;
+	_spritePtr = &_sprite;
 	_sprite.setPosition(_pos);
-	_sprite.setTexture(_textures[5-(_ship->health)]);	//Potencjalne wyj¹tki
+	_sprite.setTexture(_textures[5-(hp)]);	//Potencjalne wyj¹tki
+}
+
+hpBar::~hpBar()
+{
+	for (auto it = _vectPtr->begin(); it != _vectPtr->end(); it++)
+	{
+		if (*it == _spritePtr)
+		{
+			_vectPtr->erase(it);
+			break;
+		}
+	}
 }
 
 ship::ship(std::vector<sf::Texture> &tex, Vector2 p, std::vector<sf::Drawable*>& vect) : _textures(tex), pos(p)
 {
-	_sprite.setTexture(_textures[0]);
+	sprite.setTexture(_textures[0]);
 	speed = Vector2(0, 0);
-	_sprite.setPosition(p);
-	vect.push_back(&_sprite);
-	//vectorPos = vect.end() - 1;
+	sprite.setPosition(p);
+	vect.push_back(&sprite);
 	_it = _textures.begin();
 	collision = Vector2i(0, 0);
 }
 
 void ship::visible(bool a)
 {
-	_sprite.setColor(sf::Color(255, 255, 255, a ? 255 : 0));
+	sprite.setColor(sf::Color(255, 255, 255, a ? 255 : 0));
 }
 
 void ship::update()		//fizyka statków
 {
 	collision = Vector2i(0, 0);
-	sf::FloatRect rect = _sprite.getGlobalBounds();
+	sf::FloatRect rect = sprite.getGlobalBounds();
 	pos += speed;
 	if (pos.x + rect.width >= 800)
 		pos.x = 800 - rect.width, collision.x = 1;
@@ -45,10 +56,10 @@ void ship::update()		//fizyka statków
 	if (pos.y <= 0)
 		pos.y = 0, collision.y = -1;
 	speed = Vector2(0, 0);
-	_sprite.setTexture(*_it);
+	sprite.setTexture(*_it);
 	if (++_it == _textures.end())
 		_it = _textures.begin();
-	_sprite.setPosition(pos);
+	sprite.setPosition(pos);
 }
 
 void ship::changeSpeed(Vector2 s)
@@ -64,9 +75,21 @@ void ship::takeDamage(int amount)	//funkcja roku
 		health = 0;
 }
 
-player::player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect) : ship(tex, pos, vect)
+player::player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex) : ship(tex, pos, vect)
 {
 	health = 5;
+	_bar = new hpBar(barTex, vect, health, Vector2(pos.x, pos.y + 50));
+}
+
+player::~player()
+{
+	delete _bar;
+}
+
+void player::update()
+{
+	ship::update();
+	_bar->update(Vector2(pos.x+(sprite.getGlobalBounds().width-_bar->width)/2, pos.y + 50), health);
 }
 
 enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, int aiType) : ship(tex, pos, vect)
