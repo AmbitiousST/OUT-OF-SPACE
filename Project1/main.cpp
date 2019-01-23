@@ -8,152 +8,13 @@
 #include "ship.h"
 #include "utility.h"
 #include "collision.h"
-
+#include "projectiles.h"
 typedef sf::Vector2<float> Vector2;
 
 sf::Font font;
 
 const std::string gameName = "Space Gosciniak";
 
-class projectile
-{
-	sf::Texture _texture;
-	Vector2 _speed;
-
-public:
-	Vector2 _pos;
-	sf::Sprite _sprite;
-
-	projectile(sf::Texture tex, Vector2 pos, Vector2 speed) : _texture(tex), _pos(pos), _speed(speed)
-	{
-		_sprite.setTexture(_texture);
-		_sprite.setPosition(_pos);
-	}
-
-	void update()
-	{
-		_pos += _speed;
-		_sprite.setPosition(_pos);
-	}
-};
-class playerProjectilesContainer
-{
-	std::list<projectile*> pvect;
-	//projectile vector
-	//$#@%@!#%@ Czemu pvect to wektor pocisków gracza, a evect to wektor obiektów enemy?!
-
-public:
-	sf::Texture texture;
-	Vector2 speed;
-
-	void addProjectile(Vector2 pos)
-	{
-		pvect.push_back(new projectile(texture, pos, speed));
-	}
-
-	void update(sf::RenderWindow& window, std::list<enemy*>& evect, std::vector<sf::Drawable*>& vect)
-	{
-		int x = 0;	//czemu tu?
-		for (auto it = pvect.begin(); it != pvect.end();)
-		{
-			x = 0;	//skoro może być tu?
-			(*it)->update();
-			for (auto it2 = evect.begin(); it2 != evect.end();)
-			{
-				if (Collision::PixelPerfectTest((*it)->_sprite, (*it2)->sprite, 128))
-				{
-					(*it2)->takeDamage(1);
-					if ((*it2)->health == 0)
-					{
-						for (auto it3 = vect.begin(); it3 != vect.end(); it3++)
-							//cała ta konstrukcja jest trochę przerażająca
-							//a poza tym powinien się tym zajmować destruktor statku
-							//tak jak w hpBar
-						{
-							if (*it3 == &(*it2)->sprite)//zwłaszcza to
-							{
-								vect.erase(it3);
-								break;
-							}
-						}
-						delete *it2;
-						it2 = evect.erase(it2);
-					}
-					delete *it;
-					it = pvect.erase(it);
-					x = 1;
-					break;
-				}
-				else
-				{
-					it2++;
-				}
-			}
-			if (x)
-			{
-				if (it == pvect.end())
-					break;
-			}
-			if ((*it)->_pos.y < 0)
-			{
-				delete *it;
-				it = pvect.erase(it);
-			}
-			else
-			{
-				window.draw((*it)->_sprite);
-				it++;
-			}
-		}
-	}
-
-	~playerProjectilesContainer()
-	{
-		for (auto it = pvect.begin(); it != pvect.end(); it++)
-			delete *it;
-	}
-};
-
-class enemyProjectilesContainer
-{
-	std::list<projectile*> pvect;
-public:
-	sf::Texture texture;
-	Vector2 speed;
-	void addProjectile(Vector2 pos)
-	{
-		pvect.push_back(new projectile(texture, pos, speed));
-	}
-	void update(sf::RenderWindow& window, player& Player)
-	{
-		for (auto it = pvect.begin(); it != pvect.end();)
-		{
-			(*it)->update();
-			if (Collision::PixelPerfectTest((*it)->_sprite, Player.sprite, 128))
-			{
-				Player.takeDamage(1);
-				delete *it;
-				it = pvect.erase(it);
-				continue;
-			}
-			if ((*it)->_pos.y > 600)
-			{
-				delete *it;
-				it = pvect.erase(it);
-			}
-			else
-			{
-				window.draw((*it)->_sprite);
-				it++;
-			}
-		}
-	}
-	~enemyProjectilesContainer()
-	{
-		for (auto it = pvect.begin(); it != pvect.end(); it++)
-			delete *it;
-	}
-};
 
 int menu(sf::RenderWindow& window)
 {
@@ -415,7 +276,7 @@ int game(sf::RenderWindow& window)
 		window.draw(*levelText);
 		//Jedna runda update'u wszystkiego, żeby paski hp wyglądały po ludzku
 		Player.update();
-		ppc.update(window, evect, vect);
+		ppc.update(window, evect);
 		for (auto it = evect.begin(); it != evect.end(); it++) {
 			(*it)->update();
 		}
@@ -479,16 +340,12 @@ int game(sf::RenderWindow& window)
 			//Render
 			window.draw(bgGame);
 			Player.update();
-			ppc.update(window, evect, vect);
+			ppc.update(window, evect);
 			for (auto it = evect.begin(); it != evect.end(); it++) {
-				(*it)->shot++;
 				(*it)->move();
 				(*it)->update();
-				(*it)->shot %= 64;
 				if ((*it)->shot == 1)
-				{
 					epc.addProjectile(Vector2((*it)->pos.x + 12, (*it)->pos.y));
-				}
 			}
 			epc.update(window, Player);
 			if (Player.health < 1)

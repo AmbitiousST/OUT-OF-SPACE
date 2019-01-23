@@ -29,6 +29,7 @@ hpBar::~hpBar()
 
 ship::ship(std::vector<sf::Texture> &tex, Vector2 p, std::vector<sf::Drawable*>& vect) : _textures(tex), pos(p)
 {
+	_vectPtr = &vect;
 	sprite.setTexture(_textures[0]);
 	speed = Vector2(0, 0);
 	sprite.setPosition(p);
@@ -44,6 +45,7 @@ void ship::visible(bool a)
 
 void ship::update()		//fizyka statków
 {
+
 	collision = Vector2i(0, 0);
 	sf::FloatRect rect = sprite.getGlobalBounds();
 	pos += speed;
@@ -74,7 +76,17 @@ void ship::takeDamage(int amount)	//funkcja roku
 	if (health < 0)
 		health = 0;
 }
-
+ship::~ship()
+{
+	for (auto it = _vectPtr->begin(); it != _vectPtr->end(); it++)
+	{
+		if (*it == &sprite)
+		{
+			_vectPtr->erase(it);
+			break;
+		}
+	}
+}
 player::player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex) : ship(tex, pos, vect)
 {
 	health = 5;
@@ -83,6 +95,7 @@ player::player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawa
 
 player::~player()
 {
+	ship::~ship();
 	delete _bar;
 }
 
@@ -106,14 +119,17 @@ enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawabl
 	_bar = new hpBar(barTex, vect, health, Vector2(pos.x, pos.y - 10));
 }
 
-void enemy::update()	//Dok³adzie to samo, co update gracza
+void enemy::update()
 {
 	ship::update();
+	shot++;
+	shot %= 64;
 	_bar->update(Vector2(pos.x + (sprite.getGlobalBounds().width - _bar->width) / 2, pos.y - 10), health);
 }
 
 enemy::~enemy()			//Dok³adzie to samo, co destruktor gracza
 {
+	ship::~ship();
 	delete _bar;
 }
 

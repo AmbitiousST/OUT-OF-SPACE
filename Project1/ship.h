@@ -2,10 +2,8 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-
 typedef sf::Vector2f Vector2;
 typedef sf::Vector2i Vector2i;
-
 class hpBar
 {
 	std::vector<sf::Texture> _textures;
@@ -27,6 +25,7 @@ class ship
 {
 	std::vector<sf::Texture> _textures;
 	std::vector<sf::Texture>::iterator _it;
+	std::vector<sf::Drawable*>* _vectPtr;
 
 public:
 	int health;
@@ -35,6 +34,7 @@ public:
 	sf::Sprite sprite;
 
 	ship(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);
+	~ship();
 	void visible(bool a);
 	void update();
 	void changeSpeed(Vector2 s);
