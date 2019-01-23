@@ -122,16 +122,15 @@ void enemy::move()		//ai przeciwnika
 	switch (_aiType)
 	{
 	case(1):
-		if (collision.x == 1 && _side == 1)//(pos.x + 70 >= 800 && _side == 1) zostawi³em twój kod gdybyœ chcia³
+		if (collision.x == 1 && _side == 1)
 		{
 			_side = 0;
 		}
 
-		if (collision.x == -1 && _side == -1)//(	pos.x-50<0 && _side == -1)
+		if (collision.x == -1 && _side == -1)
 		{
 			_side = 0;
 		}
-
 		if (_dist > 50)//Co to ma na celu?
 		{
 			_dist = 0;

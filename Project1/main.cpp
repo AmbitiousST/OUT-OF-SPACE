@@ -36,10 +36,10 @@ public:
 		_sprite.setPosition(_pos);
 	}
 };
-
 class playerProjectilesContainer
 {
 	std::list<projectile*> pvect;	
+	//projectile vector
 	//$#@%@!#%@ Czemu pvect to wektor pocisków gracza, a evect to wektor obiektów enemy?!
 
 public:
@@ -62,6 +62,7 @@ public:
 			{
 				if (Collision::PixelPerfectTest((*it)->_sprite, (*it2)->sprite, 128))
 				{
+					
 					for (auto it3 = vect.begin(); it3 != vect.end(); it3++)
 					//cała ta konstrukcja jest trochę przerażająca
 					//a poza tym powinien się tym zajmować destruktor statku
@@ -73,6 +74,7 @@ public:
 							break;
 						}
 					}
+					
 					delete *it;
 					it = pvect.erase(it);
 					delete *it2;
@@ -252,7 +254,7 @@ int credits(sf::RenderWindow& window)
 	vect.push_back(&bgMenu);
 	for (auto it = Svect.begin(); it != Svect.end(); it++)
 	{
-		sf::Text* tmp = new sf::Text;	//no to już jest przgięcie z tym auto :( sf::Text* nie gryzie
+		sf::Text* tmp = new sf::Text;
 		tmp->setString(*it);
 		tmp->setFont(font);
 		tmp->setCharacterSize(20);
@@ -323,13 +325,11 @@ int game(sf::RenderWindow& window)
 {
 	const int fps = 60;
 	const float speedChange = 3;
-	const int levelNum = 1;
+	const int levelNum = 2;
 
 	for (int level = 1; level <= levelNum; level++)
 	{
 		sf::Clock clock;
-		int timer = 0;		//Może da się ładniej?
-							//to było tak na szybko
 		std::vector<sf::Drawable*> vect;
 
 		//Background
@@ -362,12 +362,11 @@ int game(sf::RenderWindow& window)
 
 		enemyProjectilesContainer epc;
 		std::list<enemy*> evect;
-		if (level == 1)
+		//enemy
 		{
-			//Enemy
 			std::vector<sf::Texture> enemyTextures;
 			epc.texture.loadFromFile("../img/enemy_proc.png");
-			epc.speed = Vector2(0, 6);
+
 			for (int i = 0; i < 5; i++)
 			{
 				sf::Texture tex;
@@ -381,10 +380,22 @@ int game(sf::RenderWindow& window)
 				tex.loadFromFile("../img/hp_bar2.png", sf::IntRect(i * 11, 0, 11, 10));
 				hpBarTextures.push_back(tex);
 			}
-			for (int i = 0; i < 5; i++)
-			{
-				enemy *e = new enemy(enemyTextures, Vector2(50.0f*i, 100.0f), vect, 1, 1, hpBarTextures);
-				evect.push_back(e);
+			switch (level) {
+			case 1:
+				epc.speed = Vector2(0, 6);
+				for (int i = 0; i < 5; i++)
+				{
+					enemy *e = new enemy(enemyTextures, Vector2(50.0f*i, 100.0f), vect, 1, 1, hpBarTextures);
+					evect.push_back(e);
+				}
+				break;
+			case 2:
+				epc.speed = Vector2(0, 6);
+				for (int i = 0; i < 5; i++)
+				{
+					enemy *e = new enemy(enemyTextures, Vector2(100.0f*i, 100.0f), vect, 1, 1, hpBarTextures);
+					evect.push_back(e);
+				}
 			}
 		}
 
@@ -418,7 +429,6 @@ int game(sf::RenderWindow& window)
 		while (evect.size() > 0 && window.isOpen())
 		{
 			clock.restart();
-			timer++;
 			sf::Event event;
 			while (window.pollEvent(event))
 			{
