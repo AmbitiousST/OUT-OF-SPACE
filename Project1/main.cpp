@@ -38,7 +38,7 @@ public:
 };
 class playerProjectilesContainer
 {
-	std::list<projectile*> pvect;	
+	std::list<projectile*> pvect;
 	//projectile vector
 	//$#@%@!#%@ Czemu pvect to wektor pocisków gracza, a evect to wektor obiektów enemy?!
 
@@ -62,23 +62,25 @@ public:
 			{
 				if (Collision::PixelPerfectTest((*it)->_sprite, (*it2)->sprite, 128))
 				{
-					
-					for (auto it3 = vect.begin(); it3 != vect.end(); it3++)
-					//cała ta konstrukcja jest trochę przerażająca
-					//a poza tym powinien się tym zajmować destruktor statku
-					//tak jak w hpBar
+					(*it2)->takeDamage(1);
+					if ((*it2)->health == 0)
 					{
-						if (*it3 == &(*it2)->sprite)//zwłaszcza to
+						for (auto it3 = vect.begin(); it3 != vect.end(); it3++)
+							//cała ta konstrukcja jest trochę przerażająca
+							//a poza tym powinien się tym zajmować destruktor statku
+							//tak jak w hpBar
 						{
-							vect.erase(it3);
-							break;
+							if (*it3 == &(*it2)->sprite)//zwłaszcza to
+							{
+								vect.erase(it3);
+								break;
+							}
 						}
+						delete *it2;
+						it2 = evect.erase(it2);
 					}
-					
 					delete *it;
 					it = pvect.erase(it);
-					delete *it2;
-					it2 = evect.erase(it2);
 					x = 1;
 					break;
 				}
@@ -297,7 +299,7 @@ int credits(sf::RenderWindow& window)
 				}
 			}
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)|| sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)|| sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) || sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) || sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
 		{
 			return 0;
 		}
@@ -385,7 +387,7 @@ int game(sf::RenderWindow& window)
 				epc.speed = Vector2(0, 6);
 				for (int i = 0; i < 5; i++)
 				{
-					enemy *e = new enemy(enemyTextures, Vector2(50.0f*i, 100.0f), vect, 1, 1, hpBarTextures);
+					enemy *e = new enemy(enemyTextures, Vector2(50.0f*i, 100.0f), vect, 1, 2, hpBarTextures);
 					evect.push_back(e);
 				}
 				break;
@@ -393,7 +395,7 @@ int game(sf::RenderWindow& window)
 				epc.speed = Vector2(0, 6);
 				for (int i = 0; i < 5; i++)
 				{
-					enemy *e = new enemy(enemyTextures, Vector2(100.0f*i, 100.0f), vect, 1, 1, hpBarTextures);
+					enemy *e = new enemy(enemyTextures, Vector2(100.0f*i, 100.0f), vect, 1, 2, hpBarTextures);
 					evect.push_back(e);
 				}
 			}
