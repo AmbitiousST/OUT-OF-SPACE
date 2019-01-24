@@ -204,58 +204,100 @@ int game(sf::RenderWindow& window)
 		playerTextures.push_back(tex);
 	}
 	int shot = 0;
+	std::vector<sf::Texture> hpBarsTextures[4];
 	std::vector<sf::Texture> playerHpBarTextures;
 	for (int i = 0; i < 5; i++)
 	{
 		sf::Texture tex;
-		tex.loadFromFile("../img/hp_bar.png", sf::IntRect(i * 27, 0, 27, 10));
+		tex.loadFromFile("../img/hp_bar5.png", sf::IntRect(i * 27, 0, 27, 10));
 		playerHpBarTextures.push_back(tex);
 	}
 	player Player(playerTextures, Vector2(400, 500), vect, playerHpBarTextures);
+	for (int j = 2; j < 6; j++)
+	{
+		std::vector<sf::Texture> hpBarTexture;
+		for (int i = 0; i < j; i++)
+		{
+			sf::Texture tex;
+			int w = j * 4 + j + 1;	//szerokość jednej części paska
+			tex.loadFromFile("../img/hp_bar" + std::to_string(j) + ".png", sf::IntRect(i * w, 0, w, 10));
+			hpBarTexture.push_back(tex);
+		}
+		hpBarsTextures[j - 2] = hpBarTexture;
+	}
+	
+
+	//Background
+	sf::Texture bgGameTex;
+	bgGameTex.loadFromFile("../img/bg_game0.jpg");
+	sf::Sprite bgGame;
+	bgGame.setTexture(bgGameTex);
+
+	//Enemy
+	std::list<enemy*> evect;
+	std::vector<sf::Texture> enemyProcTextures;
+	sf::Texture temp;
+	temp.loadFromFile("../img/enemy_proc.png");
+	enemyProcTextures.push_back(temp);
+	temp.loadFromFile("../img/enemy_proc2.png");
+	enemyProcTextures.push_back(temp);
+	temp.loadFromFile("../img/enemy_proc3.png");
+	enemyProcTextures.push_back(temp);
+	enemyProjectilesContainer epc(enemyProcTextures);
+	std::vector<sf::Texture> enemyTextures[4];
+	std::vector<sf::Texture> tmp;
+	for (int i = 0; i < 5; i++)
+	{
+		sf::Texture tex;
+		tex.loadFromFile("../img/enemy1.png", sf::IntRect(i * 35, 0, 35, 48));
+		tmp.push_back(tex);
+	}
+	enemyTextures[0] = tmp;
+	tmp.clear();
+	for (int i = 0; i < 4; i++)
+	{
+		sf::Texture tex;
+		tex.loadFromFile("../img/enemy2.png", sf::IntRect(i * 35, 0, 35, 50));
+		tmp.push_back(tex);
+	}
+	enemyTextures[1] = tmp;
+	tmp.clear();
+	for (int i = 0; i < 5; i++)
+	{
+		sf::Texture tex;
+		tex.loadFromFile("../img/enemy3.png", sf::IntRect(i * 35, 0, 35, 45));
+		tmp.push_back(tex);
+	}
+	enemyTextures[2] = tmp;
+	tmp.clear();
+	for (int i = 0; i < 5; i++)
+	{
+		sf::Texture tex;
+		tex.loadFromFile("../img/enemy4.png", sf::IntRect(i * 59, 0, 59, 54));
+		tmp.push_back(tex);
+	}
+	enemyTextures[3] = tmp;
 
 	for (int level = 1; level <= levelNum; level++)
 	{
-		//Background
-		sf::Texture bgGameTex;
-		bgGameTex.loadFromFile("../img/bg_game0.jpg");
-		sf::Sprite bgGame;
-		bgGame.setTexture(bgGameTex);
-
-		//Enemy
-		std::list<enemy*> evect;
-		std::vector<sf::Texture> enemy1Textures;
-		std::vector<sf::Texture> enemyProcTextures;
-		sf::Texture temp;
-		temp.loadFromFile("../img/enemy_proc.png");
-		enemyProcTextures.push_back(temp);
-		enemyProjectilesContainer epc(enemyProcTextures);
-		for (int i = 0; i < 5; i++)
-		{
-			sf::Texture tex;
-			tex.loadFromFile("../img/enemy1.png", sf::IntRect(i * 35, 0, 35, 48));
-			enemy1Textures.push_back(tex);
-		}
-		std::vector<sf::Texture> hpBarTextures;
-		for (int i = 0; i < 2; i++)
-		{
-			sf::Texture tex;
-			tex.loadFromFile("../img/hp_bar2.png", sf::IntRect(i * 11, 0, 11, 10));
-			hpBarTextures.push_back(tex);
-		}
 		switch (level) {
 		case 1:
 			for (int i = 0; i < 5; i++)
 			{
-				enemy *e = new enemy(enemy1Textures, Vector2(50.0f*i, 100.0f), vect, 1, 2, 0, hpBarTextures);
+				enemy *e = new enemy(enemyTextures[0], Vector2(50.0f*i, 100.0f), vect, 1, 2, 0, hpBarsTextures[0]);
 				evect.push_back(e);
 			}
 			break;
 		case 2:
 			for (int i = 0; i < 5; i++)
 			{
-				enemy *e = new enemy(enemy1Textures, Vector2(100.0f*i, 100.0f), vect, 1, 2, 0, hpBarTextures);
+				enemy *e = new enemy(enemyTextures[0], Vector2(100.0f*i, 150.0f), vect, 1, 2, 0, hpBarsTextures[0]);
 				evect.push_back(e);
 			}
+			enemy *e = new enemy(enemyTextures[1], Vector2(200.0f, 70.0f), vect, 0, 3, 1, hpBarsTextures[1]);
+			evect.push_back(e);
+			enemy *e2 = new enemy(enemyTextures[1], Vector2(565.0f, 70.0f), vect, 0, 3, 1, hpBarsTextures[1]);
+			evect.push_back(e2);
 		}
 
 		//Level text
@@ -337,7 +379,8 @@ int game(sf::RenderWindow& window)
 			window.draw(bgGame);
 			Player.update();
 			ppc.update(window, evect);
-			for (auto it = evect.begin(); it != evect.end(); it++) {
+			for (auto it = evect.begin(); it != evect.end(); it++)
+			{
 				(*it)->move();
 				(*it)->update();
 				if ((*it)->shot == 1)
@@ -346,6 +389,10 @@ int game(sf::RenderWindow& window)
 					{
 					case 0:
 						epc.addProjectile(epc.textures[0], Vector2((*it)->pos.x + 12, (*it)->pos.y), Vector2(0.0f,7.0f));
+						break;
+					case 1:
+						epc.addProjectile(epc.textures[1], Vector2((*it)->pos.x + 12, (*it)->pos.y), Vector2(0.0f, 9.0f));
+						break;
 					}
 				}
 					
