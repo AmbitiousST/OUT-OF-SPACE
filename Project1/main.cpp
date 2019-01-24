@@ -228,10 +228,9 @@ int game(sf::RenderWindow& window)
 	
 
 	//Background
-	sf::Texture bgGameTex;
-	bgGameTex.loadFromFile("../img/bg_game0.jpg");
-	sf::Sprite bgGame;
-	bgGame.setTexture(bgGameTex);
+	sf::Texture bgGameTex[2];
+	bgGameTex[0].loadFromFile("../img/bg_game1.jpg");
+	bgGameTex[1].loadFromFile("../img/bg_game2.png");
 
 	//Enemy
 	std::list<enemy*> evect;
@@ -277,6 +276,7 @@ int game(sf::RenderWindow& window)
 		tmp.push_back(tex);
 	}
 	enemyTextures[3] = tmp;
+	sf::Sprite bgGame;
 
 	for (int level = 1; level <= levelNum; level++)
 	{
@@ -299,6 +299,7 @@ int game(sf::RenderWindow& window)
 			enemy *e2 = new enemy(enemyTextures[1], Vector2(565.0f, 70.0f), vect, 0, 3, 1, hpBarsTextures[1]);
 			evect.push_back(e2);
 		}
+		bgGame.setTexture(bgGameTex[level-1]);
 
 		//Level text
 		sf::Text* levelText = new sf::Text;
