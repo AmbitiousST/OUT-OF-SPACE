@@ -106,7 +106,7 @@ void player::update()
 }
 
 enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect,
-	int aiType, int hp, std::vector<sf::Texture> &barTex) : ship(tex, pos, vect)
+	int aiType, int hp, int type, std::vector<sf::Texture> &barTex) : ship(tex, pos, vect)
 	//okropnie du¿o tych argumentów. Chyba przesadzi³em
 {
 	//ca³y ten blok chyba da siê zrobiæ ³adniej, ale nie wiem jak
@@ -116,6 +116,7 @@ enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawabl
 	shot = rand()%50;
 	_aiType = aiType;
 	_baseSpeed = 1;
+	procType = type;
 	_bar = new hpBar(barTex, vect, health, Vector2(pos.x, pos.y - 10));
 }
 

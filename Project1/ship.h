@@ -62,9 +62,9 @@ class enemy : public ship
 	hpBar *_bar;
 
 public:
-	int shot;
+	int shot, procType;
 	enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect,
-		int aiType, int hp, std::vector<sf::Texture> &barTex);
+		int aiType, int hp, int type, std::vector<sf::Texture> &barTex);
 	~enemy();
 	void update();
 	void move();

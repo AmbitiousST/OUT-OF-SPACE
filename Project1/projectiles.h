@@ -38,9 +38,10 @@ class enemyProjectilesContainer
 {
 	std::list<projectile*> pvect;
 public:
-	sf::Texture texture;
-	Vector2 speed;
-	void addProjectile(Vector2 pos);
+	std::vector<sf::Texture> textures;
+	//Vector2 speed;
+	enemyProjectilesContainer(std::vector<sf::Texture> &tex);
+	void addProjectile(sf::Texture tex, Vector2 pos, Vector2 speed);
 	void update(sf::RenderWindow& window, player& Player);
 	~enemyProjectilesContainer();
 };

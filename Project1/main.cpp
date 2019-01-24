@@ -209,7 +209,6 @@ int game(sf::RenderWindow& window)
 	{
 		sf::Texture tex;
 		tex.loadFromFile("../img/hp_bar.png", sf::IntRect(i * 27, 0, 27, 10));
-		//Szybka sztuczka na naprawę znikających pikseli - szerokość powinna być 26, ale wtedy nie działa :/
 		playerHpBarTextures.push_back(tex);
 	}
 	player Player(playerTextures, Vector2(400, 500), vect, playerHpBarTextures);
@@ -222,42 +221,40 @@ int game(sf::RenderWindow& window)
 		sf::Sprite bgGame;
 		bgGame.setTexture(bgGameTex);
 
-		enemyProjectilesContainer epc;
+		//Enemy
 		std::list<enemy*> evect;
-		//enemy
+		std::vector<sf::Texture> enemy1Textures;
+		std::vector<sf::Texture> enemyProcTextures;
+		sf::Texture temp;
+		temp.loadFromFile("../img/enemy_proc.png");
+		enemyProcTextures.push_back(temp);
+		enemyProjectilesContainer epc(enemyProcTextures);
+		for (int i = 0; i < 5; i++)
 		{
-			std::vector<sf::Texture> enemyTextures;
-			epc.texture.loadFromFile("../img/enemy_proc.png");
-
+			sf::Texture tex;
+			tex.loadFromFile("../img/enemy1.png", sf::IntRect(i * 35, 0, 35, 48));
+			enemy1Textures.push_back(tex);
+		}
+		std::vector<sf::Texture> hpBarTextures;
+		for (int i = 0; i < 2; i++)
+		{
+			sf::Texture tex;
+			tex.loadFromFile("../img/hp_bar2.png", sf::IntRect(i * 11, 0, 11, 10));
+			hpBarTextures.push_back(tex);
+		}
+		switch (level) {
+		case 1:
 			for (int i = 0; i < 5; i++)
 			{
-				sf::Texture tex;
-				tex.loadFromFile("../img/enemy1.png", sf::IntRect(i * 35, 0, 35, 48));
-				enemyTextures.push_back(tex);
+				enemy *e = new enemy(enemy1Textures, Vector2(50.0f*i, 100.0f), vect, 1, 2, 0, hpBarTextures);
+				evect.push_back(e);
 			}
-			std::vector<sf::Texture> hpBarTextures;
-			for (int i = 0; i < 2; i++)
+			break;
+		case 2:
+			for (int i = 0; i < 5; i++)
 			{
-				sf::Texture tex;
-				tex.loadFromFile("../img/hp_bar2.png", sf::IntRect(i * 11, 0, 11, 10));
-				hpBarTextures.push_back(tex);
-			}
-			switch (level) {
-			case 1:
-				epc.speed = Vector2(0, 8);
-				for (int i = 0; i < 5; i++)
-				{
-					enemy *e = new enemy(enemyTextures, Vector2(50.0f*i, 100.0f), vect, 1, 2, hpBarTextures);
-					evect.push_back(e);
-				}
-				break;
-			case 2:
-				epc.speed = Vector2(0, 8);
-				for (int i = 0; i < 5; i++)
-				{
-					enemy *e = new enemy(enemyTextures, Vector2(100.0f*i, 100.0f), vect, 1, 2, hpBarTextures);
-					evect.push_back(e);
-				}
+				enemy *e = new enemy(enemy1Textures, Vector2(100.0f*i, 100.0f), vect, 1, 2, 0, hpBarTextures);
+				evect.push_back(e);
 			}
 		}
 
@@ -272,7 +269,6 @@ int game(sf::RenderWindow& window)
 		levelText->setOutlineThickness(4);
 		window.clear();
 		window.draw(bgGame);
-		window.draw(*levelText);
 		//Jedna runda update'u wszystkiego, żeby paski hp wyglądały po ludzku
 		Player.update();
 		ppc.update(window, evect);
@@ -283,6 +279,7 @@ int game(sf::RenderWindow& window)
 		clock.restart();
 		for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 			window.draw(**it);
+		window.draw(*levelText);
 		window.display();
 		while (clock.getElapsedTime().asMilliseconds() < 500);
 		delete levelText;
@@ -344,7 +341,14 @@ int game(sf::RenderWindow& window)
 				(*it)->move();
 				(*it)->update();
 				if ((*it)->shot == 1)
-					epc.addProjectile(Vector2((*it)->pos.x + 12, (*it)->pos.y));
+				{
+					switch ((*it)->procType)
+					{
+					case 0:
+						epc.addProjectile(epc.textures[0], Vector2((*it)->pos.x + 12, (*it)->pos.y), Vector2(0.0f,7.0f));
+					}
+				}
+					
 			}
 			epc.update(window, Player);
 			if (Player.health < 1)
@@ -358,26 +362,26 @@ int game(sf::RenderWindow& window)
 	return 0;
 }
 
-int main()
-{
-	font.loadFromFile("../arial.ttf");
-	int state = 0;								// 0 - menu, 1 - gra, 2 - credits, -1 błąd, -2 zamknij
-	sf::RenderWindow window(sf::VideoMode(800, 600), gameName);
-	srand(time(NULL));
-	while (state >= 0)
+	int main()
 	{
-		switch (state)
+		font.loadFromFile("../arial.ttf");
+		int state = 0;								// 0 - menu, 1 - gra, 2 - credits, -1 błąd, -2 zamknij
+		sf::RenderWindow window(sf::VideoMode(800, 600), gameName);
+		srand(time(NULL));
+		while (state >= 0)
 		{
-		case 0:
-			state = menu(window);
-			break;
-		case 1:
-			state = credits(window);
-			break;
-		case 2:
-			state = game(window);
-			break;
+			switch (state)
+			{
+			case 0:
+				state = menu(window);
+				break;
+			case 1:
+				state = credits(window);
+				break;
+			case 2:
+				state = game(window);
+				break;
+			}
 		}
+		return 0;
 	}
-	return 0;
-}
