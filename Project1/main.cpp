@@ -9,12 +9,12 @@
 #include "utility.h"
 #include "collision.h"
 #include "projectiles.h"
+
 typedef sf::Vector2<float> Vector2;
 
 sf::Font font;
 
 const std::string gameName = "Space Gosciniak";
-
 
 int menu(sf::RenderWindow& window)
 {
@@ -189,39 +189,38 @@ int game(sf::RenderWindow& window)
 	const int fps = 60;
 	const float speedChange = 3;
 	const int levelNum = 2;
+	sf::Clock clock;
+	std::vector<sf::Drawable*> vect;
+
+	//Player
+	std::vector<sf::Texture> playerTextures;
+	playerProjectilesContainer ppc;
+	ppc.texture.loadFromFile("../img/player_proc.png");
+	ppc.speed = Vector2(0, -8);
+	for (int i = 0; i < 5; i++)
+	{
+		sf::Texture tex;
+		tex.loadFromFile("../img/player_spritesheet.png", sf::IntRect(i * 41, 0, 41, 52));
+		playerTextures.push_back(tex);
+	}
+	int shot = 0;
+	std::vector<sf::Texture> playerHpBarTextures;
+	for (int i = 0; i < 5; i++)
+	{
+		sf::Texture tex;
+		tex.loadFromFile("../img/hp_bar.png", sf::IntRect(i * 27, 0, 27, 10));
+		//Szybka sztuczka na naprawę znikających pikseli - szerokość powinna być 26, ale wtedy nie działa :/
+		playerHpBarTextures.push_back(tex);
+	}
+	player Player(playerTextures, Vector2(400, 500), vect, playerHpBarTextures);
 
 	for (int level = 1; level <= levelNum; level++)
 	{
-		sf::Clock clock;
-		std::vector<sf::Drawable*> vect;
-
 		//Background
 		sf::Texture bgGameTex;
 		bgGameTex.loadFromFile("../img/bg_game0.jpg");
 		sf::Sprite bgGame;
 		bgGame.setTexture(bgGameTex);
-
-		//Player
-		std::vector<sf::Texture> playerTextures;
-		playerProjectilesContainer ppc;
-		ppc.texture.loadFromFile("../img/player_proc.png");
-		ppc.speed = Vector2(0, -6);
-		for (int i = 0; i < 5; i++)
-		{
-			sf::Texture tex;
-			tex.loadFromFile("../img/player_spritesheet.png", sf::IntRect(i * 41, 0, 41, 52));
-			playerTextures.push_back(tex);
-		}
-		int shot = 0;
-		std::vector<sf::Texture> hpBarTextures;
-		for (int i = 0; i < 5; i++)
-		{
-			sf::Texture tex;
-			tex.loadFromFile("../img/hp_bar.png", sf::IntRect(i * 27, 0, 27, 10));
-			//Szybka sztuczka na naprawę znikających pikseli - szerokość powinna być 26, ale wtedy nie działa :/
-			hpBarTextures.push_back(tex);
-		}
-		player Player(playerTextures, Vector2(400, 500), vect, hpBarTextures);
 
 		enemyProjectilesContainer epc;
 		std::list<enemy*> evect;
@@ -245,7 +244,7 @@ int game(sf::RenderWindow& window)
 			}
 			switch (level) {
 			case 1:
-				epc.speed = Vector2(0, 6);
+				epc.speed = Vector2(0, 8);
 				for (int i = 0; i < 5; i++)
 				{
 					enemy *e = new enemy(enemyTextures, Vector2(50.0f*i, 100.0f), vect, 1, 2, hpBarTextures);
@@ -253,7 +252,7 @@ int game(sf::RenderWindow& window)
 				}
 				break;
 			case 2:
-				epc.speed = Vector2(0, 6);
+				epc.speed = Vector2(0, 8);
 				for (int i = 0; i < 5; i++)
 				{
 					enemy *e = new enemy(enemyTextures, Vector2(100.0f*i, 100.0f), vect, 1, 2, hpBarTextures);
@@ -364,6 +363,7 @@ int main()
 	font.loadFromFile("../arial.ttf");
 	int state = 0;								// 0 - menu, 1 - gra, 2 - credits, -1 błąd, -2 zamknij
 	sf::RenderWindow window(sf::VideoMode(800, 600), gameName);
+	srand(time(NULL));
 	while (state >= 0)
 	{
 		switch (state)

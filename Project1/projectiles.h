@@ -1,9 +1,11 @@
 #pragma once
+
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <list>
 #include "collision.h"
 #include "ship.h"
-#include <list>
+
 typedef sf::Vector2f Vector2;
 typedef sf::Vector2i Vector2i;
 

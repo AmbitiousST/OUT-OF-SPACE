@@ -2,8 +2,12 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <cstdlib>
+#include <ctime>
+
 typedef sf::Vector2f Vector2;
 typedef sf::Vector2i Vector2i;
+
 class hpBar
 {
 	std::vector<sf::Texture> _textures;

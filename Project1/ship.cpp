@@ -113,7 +113,7 @@ enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawabl
 	health = hp;
 	_dist = 0;
 	_side = 1;
-	shot = 0;
+	shot = rand()%50;
 	_aiType = aiType;
 	_baseSpeed = 1;
 	_bar = new hpBar(barTex, vect, health, Vector2(pos.x, pos.y - 10));
@@ -122,8 +122,9 @@ enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawabl
 void enemy::update()
 {
 	ship::update();
-	shot++;
-	shot %= 64;
+	shot += rand()%3+1;
+	if (shot >= 100)
+		shot = 1;
 	_bar->update(Vector2(pos.x + (sprite.getGlobalBounds().width - _bar->width) / 2, pos.y - 10), health);
 }
 
