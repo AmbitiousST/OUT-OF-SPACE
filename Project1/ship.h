@@ -57,7 +57,7 @@ public:
 
 class enemy : public ship
 {
-	float _dist, _baseSpeed;
+	float _dist, _baseSpeed, _superSecretVariable;
 	int _side, _aiType;
 	hpBar *_bar;
 

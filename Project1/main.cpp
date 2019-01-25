@@ -15,7 +15,8 @@ typedef sf::Vector2<float> Vector2;
 sf::Font font;
 
 const std::string gameName = "Space Gosciniak";
-std::vector<sf::Text*> loadText(std::string filename,float offset,float windowSizeX,int size,sf::Color fill,sf::Color outline,int thickness,sf::Text::Style style)
+
+std::vector<sf::Text*> loadText(std::string filename, float offset, float windowSizeX, int size, sf::Color fill, sf::Color outline, float thickness, sf::Text::Style style)
 {
 	std::ifstream creditsFile;
 	creditsFile.open(filename, std::ifstream::in);
@@ -126,13 +127,13 @@ int menu(sf::RenderWindow& window)
 int credits(sf::RenderWindow& window)
 {
 	std::vector<sf::Drawable*> vect;
-	
+
 	sf::Texture bgMenuT;
 	bgMenuT.loadFromFile("../img/bg_menu.png");
 	sf::Sprite bgMenu;
 	bgMenu.setTexture(bgMenuT);
 	vect.push_back(&bgMenu);
-	std::vector<sf::Text*> Tvect=loadText("../credits.txt", 75, window.getSize().x,20,sf::Color(0, 0, 0, 255),sf::Color(255, 255, 255, 255),3,sf::Text::Regular);
+	std::vector<sf::Text*> Tvect = loadText("../credits.txt", 75.0f, window.getSize().x, 20, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 3.0f, sf::Text::Regular);
 	vect.insert(vect.end(), Tvect.begin(), Tvect.end());
 	std::vector<button*> bvect;
 	button b1(Vector2(300, 475), "Back", Vector2(200, 75), vect);
@@ -193,7 +194,7 @@ int game(sf::RenderWindow& window)
 {
 	const int fps = 60;
 	const float speedChange = 3;
-	const int levelNum = 3;
+	const int levelNum = 4;
 	sf::Clock clock;
 	std::vector<sf::Drawable*> vect;
 
@@ -233,10 +234,11 @@ int game(sf::RenderWindow& window)
 
 
 	//Background
-	sf::Texture bgGameTex[3];
+	sf::Texture bgGameTex[4];
 	bgGameTex[0].loadFromFile("../img/bg_game1.jpg");
 	bgGameTex[1].loadFromFile("../img/bg_game2.png");
 	bgGameTex[2].loadFromFile("../img/bg_game3.jpg");
+	bgGameTex[3].loadFromFile("../img/bg_game4.jpg");
 
 	//Enemy
 	std::list<enemy*> evect;
@@ -284,8 +286,8 @@ int game(sf::RenderWindow& window)
 	enemyTextures[3] = tmp;
 	sf::Sprite bgGame;
 	std::vector<sf::Text*> Tvictory = loadText("../victory.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
-	std::vector<sf::Text*> Tfailure = loadText("../failure.txt", 75, window.getSize().x,70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
-	for (int level = 1; level <= levelNum; level++)
+	std::vector<sf::Text*> Tfailure = loadText("../failure.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
+	for (int level = 4; level <= levelNum; level++)
 	{
 		switch (level)
 		{
@@ -313,7 +315,7 @@ int game(sf::RenderWindow& window)
 			for (int i = 0; i < 3; i++)
 			{
 
-				enemy* e = new enemy(enemyTextures[1], Vector2(272.5f + 85.0f*i, 70.0f), vect, 0, 3, 1, hpBarsTextures[1]);
+				enemy* e = new enemy(enemyTextures[1], Vector2(272.5f + 85.0f*i, 70.0f), vect, 2, 3, 1, hpBarsTextures[1]);
 				evect.push_back(e);
 			}
 			for (int i = 0; i < 2; i++)
@@ -324,6 +326,12 @@ int game(sf::RenderWindow& window)
 				evect.push_back(e3);
 			}
 			break;
+		case 4:
+		{
+			enemy* e = new enemy(enemyTextures[2], Vector2(100.0f, 150.0f), vect, 3, 4, 0, hpBarsTextures[2]);
+			evect.push_back(e);
+		}
+		break;
 		}
 		bgGame.setTexture(bgGameTex[level - 1]);
 
@@ -427,12 +435,12 @@ int game(sf::RenderWindow& window)
 			epc.update(window, Player);
 			if (Player.health < 1)
 			{
-				bgGame.setTexture(bgGameTex[level-1]);
-				
+				bgGame.setTexture(bgGameTex[level - 1]);
+
 				window.clear();
 				window.draw(bgGame);
 				clock.restart();
-				for(auto it = Tfailure.begin();it!= Tfailure.end();it++)
+				for (auto it = Tfailure.begin(); it != Tfailure.end(); it++)
 					window.draw(**it);
 				window.display();
 				while (clock.getElapsedTime().asMilliseconds() < 1000);
@@ -450,7 +458,7 @@ int game(sf::RenderWindow& window)
 			while (clock.getElapsedTime().asMilliseconds() < 1000 / fps);	//Fps limiter
 		}
 	}
-	bgGame.setTexture(bgGameTex[levelNum-1]);
+	bgGame.setTexture(bgGameTex[levelNum - 1]);
 
 	window.clear();
 	window.draw(bgGame);
