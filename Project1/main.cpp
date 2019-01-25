@@ -288,7 +288,7 @@ int game(sf::RenderWindow& window)
 	sf::Sprite bgGame;
 	std::vector<sf::Text*> Tvictory = loadText("../victory.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 	std::vector<sf::Text*> Tfailure = loadText("../failure.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
-	for (int level = 1; level <= levelNum; level++)
+	for (int level = 4; level <= levelNum; level++)
 	{
 		switch (level)
 		{
@@ -330,7 +330,7 @@ int game(sf::RenderWindow& window)
 		case 4:
 			for (int i = 0; i < 5; i++)
 			{
-				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f + 135.0f*i, 50.0f), vect, 3, 4, 0, hpBarsTextures[2]);
+				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f + 135.0f*i, 50.0f), vect, 6, 4, 0, hpBarsTextures[2]);
 				evect.push_back(e);
 			}
 			break;

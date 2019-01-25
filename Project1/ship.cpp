@@ -147,6 +147,7 @@ void enemy::move()		//ai przeciwnika
 	switch (_aiType)
 	{
 	case(1):
+		//orginal
 		if (collision.x == 1 && _side == 1)
 		{
 			_side = 0;
@@ -182,10 +183,12 @@ void enemy::move()		//ai przeciwnika
 		break;
 
 	case 2:
+		//static
 		changeSpeed(Vector2(0, 0));
 		break;
 
 	case 3:
+		//sinuœ
 		if (collision.x == 1 && _side == 1)
 		{
 			_side = -1;
@@ -198,6 +201,7 @@ void enemy::move()		//ai przeciwnika
 		_superSecretVariable += 0.01f;
 		break;
 	case 4:
+		//left to right sin speed
 		if (collision.x == 1 && _side == 1)
 		{
 			_side = -1;
@@ -209,7 +213,21 @@ void enemy::move()		//ai przeciwnika
 		changeSpeed(Vector2(fabs(sin(_superSecretVariable))*_side*1.5f, 0.0f));
 		_superSecretVariable += 0.01f;
 		break;
-
+	case 5:
+		//circle
+		changeSpeed(Vector2(cos(_superSecretVariable), sin(_superSecretVariable)));
+		_superSecretVariable += 0.01f;
+		break;
+	case 6:
+		//8
+		changeSpeed(Vector2(cos(_superSecretVariable), cos(_superSecretVariable*2)));
+		_superSecretVariable += 0.01f;
+		break;
+	case 7:
+		//diagonal variable speed
+		changeSpeed(Vector2(cos(_superSecretVariable), cos(_superSecretVariable)));
+		_superSecretVariable += 0.01f;
+		break;
 	default:
 		if (collision.x == 1)
 		{
