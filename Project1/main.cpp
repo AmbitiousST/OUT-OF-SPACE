@@ -16,7 +16,7 @@ sf::Font font;
 
 const std::string gameName = "Space Gosciniak";
 
-std::vector<sf::Text*> loadText(std::string filename, float offset, float windowSizeX, int size, sf::Color fill, sf::Color outline, float thickness, sf::Text::Style style)
+std::vector<sf::Text*> loadText(std::string filename, float offset, float windowSizeX, int size, sf::Color fill, sf::Color outline, float thickness, sf::Text::Style style= sf::Text::Regular)
 {
 	std::ifstream creditsFile;
 	creditsFile.open(filename, std::ifstream::in);
@@ -133,7 +133,7 @@ int credits(sf::RenderWindow& window)
 	sf::Sprite bgMenu;
 	bgMenu.setTexture(bgMenuT);
 	vect.push_back(&bgMenu);
-	std::vector<sf::Text*> Tvect = loadText("../credits.txt", 75.0f, window.getSize().x, 20, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 3.0f, sf::Text::Regular);
+	std::vector<sf::Text*> Tvect = loadText("../credits.txt", 75.0f, window.getSize().x, 20, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 3.0f);
 	vect.insert(vect.end(), Tvect.begin(), Tvect.end());
 	std::vector<button*> bvect;
 	button b1(Vector2(300, 475), "Back", Vector2(200, 75), vect);
@@ -288,7 +288,7 @@ int game(sf::RenderWindow& window)
 	sf::Sprite bgGame;
 	std::vector<sf::Text*> Tvictory = loadText("../victory.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 	std::vector<sf::Text*> Tfailure = loadText("../failure.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
-	for (int level = 5; level <= levelNum; level++)
+	for (int level = 1; level <= levelNum; level++)
 	{
 		switch (level)
 		{
@@ -342,7 +342,8 @@ int game(sf::RenderWindow& window)
 		break;
 		}
 		bgGame.setTexture(bgGameTex[level - 1]);
-
+		epc.clear();
+		ppc.clear();
 		//Level text
 		sf::Text* levelText = new sf::Text;
 		const std::string levelStr = "Level " + std::to_string(level);
