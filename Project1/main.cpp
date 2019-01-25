@@ -327,11 +327,12 @@ int game(sf::RenderWindow& window)
 			}
 			break;
 		case 4:
-		{
-			enemy* e = new enemy(enemyTextures[2], Vector2(100.0f, 150.0f), vect, 3, 4, 0, hpBarsTextures[2]);
-			evect.push_back(e);
-		}
-		break;
+			for (int i = 0; i < 5; i++)
+			{
+				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f + 135.0f*i, 50.0f), vect, 3, 4, 0, hpBarsTextures[2]);
+				evect.push_back(e);
+			}
+			break;
 		}
 		bgGame.setTexture(bgGameTex[level - 1]);
 

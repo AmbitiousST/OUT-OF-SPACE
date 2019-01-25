@@ -1,7 +1,7 @@
 Menu & credits background by StumpyStrust opengameart.org
 Ships and cursor design by Stephen Challener (Redshrike), hosted by OpenGameArt.org
 Ship engines light and lasers by Rawdanitsu opengameart.org
-Level 1,3 background by Rawdanitsu opengameart.org
+Level 1,3,4 background by Rawdanitsu opengameart.org
 Level 2 background: CC-BY 3.0 Darklighter Designs 2017
 
 Code & rest of graphics: Tobiasz "AmbitiousST" Szulc, Andrzej "Pojemnik" Gauza

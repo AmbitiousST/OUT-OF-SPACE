@@ -194,7 +194,7 @@ void enemy::move()		//ai przeciwnika
 		{
 			_side = 1;
 		}
-		changeSpeed(Vector2(_baseSpeed*_side, 50*sin(_superSecretVariable)));
+		changeSpeed(Vector2(_baseSpeed*_side, sin(_superSecretVariable)));
 		_superSecretVariable += 0.01f;
 		break;
 
