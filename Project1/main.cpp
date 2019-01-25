@@ -188,7 +188,7 @@ int game(sf::RenderWindow& window)
 {
 	const int fps = 60;
 	const float speedChange = 3;
-	const int levelNum = 2;
+	const int levelNum = 3;
 	sf::Clock clock;
 	std::vector<sf::Drawable*> vect;
 
@@ -225,12 +225,13 @@ int game(sf::RenderWindow& window)
 		}
 		hpBarsTextures[j - 2] = hpBarTexture;
 	}
-	
+
 
 	//Background
-	sf::Texture bgGameTex[2];
+	sf::Texture bgGameTex[3];
 	bgGameTex[0].loadFromFile("../img/bg_game1.jpg");
 	bgGameTex[1].loadFromFile("../img/bg_game2.png");
+	bgGameTex[2].loadFromFile("../img/bg_game3.jpg");
 
 	//Enemy
 	std::list<enemy*> evect;
@@ -280,7 +281,8 @@ int game(sf::RenderWindow& window)
 
 	for (int level = 1; level <= levelNum; level++)
 	{
-		switch (level) {
+		switch (level)
+		{
 		case 1:
 			for (int i = 0; i < 5; i++)
 			{
@@ -294,12 +296,30 @@ int game(sf::RenderWindow& window)
 				enemy *e = new enemy(enemyTextures[0], Vector2(100.0f*i, 150.0f), vect, 1, 2, 0, hpBarsTextures[0]);
 				evect.push_back(e);
 			}
-			enemy *e = new enemy(enemyTextures[1], Vector2(200.0f, 70.0f), vect, 0, 3, 1, hpBarsTextures[1]);
-			evect.push_back(e);
-			enemy *e2 = new enemy(enemyTextures[1], Vector2(565.0f, 70.0f), vect, 0, 3, 1, hpBarsTextures[1]);
-			evect.push_back(e2);
+			{
+				enemy *e = new enemy(enemyTextures[1], Vector2(200.0f, 70.0f), vect, 0, 3, 1, hpBarsTextures[1]);
+				evect.push_back(e);
+				enemy *e2 = new enemy(enemyTextures[1], Vector2(565.0f, 70.0f), vect, 0, 3, 1, hpBarsTextures[1]);
+				evect.push_back(e2);
+			}
+			break;
+		case 3:
+			for (int i = 0; i < 3; i++)
+			{
+
+				enemy* e = new enemy(enemyTextures[1], Vector2(272.5f + 85.0f*i, 70.0f), vect, 0, 3, 1, hpBarsTextures[1]);
+				evect.push_back(e);
+			}
+			for (int i = 0; i < 2; i++)
+			{
+				enemy* e2 = new enemy(enemyTextures[0], Vector2(100 + 100.0f*i, 150.0f), vect, -1, 2, 0, hpBarsTextures[0]);
+				evect.push_back(e2);
+				enemy* e3 = new enemy(enemyTextures[0], Vector2(565 + 100.0f*i, 150.0f), vect, 1, 2, 0, hpBarsTextures[0]);
+				evect.push_back(e3);
+			}
+			break;
 		}
-		bgGame.setTexture(bgGameTex[level-1]);
+		bgGame.setTexture(bgGameTex[level - 1]);
 
 		//Level text
 		sf::Text* levelText = new sf::Text;
@@ -389,14 +409,14 @@ int game(sf::RenderWindow& window)
 					switch ((*it)->procType)
 					{
 					case 0:
-						epc.addProjectile(epc.textures[0], Vector2((*it)->pos.x + 12, (*it)->pos.y), Vector2(0.0f,7.0f));
+						epc.addProjectile(epc.textures[0], Vector2((*it)->pos.x + 12, (*it)->pos.y), Vector2(0.0f, 7.0f));
 						break;
 					case 1:
 						epc.addProjectile(epc.textures[1], Vector2((*it)->pos.x + 12, (*it)->pos.y), Vector2(0.0f, 9.0f));
 						break;
 					}
 				}
-					
+
 			}
 			epc.update(window, Player);
 			if (Player.health < 1)
@@ -410,26 +430,26 @@ int game(sf::RenderWindow& window)
 	return 0;
 }
 
-	int main()
+int main()
+{
+	font.loadFromFile("../arial.ttf");
+	int state = 0;								// 0 - menu, 1 - gra, 2 - credits, -1 błąd, -2 zamknij
+	sf::RenderWindow window(sf::VideoMode(800, 600), gameName);
+	srand(time(NULL));
+	while (state >= 0)
 	{
-		font.loadFromFile("../arial.ttf");
-		int state = 0;								// 0 - menu, 1 - gra, 2 - credits, -1 błąd, -2 zamknij
-		sf::RenderWindow window(sf::VideoMode(800, 600), gameName);
-		srand(time(NULL));
-		while (state >= 0)
+		switch (state)
 		{
-			switch (state)
-			{
-			case 0:
-				state = menu(window);
-				break;
-			case 1:
-				state = credits(window);
-				break;
-			case 2:
-				state = game(window);
-				break;
-			}
+		case 0:
+			state = menu(window);
+			break;
+		case 1:
+			state = credits(window);
+			break;
+		case 2:
+			state = game(window);
+			break;
 		}
-		return 0;
 	}
+	return 0;
+}

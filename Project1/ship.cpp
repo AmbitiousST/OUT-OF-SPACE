@@ -2,7 +2,7 @@
 
 hpBar::hpBar(std::vector<sf::Texture> &tex, std::vector<sf::Drawable*>& vect, int hp, Vector2 p) : _textures(tex), _vectPtr(&vect), _maxHp(hp)
 {
-	update(p,hp);
+	update(p, hp);
 	vect.push_back(&_sprite);
 	width = _sprite.getGlobalBounds().width;
 }
@@ -12,7 +12,7 @@ void hpBar::update(Vector2 p, int hp)
 	_pos = p;
 	_spritePtr = &_sprite;
 	_sprite.setPosition(_pos);
-	_sprite.setTexture(_textures[_maxHp-(hp)]);	//Potencjalne wyj¹tki
+	_sprite.setTexture(_textures[_maxHp - (hp)]);	//Potencjalne wyj¹tki
 }
 
 hpBar::~hpBar()
@@ -102,7 +102,7 @@ player::~player()
 void player::update()
 {
 	ship::update();
-	_bar->update(Vector2(pos.x+(sprite.getGlobalBounds().width-_bar->width)/2, pos.y + 50), health);
+	_bar->update(Vector2(pos.x + (sprite.getGlobalBounds().width - _bar->width) / 2, pos.y + 50), health);
 }
 
 enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect,
@@ -110,11 +110,17 @@ enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawabl
 	//okropnie du¿o tych argumentów. Chyba przesadzi³em
 {
 	//ca³y ten blok chyba da siê zrobiæ ³adniej, ale nie wiem jak
+
+	_side = 1;
+	_aiType = aiType;
+	if (aiType == -1)
+	{
+		_side = -1;
+		_aiType = 1;
+	}
 	health = hp;
 	_dist = 0;
-	_side = 1;
-	shot = rand()%50;
-	_aiType = aiType;
+	shot = rand() % 50;
 	_baseSpeed = 1;
 	procType = type;
 	_bar = new hpBar(barTex, vect, health, Vector2(pos.x, pos.y - 10));
@@ -123,7 +129,7 @@ enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawabl
 void enemy::update()
 {
 	ship::update();
-	shot += rand()%3+1;
+	shot += rand() % 3 + 1;
 	if (shot >= 100)
 		shot = 1;
 	_bar->update(Vector2(pos.x + (sprite.getGlobalBounds().width - _bar->width) / 2, pos.y - 10), health);
@@ -149,7 +155,7 @@ void enemy::move()		//ai przeciwnika
 		{
 			_side = 0;
 		}
-		if (_dist > 50)//Co to ma na celu?
+		if (_dist > 50)
 		{
 			_dist = 0;
 			if (pos.x < 400)
@@ -186,7 +192,7 @@ void enemy::move()		//ai przeciwnika
 
 		if (collision.x == -1)
 		{
-		changeSpeed(Vector2(_baseSpeed*-1, 0));
+			changeSpeed(Vector2(_baseSpeed*-1, 0));
 		}
 		break;
 	}
