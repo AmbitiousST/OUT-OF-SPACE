@@ -1,4 +1,5 @@
 ﻿#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <cmath>
 #include <vector>
 #include <list>
@@ -13,7 +14,7 @@
 typedef sf::Vector2<float> Vector2;
 
 sf::Font font;
-
+sf::Music music;
 const std::string gameName = "Space Gosciniak";
 
 std::vector<sf::Text*> loadText(std::string filename, float offset, float windowSizeX, int size, sf::Color fill, sf::Color outline, float thickness, sf::Text::Style style= sf::Text::Regular)
@@ -462,7 +463,7 @@ int game(sf::RenderWindow& window)
 					delete *it;
 				for (auto it = evect.begin(); it != evect.end(); it++)
 					delete *it;
-				return 0;
+				return 1;
 			}
 			for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 				window.draw(**it);
@@ -489,6 +490,10 @@ int game(sf::RenderWindow& window)
 
 int main()
 {
+	music.openFromFile("../sound/title.ogg");
+	music.setVolume(12);
+	music.setLoop(1);
+	music.play();
 	font.loadFromFile("../arial.ttf");
 	int state = 0;								// 0 - menu, 1 - gra, 2 - credits, -1 błąd, -2 zamknij
 	sf::RenderWindow window(sf::VideoMode(800, 600), gameName);
