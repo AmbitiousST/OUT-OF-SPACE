@@ -16,6 +16,12 @@ void playerProjectilesContainer::addProjectile(Vector2 pos)
 {
 	pvect.push_back(new projectile(texture, pos, speed));
 }
+void playerProjectilesContainer::clear()
+{
+	for (auto it = pvect.begin(); it != pvect.end(); it++)
+		delete *it;
+	pvect.clear();
+}
 
 void playerProjectilesContainer::update(sf::RenderWindow& window, std::list<enemy*>& evect)
 {
@@ -72,7 +78,12 @@ enemyProjectilesContainer::enemyProjectilesContainer(std::vector<sf::Texture> &t
 {
 
 }
-
+void enemyProjectilesContainer::clear()
+{
+	for (auto it = pvect.begin(); it != pvect.end(); it++)
+		delete *it;
+	pvect.clear();
+}
 
 void enemyProjectilesContainer::addProjectile(sf::Texture tex, Vector2 pos, Vector2 speed)
 {
