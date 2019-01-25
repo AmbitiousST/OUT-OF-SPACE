@@ -15,7 +15,34 @@ typedef sf::Vector2<float> Vector2;
 sf::Font font;
 
 const std::string gameName = "Space Gosciniak";
-
+std::vector<sf::Text*> loadText(std::string filename,float offset,float windowSizeX,int size,sf::Color fill,sf::Color outline,int thickness,sf::Text::Style style)
+{
+	std::ifstream creditsFile;
+	creditsFile.open(filename, std::ifstream::in);
+	std::string creditsStr, temp;
+	std::vector<sf::Text*> Tvect;
+	std::vector<std::string> Svect;
+	while (!creditsFile.eof())
+	{
+		std::getline(creditsFile, temp);
+		Svect.push_back(temp);
+	}
+	for (auto it = Svect.begin(); it != Svect.end(); it++)
+	{
+		sf::Text* tmp = new sf::Text;
+		tmp->setStyle(style);
+		tmp->setString(*it);
+		tmp->setFont(font);
+		tmp->setCharacterSize(size);
+		tmp->setFillColor(fill);
+		tmp->setOutlineColor(outline);
+		tmp->setOutlineThickness(thickness);
+		tmp->setPosition((windowSizeX - tmp->getLocalBounds().width - tmp->getLocalBounds().left) / 2, offset);
+		offset += tmp->getLocalBounds().height + tmp->getLocalBounds().top + 5;
+		Tvect.push_back(tmp);
+	}
+	return Tvect;
+}
 int menu(sf::RenderWindow& window)
 {
 	std::vector<sf::Drawable*> vect;
@@ -99,36 +126,14 @@ int menu(sf::RenderWindow& window)
 int credits(sf::RenderWindow& window)
 {
 	std::vector<sf::Drawable*> vect;
-	std::ifstream creditsFile;
-	creditsFile.open("../credits.txt", std::ifstream::in);
-	std::string creditsStr, temp;
-	std::vector<sf::Text*> Tvect;
-	std::vector<std::string> Svect;
-	float y = 75;
-	while (!creditsFile.eof())
-	{
-		std::getline(creditsFile, temp);
-		Svect.push_back(temp);
-	}
+	
 	sf::Texture bgMenuT;
 	bgMenuT.loadFromFile("../img/bg_menu.png");
 	sf::Sprite bgMenu;
 	bgMenu.setTexture(bgMenuT);
 	vect.push_back(&bgMenu);
-	for (auto it = Svect.begin(); it != Svect.end(); it++)
-	{
-		sf::Text* tmp = new sf::Text;
-		tmp->setString(*it);
-		tmp->setFont(font);
-		tmp->setCharacterSize(20);
-		tmp->setFillColor(sf::Color(0, 0, 0, 255));
-		tmp->setOutlineColor(sf::Color(255, 255, 255, 255));
-		tmp->setOutlineThickness(3);
-		tmp->setPosition((window.getSize().x - tmp->getLocalBounds().width - tmp->getLocalBounds().left) / 2, y);
-		y += tmp->getLocalBounds().height + tmp->getLocalBounds().top + 5;
-		Tvect.push_back(tmp);
-		vect.push_back(tmp);
-	}
+	std::vector<sf::Text*> Tvect=loadText("../credits.txt", 75, window.getSize().x,20,sf::Color(0, 0, 0, 255),sf::Color(255, 255, 255, 255),3,sf::Text::Regular);
+	vect.insert(vect.end(), Tvect.begin(), Tvect.end());
 	std::vector<button*> bvect;
 	button b1(Vector2(300, 475), "Back", Vector2(200, 75), vect);
 	bvect.push_back(&b1);
@@ -278,7 +283,8 @@ int game(sf::RenderWindow& window)
 	}
 	enemyTextures[3] = tmp;
 	sf::Sprite bgGame;
-
+	std::vector<sf::Text*> Tvictory = loadText("../victory.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
+	std::vector<sf::Text*> Tfailure = loadText("../failure.txt", 75, window.getSize().x,70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 	for (int level = 1; level <= levelNum; level++)
 	{
 		switch (level)
@@ -420,13 +426,44 @@ int game(sf::RenderWindow& window)
 			}
 			epc.update(window, Player);
 			if (Player.health < 1)
-				return 0; //zmienić na jakieś lepsze Game Over
+			{
+				bgGame.setTexture(bgGameTex[level-1]);
+				
+				window.clear();
+				window.draw(bgGame);
+				clock.restart();
+				for(auto it = Tfailure.begin();it!= Tfailure.end();it++)
+					window.draw(**it);
+				window.display();
+				while (clock.getElapsedTime().asMilliseconds() < 1000);
+				for (auto it = Tfailure.begin(); it != Tfailure.end(); it++)
+					delete *it;
+				for (auto it = Tvictory.begin(); it != Tvictory.end(); it++)
+					delete *it;
+				for (auto it = evect.begin(); it != evect.end(); it++)
+					delete *it;
+				return 0;
+			}
 			for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 				window.draw(**it);
 			window.display();
 			while (clock.getElapsedTime().asMilliseconds() < 1000 / fps);	//Fps limiter
 		}
 	}
+	bgGame.setTexture(bgGameTex[levelNum-1]);
+
+	window.clear();
+	window.draw(bgGame);
+	for (auto it = Tvictory.begin(); it != Tvictory.end(); it++)
+		window.draw(**it);
+	clock.restart();
+	window.display();
+	while (clock.getElapsedTime().asMilliseconds() < 1000);
+
+	for (auto it = Tfailure.begin(); it != Tfailure.end(); it++)
+		delete *it;
+	for (auto it = Tvictory.begin(); it != Tvictory.end(); it++)
+		delete *it;
 	return 0;
 }
 
