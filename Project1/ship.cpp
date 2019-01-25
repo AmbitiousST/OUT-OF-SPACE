@@ -197,6 +197,18 @@ void enemy::move()		//ai przeciwnika
 		changeSpeed(Vector2(_baseSpeed*_side, sin(_superSecretVariable)));
 		_superSecretVariable += 0.01f;
 		break;
+	case 4:
+		if (collision.x == 1 && _side == 1)
+		{
+			_side = -1;
+		}
+		if (collision.x == -1 && _side == -1)
+		{
+			_side = 1;
+		}
+		changeSpeed(Vector2(fabs(sin(_superSecretVariable))*_side*1.5f, 0.0f));
+		_superSecretVariable += 0.01f;
+		break;
 
 	default:
 		if (collision.x == 1)

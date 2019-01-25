@@ -219,7 +219,7 @@ int game(sf::RenderWindow& window)
 		playerHpBarTextures.push_back(tex);
 	}
 	player Player(playerTextures, Vector2(400, 500), vect, playerHpBarTextures);
-	for (int j = 2; j < 6; j++)
+	for (int j = 2; j < 5; j++)
 	{
 		std::vector<sf::Texture> hpBarTexture;
 		for (int i = 0; i < j; i++)
@@ -231,7 +231,7 @@ int game(sf::RenderWindow& window)
 		}
 		hpBarsTextures[j - 2] = hpBarTexture;
 	}
-
+	hpBarsTextures[3] = playerHpBarTextures;
 
 	//Background
 	sf::Texture bgGameTex[5];
@@ -336,7 +336,7 @@ int game(sf::RenderWindow& window)
 			break;
 		case 5:
 		{
-			enemy* e = new enemy(enemyTextures[3], Vector2(370.5f, 50.0f), vect, 3, 5, 3, hpBarsTextures[3]);
+			enemy* e = new enemy(enemyTextures[3], Vector2(370.5f, 50.0f), vect, 4, 5, 3, hpBarsTextures[3]);
 			evect.push_back(e);
 		}
 		break;
@@ -442,7 +442,6 @@ int game(sf::RenderWindow& window)
 						break;
 					}
 				}
-
 			}
 			epc.update(window, Player);
 			if (Player.health < 1)
