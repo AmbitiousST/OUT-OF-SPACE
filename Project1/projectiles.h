@@ -5,11 +5,11 @@
 #include <list>
 #include "collision.h"
 #include "ship.h"
-
+#include "collisions.h"
 typedef sf::Vector2f Vector2;
 typedef sf::Vector2i Vector2i;
 
-class projectile
+class projectile : public colidable
 {
 	sf::Texture _texture;
 	Vector2 _speed;
@@ -20,6 +20,7 @@ public:
 
 	projectile(sf::Texture tex, Vector2 pos, Vector2 speed);
 	void update();
+	Vector2 getPos();
 };
 class playerProjectilesContainer
 {
