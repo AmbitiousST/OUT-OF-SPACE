@@ -241,3 +241,36 @@ void enemy::move()		//ai przeciwnika
 		break;
 	}
 }
+
+explosion::explosion(Vector2 p, std::vector <sf::Texture>& tex, std::vector<sf::Drawable*>& vect) : _pos(p), _textures(tex)
+{
+	_it = _textures.begin();
+	sprite.setTexture(*_it);
+	sprite.setPosition(_pos);
+	vect.push_back(&sprite);
+	_vectPtr = &vect;
+}
+
+bool explosion::update()
+{
+	sprite.setTexture(*_it);
+	_it++;
+	if (_it == _textures.end())
+	{
+		_it = _textures.begin();
+		return false;
+	}
+	return true;
+}
+
+explosion::~explosion()
+{
+	for (auto it = _vectPtr->begin(); it != _vectPtr->end(); it++)
+	{
+		if (*it == &sprite)
+		{
+			_vectPtr->erase(it);
+			break;
+		}
+	}
+}

@@ -199,9 +199,22 @@ int game(sf::RenderWindow& window)
 	sf::Clock clock;
 	std::vector<sf::Drawable*> vect;
 
+	//Explosions
+	std::vector <Vector2> explosionPositions;
+	std::vector <explosion*> explosions;
+	std::vector <sf::Texture> exp1;
+	//std::vector <sf::Texture> exp2;
+	for (int i = 0; i < 10; i++)
+	{
+		sf::Texture a;
+		a.loadFromFile("../img/explosion1.png", sf::IntRect(1 + 92 * i, 1, 89, 89));
+		exp1.push_back(a);
+	}
+
+
 	//Player
 	std::vector<sf::Texture> playerTextures;
-	playerProjectilesContainer ppc;
+	playerProjectilesContainer ppc(&explosionPositions);
 	ppc.texture.loadFromFile("../img/player_proc.png");
 	ppc.speed = Vector2(0, -8);
 	for (int i = 0; i < 5; i++)
@@ -289,7 +302,8 @@ int game(sf::RenderWindow& window)
 	sf::Sprite bgGame;
 	std::vector<sf::Text*> Tvictory = loadText("../victory.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 	std::vector<sf::Text*> Tfailure = loadText("../failure.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
-	for (int level = 4; level <= levelNum; level++)
+
+	for (int level = 1; level <= levelNum; level++)
 	{
 		switch (level)
 		{
@@ -345,6 +359,10 @@ int game(sf::RenderWindow& window)
 		bgGame.setTexture(bgGameTex[level - 1]);
 		epc.clear();
 		ppc.clear();
+		explosionPositions.clear();
+		for (auto it = explosions.begin(); it != explosions.end(); it++)
+			delete *it;
+		explosions.clear();
 		//Level text
 		sf::Text* levelText = new sf::Text;
 		const std::string levelStr = "Level " + std::to_string(level);
@@ -445,6 +463,26 @@ int game(sf::RenderWindow& window)
 					}
 				}
 			}
+			while(!explosionPositions.empty())
+			{
+				std::vector<Vector2>::iterator it = explosionPositions.begin();
+				explosion* e = new explosion(*it, exp1, vect);
+				explosionPositions.erase(it);
+				explosions.push_back(e);
+			}
+			for (auto it = explosions.begin(); it != explosions.end(); it++)
+			{
+				if (!(*it)->update())
+				{
+					delete *it;
+					if (explosions.size() == 1)
+					{
+						explosions.clear();
+						break;
+					}
+					explosions.erase(it);
+				}
+			}
 			epc.update(window, Player);
 			if (Player.health < 1)
 			{
@@ -463,6 +501,9 @@ int game(sf::RenderWindow& window)
 					delete *it;
 				for (auto it = evect.begin(); it != evect.end(); it++)
 					delete *it;
+				explosionPositions.clear();
+				for (auto it = explosions.begin(); it != explosions.end(); it++)
+					delete *it;
 				return 1;
 			}
 			for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
@@ -470,6 +511,7 @@ int game(sf::RenderWindow& window)
 			window.display();
 			while (clock.getElapsedTime().asMilliseconds() < 1000 / fps);	//Fps limiter
 		}
+
 	}
 	bgGame.setTexture(bgGameTex[levelNum - 1]);
 

@@ -24,10 +24,12 @@ public:
 class playerProjectilesContainer
 {
 	std::list<projectile*> pvect;
+	std::vector <Vector2>* _expPos;
 
 public:
 	sf::Texture texture;
 	Vector2 speed;
+	playerProjectilesContainer(std::vector <Vector2>* expPos);
 	void clear();
 	void addProjectile(Vector2 pos);
 	void update(sf::RenderWindow& window, std::list<enemy*>& evect);

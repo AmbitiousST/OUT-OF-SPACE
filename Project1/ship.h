@@ -69,3 +69,18 @@ public:
 	void update();
 	void move();
 };
+
+class explosion
+{
+	Vector2 _pos;
+	std::vector <sf::Texture> _textures;
+	std::vector <sf::Texture>::iterator _it;
+	std::vector<sf::Drawable*>* _vectPtr;
+
+public:
+	sf::Sprite sprite;
+
+	explosion(Vector2 p, std::vector <sf::Texture>& tex, std::vector<sf::Drawable*>& vect);
+	~explosion();
+	bool update();
+};

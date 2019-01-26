@@ -12,10 +12,16 @@ void projectile::update()
 	_sprite.setPosition(_pos);
 }
 
+playerProjectilesContainer::playerProjectilesContainer(std::vector <Vector2>* expPos) : _expPos(expPos)
+{
+
+}
+
 void playerProjectilesContainer::addProjectile(Vector2 pos)
 {
 	pvect.push_back(new projectile(texture, pos, speed));
 }
+
 void playerProjectilesContainer::clear()
 {
 	for (auto it = pvect.begin(); it != pvect.end(); it++)
@@ -37,6 +43,8 @@ void playerProjectilesContainer::update(sf::RenderWindow& window, std::list<enem
 				(*it2)->takeDamage(1);
 				if ((*it2)->health == 0)
 				{
+					auto bounds = (*it2)->sprite.getGlobalBounds();
+					_expPos->push_back(Vector2((*it2)->pos.x + bounds.width / 2 - 44.5f, (*it2)->pos.y + bounds.height / 2 - 44.5f));
 					delete *it2;
 					it2 = evect.erase(it2);
 				}
