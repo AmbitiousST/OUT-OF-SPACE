@@ -330,7 +330,7 @@ int game(sf::RenderWindow& window)
 	std::vector<sf::Text*> Tvictory = loadText("../victory.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 	std::vector<sf::Text*> Tfailure = loadText("../failure.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 
-	for (int level = 5; level <= levelNum; level++)
+	for (int level = 1; level <= levelNum; level++)
 	{
 
 		switch (level)
@@ -376,6 +376,12 @@ int game(sf::RenderWindow& window)
 				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f+40.0f + 135.0f*i, 50.0f), vect, 6, 4, 0, hpBarsTextures[2]);
 				evect.push_back(e);
 			}
+			for (int i = 0; i < 3; i++)
+			{
+
+				enemy* e = new enemy(enemyTextures[1], Vector2(272.5f + 85.0f*i, 70.0f), vect, 2, 3, 1, hpBarsTextures[1]);
+				evect.push_back(e);
+			}
 			break;
 		case 5:
 		{
@@ -384,6 +390,13 @@ int game(sf::RenderWindow& window)
 				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f + 40.0f + 135.0f*i, 50.0f), vect, 5, 4, 0, hpBarsTextures[2]);
 				evect.push_back(e);
 			}
+			for (int i = 0; i < 2; i++)
+			{
+				enemy* e2 = new enemy(enemyTextures[0], Vector2(100 + 100.0f*i, 150.0f), vect, -1, 2, 0, hpBarsTextures[0]);
+				evect.push_back(e2);
+				enemy* e3 = new enemy(enemyTextures[0], Vector2(565 + 100.0f*i, 150.0f), vect, 1, 2, 0, hpBarsTextures[0]);
+				evect.push_back(e3);
+			}
 			break;
 		}
 		case 6:
@@ -391,6 +404,11 @@ int game(sf::RenderWindow& window)
 			for (int i = 0; i < 5; i++)
 			{
 				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f + 40.0f + 135.0f*i, 50.0f), vect, 7, 4, 0, hpBarsTextures[2]);
+				evect.push_back(e);
+			}
+			for (int i = 0; i < 5; i++)
+			{
+				enemy *e = new enemy(enemyTextures[0], Vector2(50.0f*i, 100.0f), vect, 1, 2, 0, hpBarsTextures[0]);
 				evect.push_back(e);
 			}
 			break;
