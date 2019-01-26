@@ -229,11 +229,13 @@ int game(sf::RenderWindow& window)
 		{
 			sf::Music* tmp=new sf::Music;
 			tmp->openFromFile(*it);
+			tmp->setVolume(5);
 			MusicVector.push_back(tmp);
 		}
 	}
 	auto musicIterator = MusicVector.begin();
 	(*musicIterator)->play();
+
 	//Player
 	std::vector<sf::Texture> playerTextures;
 	playerProjectilesContainer ppc(&explosionPositions);
@@ -267,7 +269,7 @@ int game(sf::RenderWindow& window)
 		}
 		hpBarsTextures[j - 2] = hpBarTexture;
 	}
-	hpBarsTextures[3] = playerHpBarTextures;
+	hpBarsTextures[8] = playerHpBarTextures;
 
 	//Background
 	sf::Texture bgGameTex[5];
@@ -275,7 +277,10 @@ int game(sf::RenderWindow& window)
 	bgGameTex[1].loadFromFile("../img/bg_game2.png");
 	bgGameTex[2].loadFromFile("../img/bg_game3.jpg");
 	bgGameTex[3].loadFromFile("../img/bg_game4.jpg");
-	bgGameTex[4].loadFromFile("../img/bg_menu.png");
+	bgGameTex[4].loadFromFile("../img/bg_game5.png");
+	bgGameTex[5].loadFromFile("../img/bg_game6.png");
+	bgGameTex[6].loadFromFile("../img/bg_game7.png");
+	bgGameTex[7].loadFromFile("../img/bg_game8.png");
 
 	//Enemy
 	std::list<enemy*> evect;
@@ -444,7 +449,7 @@ int game(sf::RenderWindow& window)
 			if (shot == 1)
 			{
 				SoundVector.push_back(sf::Sound(shootSoundVector[0]));
-				SoundVector.back().setVolume(50);
+				SoundVector.back().setVolume(12);
 				SoundVector.back().play();
 				ppc.addProjectile(Vector2(Player.pos.x + 12, Player.pos.y));
 			}
@@ -487,7 +492,7 @@ int game(sf::RenderWindow& window)
 				if ((*it)->shot == 1)
 				{
 					SoundVector.push_back(sf::Sound(shootSoundVector[(*it)->procType]));
-					SoundVector.back().setVolume(50);
+					SoundVector.back().setVolume(12);
 					SoundVector.back().play();
 					switch ((*it)->procType)
 					{
