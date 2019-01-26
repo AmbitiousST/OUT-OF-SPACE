@@ -216,12 +216,13 @@ int game(sf::RenderWindow& window)
 
 	sf::SoundBuffer shootSoundVector[4];
 	shootSoundVector[0].loadFromFile("../sound/laser3.wav");
-	shootSoundVector[1].loadFromFile("../sound/laser3.wav");
+	shootSoundVector[1].loadFromFile("../sound/laser5.wav");
 	shootSoundVector[3].loadFromFile("../sound/space laser.wav");
 	std::list<sf::Sound> SoundVector;
 	std::vector<sf::Music*> MusicVector;
 	{
 		std::vector<std::string> names;
+		names.push_back("../sound/Cyberpunk Moonlight Sonata.wav");
 		names.push_back("../sound/through space.ogg");
 		names.push_back("../sound/high tech lab.flac");
 		for (auto it=names.begin();it!=names.end();it++)
@@ -367,7 +368,7 @@ int game(sf::RenderWindow& window)
 		case 4:
 			for (int i = 0; i < 5; i++)
 			{
-				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f + 135.0f*i, 50.0f), vect, 6, 4, 0, hpBarsTextures[2]);
+				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f+40.0f + 135.0f*i, 50.0f), vect, 6, 4, 0, hpBarsTextures[2]);
 				evect.push_back(e);
 			}
 			break;
@@ -459,6 +460,18 @@ int game(sf::RenderWindow& window)
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			{
+				(*musicIterator)->stop();
+				for (auto it = Tfailure.begin(); it != Tfailure.end(); it++)
+					delete *it;
+				for (auto it = Tvictory.begin(); it != Tvictory.end(); it++)
+					delete *it;
+				for (auto it = evect.begin(); it != evect.end(); it++)
+					delete *it;
+				explosionPositions.clear();
+				for (auto it = MusicVector.begin(); it != MusicVector.end(); it++)
+					delete *it;
+				for (auto it = explosions.begin(); it != explosions.end(); it++)
+					delete *it;
 				return 0;
 			}
 			window.clear();
