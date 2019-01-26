@@ -195,7 +195,7 @@ int game(sf::RenderWindow& window)
 {
 	const int fps = 60;
 	const float speedChange = 3;
-	const int levelNum = 5;
+	const int levelNum = 7;
 	sf::Clock clock;
 	std::vector<sf::Drawable*> vect;
 
@@ -269,10 +269,10 @@ int game(sf::RenderWindow& window)
 		}
 		hpBarsTextures[j - 2] = hpBarTexture;
 	}
-	hpBarsTextures[8] = playerHpBarTextures;
+	hpBarsTextures[3] = playerHpBarTextures;
 
 	//Background
-	sf::Texture bgGameTex[5];
+	sf::Texture bgGameTex[8];
 	bgGameTex[0].loadFromFile("../img/bg_game1.jpg");
 	bgGameTex[1].loadFromFile("../img/bg_game2.png");
 	bgGameTex[2].loadFromFile("../img/bg_game3.jpg");
@@ -330,7 +330,7 @@ int game(sf::RenderWindow& window)
 	std::vector<sf::Text*> Tvictory = loadText("../victory.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 	std::vector<sf::Text*> Tfailure = loadText("../failure.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 
-	for (int level = 1; level <= levelNum; level++)
+	for (int level = 5; level <= levelNum; level++)
 	{
 
 		switch (level)
@@ -378,6 +378,24 @@ int game(sf::RenderWindow& window)
 			}
 			break;
 		case 5:
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f + 40.0f + 135.0f*i, 50.0f), vect, 5, 4, 0, hpBarsTextures[2]);
+				evect.push_back(e);
+			}
+			break;
+		}
+		case 6:
+		{
+			for (int i = 0; i < 5; i++)
+			{
+				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f + 40.0f + 135.0f*i, 50.0f), vect, 7, 4, 0, hpBarsTextures[2]);
+				evect.push_back(e);
+			}
+			break;
+		}
+		case 7:
 		{
 			enemy* e = new enemy(enemyTextures[3], Vector2(370.5f, 50.0f), vect, 4, 5, 3, hpBarsTextures[3]);
 			evect.push_back(e);

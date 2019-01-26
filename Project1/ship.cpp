@@ -226,7 +226,7 @@ void enemy::move()		//ai przeciwnika
 	case 7:
 		//diagonal variable speed
 		changeSpeed(Vector2(cos(_superSecretVariable), cos(_superSecretVariable)));
-		_superSecretVariable += 0.01f;
+		_superSecretVariable += 0.02f;
 		break;
 	default:
 		if (collision.x == 1)
