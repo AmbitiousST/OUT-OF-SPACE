@@ -14,7 +14,7 @@
 typedef sf::Vector2<float> Vector2;
 
 sf::Font font;
-sf::Music music;
+
 const std::string gameName = "Space Gosciniak";
 
 std::vector<sf::Text*> loadText(std::string filename, float offset, float windowSizeX, int size, sf::Color fill, sf::Color outline, float thickness, sf::Text::Style style= sf::Text::Regular)
@@ -210,8 +210,30 @@ int game(sf::RenderWindow& window)
 		a.loadFromFile("../img/explosion1.png", sf::IntRect(1 + 92 * i, 1, 89, 89));
 		exp1.push_back(a);
 	}
+	//sound and music
+	sf::SoundBuffer bigBoom;
+	bigBoom.loadFromFile("../sound/DeathFlash.flac");
 
-
+	sf::SoundBuffer shootSoundVector[4];
+	shootSoundVector[0].loadFromFile("../sound/laser3.wav");
+	shootSoundVector[1].loadFromFile("../sound/laser5.wav");
+	shootSoundVector[3].loadFromFile("../sound/space laser.wav");
+	std::list<sf::Sound> SoundVector;
+	std::vector<sf::Music*> MusicVector;
+	{
+		std::vector<std::string> names;
+		names.push_back("../sound/Cyberpunk Moonlight Sonata.wav");
+		names.push_back("../sound/through space.ogg");
+		names.push_back("../sound/high tech lab.flac");
+		for (auto it=names.begin();it!=names.end();it++)
+		{
+			sf::Music* tmp=new sf::Music;
+			tmp->openFromFile(*it);
+			MusicVector.push_back(tmp);
+		}
+	}
+	auto musicIterator = MusicVector.begin();
+	(*musicIterator)->play();
 	//Player
 	std::vector<sf::Texture> playerTextures;
 	playerProjectilesContainer ppc(&explosionPositions);
@@ -305,6 +327,7 @@ int game(sf::RenderWindow& window)
 
 	for (int level = 1; level <= levelNum; level++)
 	{
+
 		switch (level)
 		{
 		case 1:
@@ -345,7 +368,7 @@ int game(sf::RenderWindow& window)
 		case 4:
 			for (int i = 0; i < 5; i++)
 			{
-				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f + 135.0f*i, 50.0f), vect, 6, 4, 0, hpBarsTextures[2]);
+				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f+40.0f + 135.0f*i, 50.0f), vect, 6, 4, 0, hpBarsTextures[2]);
 				evect.push_back(e);
 			}
 			break;
@@ -388,7 +411,7 @@ int game(sf::RenderWindow& window)
 		window.display();
 		while (clock.getElapsedTime().asMilliseconds() < 500);
 		delete levelText;
-
+		
 		//Loop
 		while (evect.size() > 0 && window.isOpen())
 		{
@@ -420,6 +443,9 @@ int game(sf::RenderWindow& window)
 			}
 			if (shot == 1)
 			{
+				SoundVector.push_back(sf::Sound(shootSoundVector[0]));
+				SoundVector.back().setVolume(50);
+				SoundVector.back().play();
 				ppc.addProjectile(Vector2(Player.pos.x + 12, Player.pos.y));
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
@@ -434,6 +460,18 @@ int game(sf::RenderWindow& window)
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
 			{
+				(*musicIterator)->stop();
+				for (auto it = Tfailure.begin(); it != Tfailure.end(); it++)
+					delete *it;
+				for (auto it = Tvictory.begin(); it != Tvictory.end(); it++)
+					delete *it;
+				for (auto it = evect.begin(); it != evect.end(); it++)
+					delete *it;
+				explosionPositions.clear();
+				for (auto it = MusicVector.begin(); it != MusicVector.end(); it++)
+					delete *it;
+				for (auto it = explosions.begin(); it != explosions.end(); it++)
+					delete *it;
 				return 0;
 			}
 			window.clear();
@@ -448,6 +486,9 @@ int game(sf::RenderWindow& window)
 				(*it)->update();
 				if ((*it)->shot == 1)
 				{
+					SoundVector.push_back(sf::Sound(shootSoundVector[(*it)->procType]));
+					SoundVector.back().setVolume(50);
+					SoundVector.back().play();
 					switch ((*it)->procType)
 					{
 					case 0:
@@ -456,6 +497,7 @@ int game(sf::RenderWindow& window)
 					case 1:
 						epc.addProjectile(epc.textures[1], Vector2((*it)->pos.x + 12, (*it)->pos.y), Vector2(0.0f, 9.0f));
 						break;
+						//gdzie jest 2
 					case 3:
 						epc.addProjectile(epc.textures[2], Vector2((*it)->pos.x - 16.5f, (*it)->pos.y), Vector2(0.0f, 9.0f));
 						epc.addProjectile(epc.textures[2], Vector2((*it)->pos.x + 13.5f, (*it)->pos.y), Vector2(0.0f, 9.0f));
@@ -467,6 +509,9 @@ int game(sf::RenderWindow& window)
 			{
 				std::vector<Vector2>::iterator it = explosionPositions.begin();
 				explosion* e = new explosion(*it, exp1, vect);
+				SoundVector.push_back(sf::Sound(bigBoom));
+				SoundVector.back().setVolume(50);
+				SoundVector.back().play();
 				explosionPositions.erase(it);
 				explosions.push_back(e);
 			}
@@ -486,6 +531,7 @@ int game(sf::RenderWindow& window)
 			epc.update(window, Player);
 			if (Player.health < 1)
 			{
+				(*musicIterator)->stop();
 				bgGame.setTexture(bgGameTex[level - 1]);
 
 				window.clear();
@@ -502,19 +548,28 @@ int game(sf::RenderWindow& window)
 				for (auto it = evect.begin(); it != evect.end(); it++)
 					delete *it;
 				explosionPositions.clear();
+				for (auto it = MusicVector.begin(); it != MusicVector.end(); it++)
+					delete *it;
 				for (auto it = explosions.begin(); it != explosions.end(); it++)
 					delete *it;
-				return 1;
+				return 0;
 			}
+			SoundVector.remove_if([](sf::Sound &sound) {return sound.getStatus() == sf::Sound::Stopped; });
 			for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 				window.draw(**it);
 			window.display();
+			if ((*musicIterator)->getStatus() == sf::Music::Stopped)
+			{
+				if (++musicIterator == MusicVector.end())
+					musicIterator = MusicVector.begin();
+				(*musicIterator)->play();
+			}
 			while (clock.getElapsedTime().asMilliseconds() < 1000 / fps);	//Fps limiter
 		}
 
 	}
 	bgGame.setTexture(bgGameTex[levelNum - 1]);
-
+	(*musicIterator)->stop();
 	window.clear();
 	window.draw(bgGame);
 	for (auto it = Tvictory.begin(); it != Tvictory.end(); it++)
@@ -527,19 +582,22 @@ int game(sf::RenderWindow& window)
 		delete *it;
 	for (auto it = Tvictory.begin(); it != Tvictory.end(); it++)
 		delete *it;
-	return 0;
+	for (auto it = MusicVector.begin(); it != MusicVector.end(); it++)
+		delete *it;
+	return 1;
 }
 
 int main()
 {
-	music.openFromFile("../sound/title.ogg");
+	sf::Music music;
+	music.openFromFile("../sound/ObservingTheStar.ogg");
 	music.setVolume(12);
 	music.setLoop(1);
-	music.play();
 	font.loadFromFile("../arial.ttf");
 	int state = 0;								// 0 - menu, 1 - gra, 2 - credits, -1 błąd, -2 zamknij
 	sf::RenderWindow window(sf::VideoMode(800, 600), gameName);
 	srand(time(NULL));
+	music.play();
 	while (state >= 0)
 	{
 		switch (state)
@@ -551,7 +609,9 @@ int main()
 			state = credits(window);
 			break;
 		case 2:
+			music.stop();
 			state = game(window);
+			music.play();
 			break;
 		}
 	}
