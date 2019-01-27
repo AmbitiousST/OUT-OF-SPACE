@@ -204,7 +204,7 @@ int game(sf::RenderWindow& window)
 		std::vector<std::pair<Vector2, Vector2>> enemyColis[6];
 		std::vector<std::pair<Vector2, Vector2>> enemyProjectileColis[4];
 		{
-			auto lamb = [](int a, int b, int c, int d) {return std::make_pair(Vector2(a,b), Vector2(c,d)); };
+			auto lamb = [](float a, float b, float c, float d) {return std::make_pair(Vector2(a,b), Vector2(c,d)); };
 			playerColis.push_back(lamb(20,0,0,46));
 			playerColis.push_back(lamb(40, 46, 0, 46));
 			playerColis.push_back(lamb(20, 0, 40, 46));
@@ -488,7 +488,7 @@ int game(sf::RenderWindow& window)
 		break;
 		case 8:
 		{
-			enemy* e = new enemy(enemyTextures[4], Vector2(370.5f, 50.0f), vect, 8, 5, 3, hpBarsTextures[3]);
+			enemy* e = new enemy(enemyTextures[4], Vector2(370.5f, 50.0f), vect, 8, 5, 3, hpBarsTextures[3],enemyColis[4]);
 			evect.push_back(e);
 		}
 		break;
