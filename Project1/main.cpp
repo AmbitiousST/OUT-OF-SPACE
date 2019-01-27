@@ -227,6 +227,9 @@ int game(sf::RenderWindow& window)
 	sf::SoundBuffer bigBoom;
 	bigBoom.loadFromFile("../sound/DeathFlash.flac");
 
+	sf::SoundBuffer jumpSound;
+	jumpSound.loadFromFile("../sound/jump.wav");
+
 	sf::SoundBuffer shootSoundVector[4];
 	shootSoundVector[0].loadFromFile("../sound/laser3.wav");
 	shootSoundVector[1].loadFromFile("../sound/laser5.wav");
@@ -649,6 +652,9 @@ int game(sf::RenderWindow& window)
 		jump = new explosion(x, jumpTex, vect);
 		explosions.push_back(jump);
 		Player.visible(false);
+		SoundVector.push_back(sf::Sound(jumpSound));
+		SoundVector.back().setVolume(25);
+		SoundVector.back().play();
 		while (!explosions.empty())
 		{
 			clock.restart();
