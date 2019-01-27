@@ -12,6 +12,11 @@ void projectile::update()
 	_sprite.setPosition(_pos);
 }
 
+Vector2* projectile::getPos()
+{
+	return &_pos;
+}
+
 playerProjectilesContainer::playerProjectilesContainer(std::vector <Vector2>* expPos) : _expPos(expPos)
 {
 

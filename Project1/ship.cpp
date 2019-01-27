@@ -76,6 +76,10 @@ void ship::takeDamage(int amount)	//funkcja roku
 	if (health < 0)
 		health = 0;
 }
+Vector2* ship::getPos()
+{
+	return &pos;
+}
 ship::~ship()
 {
 	for (auto it = _vectPtr->begin(); it != _vectPtr->end(); it++)

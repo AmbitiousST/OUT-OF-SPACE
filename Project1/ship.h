@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <cmath>
+#include "collisions.h"
 
 typedef sf::Vector2f Vector2;
 typedef sf::Vector2i Vector2i;
@@ -26,7 +27,7 @@ public:
 	void update(Vector2 p, int hp);
 };
 
-class ship
+class ship : public colidable
 {
 	std::vector<sf::Texture> _textures;
 	std::vector<sf::Texture>::iterator _it;
@@ -44,6 +45,7 @@ public:
 	void update();
 	void changeSpeed(Vector2 s);
 	void takeDamage(int amount);
+	Vector2* getPos();
 };
 
 class player : public ship
