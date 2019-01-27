@@ -198,6 +198,7 @@ int game(sf::RenderWindow& window)
 	const int levelNum = 8;
 	sf::Clock clock;
 	std::vector<sf::Drawable*> vect;
+
 	//Colisions
 	std::vector<std::pair<Vector2, Vector2>> playerColis;
 	std::vector<std::pair<Vector2, Vector2>> playerProjectilesColis;
@@ -235,13 +236,6 @@ int game(sf::RenderWindow& window)
 		enemyColis[4].push_back(lamb(32, 74, 0, 4));
 		enemyColis[4].push_back(lamb(32, 74, 63, 5));
 
-		enemyColis[5].push_back(lamb(10, 0, 84, 0));
-		enemyColis[5].push_back(lamb(94, 25, 84, 0));
-		enemyColis[5].push_back(lamb(94, 25, 68, 75));
-		enemyColis[5].push_back(lamb(26, 75, 68, 75));
-		enemyColis[5].push_back(lamb(26, 75, 0, 25));
-		enemyColis[5].push_back(lamb(0, 25, 10, 0));
-
 		enemyProjectileColis[0].push_back(lamb(6, 7, 6, 25));
 		enemyProjectileColis[0].push_back(lamb(10, 7, 10, 25));
 		enemyProjectileColis[0].push_back(lamb(6, 7, 10, 7));
@@ -256,12 +250,20 @@ int game(sf::RenderWindow& window)
 		enemyProjectileColis[2].push_back(lamb(27, 26, 27, 84));
 		enemyProjectileColis[2].push_back(lamb(34, 26, 34, 84));
 		enemyProjectileColis[2].push_back(lamb(27, 84, 34, 84));
-
-		enemyProjectileColis[3].push_back(lamb(21, 69, 33, 69));
-		enemyProjectileColis[3].push_back(lamb(21, 69, 21, 81));
-		enemyProjectileColis[3].push_back(lamb(21, 81, 33, 81));
-		enemyProjectileColis[3].push_back(lamb(33, 81, 33, 69));
 	}
+
+	//Jump
+	std::vector <sf::Texture> jumpTex;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			sf::Texture a;
+			a.loadFromFile("../img/jump_animation.png", sf::IntRect(128 * j, 128 * i, 128, 128));
+			jumpTex.push_back(a);
+		}
+	}
+
 	//Explosions
 	std::vector <Vector2> explosionPositions;
 	std::vector <explosion*> explosions;
@@ -273,9 +275,13 @@ int game(sf::RenderWindow& window)
 		a.loadFromFile("../img/explosion1.png", sf::IntRect(1 + 92 * i, 1, 89, 89));
 		exp1.push_back(a);
 	}
-	//sound and music
+
+	//Sound and music
 	sf::SoundBuffer bigBoom;
 	bigBoom.loadFromFile("../sound/DeathFlash.flac");
+
+	sf::SoundBuffer jumpSound;
+	jumpSound.loadFromFile("../sound/jump.wav");
 
 	sf::SoundBuffer shootSoundVector[4];
 	shootSoundVector[0].loadFromFile("../sound/laser3.wav");
@@ -297,7 +303,6 @@ int game(sf::RenderWindow& window)
 		}
 	}
 	auto musicIterator = MusicVector.begin();
-	(*musicIterator)->play();
 
 	//Player
 	std::vector<sf::Texture> playerTextures;
@@ -408,6 +413,8 @@ int game(sf::RenderWindow& window)
 	sf::Sprite bgGame;
 	std::vector<sf::Text*> Tvictory = loadText("../victory.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 	std::vector<sf::Text*> Tfailure = loadText("../failure.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
+
+	(*musicIterator)->play();
 
 	for (int level = 1; level <= levelNum; level++)
 	{
@@ -651,7 +658,7 @@ int game(sf::RenderWindow& window)
 						explosions.clear();
 						break;
 					}
-					explosions.erase(it);
+					it = explosions.erase(it);
 				}
 			}
 			epc.update(window, Player);
@@ -692,7 +699,39 @@ int game(sf::RenderWindow& window)
 			}
 			while (clock.getElapsedTime().asMilliseconds() < 1000 / fps);	//Fps limiter
 		}
-
+		explosion* jump;
+		auto bounds = Player.sprite.getGlobalBounds();
+		Vector2 x = Vector2(Player.pos.x + bounds.width / 2 - 64, Player.pos.y + bounds.height / 2 - 100);
+		jump = new explosion(x, jumpTex, vect);
+		explosions.push_back(jump);
+		Player.visible(false);
+		SoundVector.push_back(sf::Sound(jumpSound));
+		SoundVector.back().setVolume(25);
+		SoundVector.back().play();
+		while (!explosions.empty())
+		{
+			clock.restart();
+			window.clear();
+			window.draw(bgGame);
+			for (auto it = explosions.begin(); it != explosions.end(); it++)
+			{
+				if (!(*it)->update())
+				{
+					delete *it;
+					if (explosions.size() == 1)
+					{
+						explosions.clear();
+						break;
+					}
+					it = explosions.erase(it);
+				}
+			}
+			for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
+				window.draw(**it);
+			window.display();
+			while (clock.getElapsedTime().asMilliseconds() < 1000 / fps);
+		}
+		Player.visible(true);
 	}
 	bgGame.setTexture(bgGameTex[levelNum - 1]);
 	(*musicIterator)->stop();
