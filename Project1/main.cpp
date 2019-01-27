@@ -352,6 +352,14 @@ int game(sf::RenderWindow& window)
 	}
 	hpBarsTextures[3] = playerHpBarTextures;
 
+	std::vector<sf::Texture> hpBarBossTexture;
+	for (int i = 0; i < 19; i++)
+	{
+		sf::Texture tex;
+		tex.loadFromFile("../img/hp_bar_boss.png", sf::IntRect(0, i*10, 96, 10));
+		hpBarBossTexture.push_back(tex);
+	}
+
 	//Background
 	sf::Texture bgGameTex[10];
 	bgGameTex[0].loadFromFile("../img/bg_game1.jpg");
@@ -539,7 +547,7 @@ int game(sf::RenderWindow& window)
 		break;
 		case 10:
 		{
-			enemy* e = new enemy(enemyTextures[5], Vector2(370.5f, 50.0f), vect, 8, 5, 3, hpBarsTextures[3], enemyColis[4]);
+			enemy* e = new enemy(enemyTextures[5], Vector2(370.5f, 50.0f), vect, 8, 19, 3, hpBarBossTexture, enemyColis[4]);
 			evect.push_back(e);
 		}
 		break;
