@@ -298,3 +298,17 @@ explosion::~explosion()
 		}
 	}
 }
+
+void boss::update()
+{
+	ship::update();
+	_bar->update(Vector2(pos.x + (sprite.getGlobalBounds().width - _bar->width) / 2, pos.y + 50), health);
+}
+
+boss::boss(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis) : enemy(tex, pos, vect,0,19,0,barTex,colis)
+{
+}
+void boss::move() 
+{
+
+}
