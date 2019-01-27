@@ -439,7 +439,7 @@ int game(sf::RenderWindow& window)
 
 	(*musicIterator)->play();
 
-	for (int level = 9; level <= levelNum; level++)
+	for (int level = 10; level <= levelNum; level++)
 	{
 
 		switch (level)
@@ -585,11 +585,30 @@ int game(sf::RenderWindow& window)
 		while (clock.getElapsedTime().asMilliseconds() < 500);
 		delete levelText;
 
+		unsigned int uglyTimer = 3000;
+
 		//Loop
 		while (evect.size() > 0 && window.isOpen())
 		{
 			clock.restart();
 			sf::Event event;
+			
+			if (level == 10)	//Boss' support spawner
+			{
+				uglyTimer++;
+				if (uglyTimer == 3600)
+				{
+					uglyTimer = 0;
+					explosion* e = new explosion(Vector2(100.0f, 25.0f), jumpTex, vect);
+					explosions.push_back(e);
+					explosion* e1 = new explosion(Vector2(572.0f, 25.0f), jumpTex, vect);
+					explosions.push_back(e1);
+					SoundVector.push_back(sf::Sound(jumpSound));
+					SoundVector.back().setVolume(25);
+					SoundVector.back().play();
+				}
+			}
+
 			while (window.pollEvent(event))
 			{
 				if (event.type == sf::Event::Closed)

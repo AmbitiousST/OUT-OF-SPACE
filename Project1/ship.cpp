@@ -47,7 +47,6 @@ void ship::visible(bool a)
 
 void ship::update()		//fizyka statków
 {
-
 	collision = Vector2i(0, 0);
 	sf::FloatRect rect = sprite.getGlobalBounds();
 	pos += speed;
