@@ -195,7 +195,7 @@ int game(sf::RenderWindow& window)
 {
 	const int fps = 60;
 	const float speedChange = 3;
-	const int levelNum = 7;
+	const int levelNum = 8;
 	sf::Clock clock;
 	std::vector<sf::Drawable*> vect;
 
@@ -293,7 +293,7 @@ int game(sf::RenderWindow& window)
 	temp.loadFromFile("../img/enemy_proc3.png");
 	enemyProcTextures.push_back(temp);
 	enemyProjectilesContainer epc(enemyProcTextures);
-	std::vector<sf::Texture> enemyTextures[4];
+	std::vector<sf::Texture> enemyTextures[6];
 	std::vector<sf::Texture> tmp;
 	for (int i = 0; i < 5; i++)
 	{
@@ -326,11 +326,27 @@ int game(sf::RenderWindow& window)
 		tmp.push_back(tex);
 	}
 	enemyTextures[3] = tmp;
+	tmp.clear();
+	for (int i = 0; i < 5; i++)
+	{
+		sf::Texture tex;
+		tex.loadFromFile("../img/enemy5.png", sf::IntRect(i * 65, 0, 65, 75));
+		tmp.push_back(tex);
+	}
+	enemyTextures[4] = tmp;
+	tmp.clear();
+	for (int i = 0; i < 5; i++)
+	{
+		sf::Texture tex;
+		tex.loadFromFile("../img/enemy6.png", sf::IntRect(i * 95, 0, 95, 76));
+		tmp.push_back(tex);
+	}
+	enemyTextures[5] = tmp;
 	sf::Sprite bgGame;
 	std::vector<sf::Text*> Tvictory = loadText("../victory.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 	std::vector<sf::Text*> Tfailure = loadText("../failure.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 
-	for (int level = 1; level <= levelNum; level++)
+	for (int level = 7; level <= levelNum; level++)
 	{
 
 		switch (level)
@@ -416,6 +432,12 @@ int game(sf::RenderWindow& window)
 		case 7:
 		{
 			enemy* e = new enemy(enemyTextures[3], Vector2(370.5f, 50.0f), vect, 4, 5, 3, hpBarsTextures[3]);
+			evect.push_back(e);
+		}
+		break;
+		case 8:
+		{
+			enemy* e = new enemy(enemyTextures[4], Vector2(370.5f, 50.0f), vect, 8, 5, 3, hpBarsTextures[3]);
 			evect.push_back(e);
 		}
 		break;

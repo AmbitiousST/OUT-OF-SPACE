@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include <cmath>
 
 typedef sf::Vector2f Vector2;
 typedef sf::Vector2i Vector2i;
@@ -57,7 +58,7 @@ public:
 
 class enemy : public ship
 {
-	float _dist, _baseSpeed, _superSecretVariable;
+	float _dist, _baseSpeed, _aiVar, _aiVar2;
 	int _side, _aiType;
 	hpBar *_bar;
 

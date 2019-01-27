@@ -123,7 +123,8 @@ enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawabl
 	shot = rand() % 50;
 	_baseSpeed = 1;
 	procType = type;
-	_superSecretVariable = 0;
+	_aiVar = 0;
+	_aiVar2 = -2;
 	_bar = new hpBar(barTex, vect, health, Vector2(pos.x, pos.y - 10));
 }
 
@@ -197,8 +198,8 @@ void enemy::move()		//ai przeciwnika
 		{
 			_side = 1;
 		}
-		changeSpeed(Vector2(_baseSpeed*_side, sin(_superSecretVariable)));
-		_superSecretVariable += 0.01f;
+		changeSpeed(Vector2(_baseSpeed*_side, sin(_aiVar)));
+		_aiVar += 0.01f;
 		break;
 	case 4:
 		//left to right sin speed
@@ -210,23 +211,39 @@ void enemy::move()		//ai przeciwnika
 		{
 			_side = 1;
 		}
-		changeSpeed(Vector2(fabs(sin(_superSecretVariable))*_side*1.5f, 0.0f));
-		_superSecretVariable += 0.01f;
+		changeSpeed(Vector2(fabs(sin(_aiVar))*_side*1.5f, cos(_aiVar)));
+		_aiVar += 0.01f;
 		break;
 	case 5:
 		//circle
-		changeSpeed(Vector2(cos(_superSecretVariable), sin(_superSecretVariable)));
-		_superSecretVariable += 0.01f;
+		changeSpeed(Vector2(cos(_aiVar), sin(_aiVar)));
+		_aiVar += 0.01f;
 		break;
 	case 6:
 		//8
-		changeSpeed(Vector2(cos(_superSecretVariable), cos(_superSecretVariable*2)));
-		_superSecretVariable += 0.01f;
+		changeSpeed(Vector2(cos(_aiVar), cos(_aiVar*2)));
+		_aiVar += 0.01f;
 		break;
 	case 7:
 		//diagonal variable speed
-		changeSpeed(Vector2(cos(_superSecretVariable), cos(_superSecretVariable)));
-		_superSecretVariable += 0.02f;
+		changeSpeed(Vector2(cos(_aiVar), cos(_aiVar)));
+		_aiVar += 0.02f;
+		break;
+	case 8:
+		//polynomial
+		if (collision.x == 1 && _side == 1)
+		{
+			_side = -1;
+		}
+		if (collision.x == -1 && _side == -1)
+		{
+			_side = 1;
+		}
+		changeSpeed(Vector2((_aiVar + 2)*(_aiVar + 1)*(_aiVar - 0.5)*(_aiVar - 1.5)*_side, cos(_aiVar2)));
+		_aiVar += 0.01f;
+		_aiVar2 += 0.01f;
+		if (_aiVar > 1.9)
+			_aiVar = -2.3;
 		break;
 	default:
 		if (collision.x == 1)
