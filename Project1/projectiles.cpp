@@ -1,7 +1,9 @@
 #include "projectiles.h"
 
-projectile::projectile(sf::Texture tex, Vector2 pos, Vector2 speed) : _texture(tex), _pos(pos), _speed(speed)
+projectile::projectile(sf::Texture tex, Vector2 pos, Vector2 speed,std::vector<std::pair<Vector2, Vector2>>& colis) : _texture(tex), _pos(pos), _speed(speed)
 {
+	colisionlines = colis;
+	setBB();
 	_sprite.setTexture(_texture);
 	_sprite.setPosition(_pos);
 }
@@ -10,6 +12,7 @@ void projectile::update()
 {
 	_pos += _speed;
 	_sprite.setPosition(_pos);
+	updateBB();
 }
 
 Vector2* projectile::getPos()
@@ -17,14 +20,14 @@ Vector2* projectile::getPos()
 	return &_pos;
 }
 
-playerProjectilesContainer::playerProjectilesContainer(std::vector <Vector2>* expPos) : _expPos(expPos)
+playerProjectilesContainer::playerProjectilesContainer(std::vector <Vector2>* expPos, std::vector<std::pair<Vector2, Vector2>>& _colis) : _expPos(expPos),colis(_colis)
 {
 
 }
 
 void playerProjectilesContainer::addProjectile(Vector2 pos)
 {
-	pvect.push_back(new projectile(texture, pos, speed));
+	pvect.push_back(new projectile(texture, pos, speed,colis));
 }
 
 void playerProjectilesContainer::clear()
@@ -43,7 +46,7 @@ void playerProjectilesContainer::update(sf::RenderWindow& window, std::list<enem
 		(*it)->update();
 		for (auto it2 = evect.begin(); it2 != evect.end();)
 		{
-			if (Collision::PixelPerfectTest((*it)->_sprite, (*it2)->sprite, 128))
+			if (testColision(*it,*it2)) //Collision::PixelPerfectTest((*it)->_sprite, (*it2)->sprite, 128)
 			{
 				(*it2)->takeDamage(1);
 				if ((*it2)->health == 0)
@@ -98,9 +101,9 @@ void enemyProjectilesContainer::clear()
 	pvect.clear();
 }
 
-void enemyProjectilesContainer::addProjectile(sf::Texture tex, Vector2 pos, Vector2 speed)
+void enemyProjectilesContainer::addProjectile(sf::Texture tex, Vector2 pos, Vector2 speed, std::vector<std::pair<Vector2, Vector2>>& colis)
 {
-	pvect.push_back(new projectile(tex, pos, speed));
+	pvect.push_back(new projectile(tex, pos, speed,colis));
 }
 
 void enemyProjectilesContainer::update(sf::RenderWindow& window, player& Player)
@@ -108,7 +111,7 @@ void enemyProjectilesContainer::update(sf::RenderWindow& window, player& Player)
 	for (auto it = pvect.begin(); it != pvect.end();)
 	{
 		(*it)->update();
-		if (Collision::PixelPerfectTest((*it)->_sprite, Player.sprite, 128))
+		if (testColision(&Player,*it)) //Collision::PixelPerfectTest((*it)->_sprite, Player.sprite, 128)
 		{
 			Player.takeDamage(1);
 			delete *it;

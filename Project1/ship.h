@@ -39,7 +39,7 @@ public:
 	Vector2i collision;
 	sf::Sprite sprite;
 
-	ship(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect);
+	ship(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<std::pair<Vector2, Vector2>>& colis);
 	~ship();
 	void visible(bool a);
 	void update();
@@ -53,7 +53,7 @@ class player : public ship
 	hpBar *_bar;
 
 public:
-	player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex);
+	player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis);
 	void update();
 	~player();
 };
@@ -67,7 +67,7 @@ class enemy : public ship
 public:
 	int shot, procType;
 	enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect,
-		int aiType, int hp, int type, std::vector<sf::Texture> &barTex);
+		int aiType, int hp, int type, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis);
 	~enemy();
 	void update();
 	void move();
