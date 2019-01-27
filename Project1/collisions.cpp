@@ -4,10 +4,6 @@ bool testColision(colidable* a, colidable* b)
 {
 	Vector2 apos = *(a->posPTR);
 	Vector2 bpos = *(b->posPTR);
-	a->BB.left = apos.x + a->lower.x;
-	a->BB.top = apos.y + a->lower.y;
-	b->BB.left = bpos.x + b->lower.x;
-	b->BB.top = bpos.y + b->lower.y;
 	if (!a->BB.intersects(b->BB))
 		return 0;
 	auto wekt = [](Vector2& p1, Vector2& p2, Vector2& p3) {return (p2.x - p1.x)*(p3.y - p1.y) - (p3.x - p1.x)*(p2.y - p1.y); };
@@ -39,10 +35,12 @@ Vector2* colidable::getPos()
 {
 	return NULL;
 }
-void colidable::updateBB()
+void colidable::setBB()
 {
-	Vector2 higher;
 	posPTR = getPos();
+	if (colisionlines.size() == 0)
+		return;
+	Vector2 higher;
 	auto it1 = colisionlines.begin();
 	lower.x = std::min(it1->first.x, it1->second.x);
 	lower.y = std::min(it1->first.y, it1->second.y);
@@ -58,4 +56,9 @@ void colidable::updateBB()
 	}
 	BB.height = higher.y - lower.y;
 	BB.width = higher.x - lower.x;
+}
+void colidable::updateBB()
+{
+	BB.left = posPTR->x + lower.x;
+	BB.top = posPTR->y + lower.y;
 }

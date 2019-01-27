@@ -27,8 +27,10 @@ hpBar::~hpBar()
 	}
 }
 
-ship::ship(std::vector<sf::Texture> &tex, Vector2 p, std::vector<sf::Drawable*>& vect) : _textures(tex), pos(p)
+ship::ship(std::vector<sf::Texture> &tex, Vector2 p, std::vector<sf::Drawable*>& vect,std::vector<std::pair<Vector2,Vector2>>& colis) : _textures(tex), pos(p)
 {
+	colisionlines = colis;
+	setBB();
 	_vectPtr = &vect;
 	sprite.setTexture(_textures[0]);
 	speed = Vector2(0, 0);
@@ -62,6 +64,7 @@ void ship::update()		//fizyka statków
 	if (++_it == _textures.end())
 		_it = _textures.begin();
 	sprite.setPosition(pos);
+	updateBB();
 }
 
 void ship::changeSpeed(Vector2 s)
@@ -91,7 +94,7 @@ ship::~ship()
 		}
 	}
 }
-player::player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex) : ship(tex, pos, vect)
+player::player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis) : ship(tex, pos, vect,colis)
 {
 	health = 5;
 	_bar = new hpBar(barTex, vect, health, Vector2(pos.x, pos.y + 50));
@@ -110,7 +113,7 @@ void player::update()
 }
 
 enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect,
-	int aiType, int hp, int type, std::vector<sf::Texture> &barTex) : ship(tex, pos, vect)
+	int aiType, int hp, int type, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis) : ship(tex, pos, vect,colis)
 	//okropnie du¿o tych argumentów. Chyba przesadzi³em
 {
 	//ca³y ten blok chyba da siê zrobiæ ³adniej, ale nie wiem jak

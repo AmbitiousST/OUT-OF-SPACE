@@ -198,7 +198,58 @@ int game(sf::RenderWindow& window)
 	const int levelNum = 7;
 	sf::Clock clock;
 	std::vector<sf::Drawable*> vect;
+	//Colisions
+		std::vector<std::pair<Vector2, Vector2>> playerColis;
+		std::vector<std::pair<Vector2, Vector2>> playerProjectilesColis;
+		std::vector<std::pair<Vector2, Vector2>> enemyColis[6];
+		std::vector<std::pair<Vector2, Vector2>> enemyProjectileColis[4];
+		{
+			auto lamb = [](int a, int b, int c, int d) {return std::make_pair(Vector2(a,b), Vector2(c,d)); };
+			playerColis.push_back(lamb(20,0,0,46));
+			playerColis.push_back(lamb(40, 46, 0, 46));
+			playerColis.push_back(lamb(20, 0, 40, 46));
 
+			playerProjectilesColis.push_back(lamb(6, 7, 6, 25));
+			playerProjectilesColis.push_back(lamb(10, 7, 10, 25));
+			playerProjectilesColis.push_back(lamb(6, 7, 10, 7));
+			playerProjectilesColis.push_back(lamb(6, 25, 10, 25));
+
+			enemyColis[0].push_back(lamb(0,14,34,14));
+			enemyColis[0].push_back(lamb(17,47,0,14));
+			enemyColis[0].push_back(lamb(17, 47,34,14));
+
+			enemyColis[1].push_back(lamb(0,9,34,9));
+			enemyColis[1].push_back(lamb(17, 49, 0, 9));
+			enemyColis[1].push_back(lamb(17,49,34,9));
+
+			enemyColis[2].push_back(lamb(0, 15, 34, 15));
+			enemyColis[2].push_back(lamb(17, 44, 34, 15));
+			enemyColis[2].push_back(lamb(0, 15, 17, 44));
+
+			enemyColis[3].push_back(lamb(0,12,58,12));
+			enemyColis[3].push_back(lamb(24,53,34,53));
+			enemyColis[3].push_back(lamb(24, 53, 0, 12));
+			enemyColis[3].push_back(lamb(58, 12, 34, 53));
+
+			enemyColis[4].push_back(lamb(0,4,63,5));
+			enemyColis[4].push_back(lamb(32,74,0,4));
+			enemyColis[4].push_back(lamb(32, 74, 63, 5));
+	
+			enemyProjectileColis[0].push_back(lamb(6, 7, 6, 25));
+			enemyProjectileColis[0].push_back(lamb(10, 7, 10, 25));
+			enemyProjectileColis[0].push_back(lamb(6, 7, 10, 7));
+			enemyProjectileColis[0].push_back(lamb(6, 25, 10, 25));
+
+			enemyProjectileColis[1].push_back(lamb(4, 8, 9, 8));
+			enemyProjectileColis[1].push_back(lamb(4, 8, 4, 18));
+			enemyProjectileColis[1].push_back(lamb(9, 8, 9, 18));
+			enemyProjectileColis[1].push_back(lamb(4, 18, 9, 18));
+
+			enemyProjectileColis[2].push_back(lamb(27, 26, 34, 26));
+			enemyProjectileColis[2].push_back(lamb(27, 26, 27, 84));
+			enemyProjectileColis[2].push_back(lamb(34, 26, 34, 84));
+			enemyProjectileColis[2].push_back(lamb(27, 84, 34, 84));
+		}
 	//Explosions
 	std::vector <Vector2> explosionPositions;
 	std::vector <explosion*> explosions;
@@ -238,7 +289,7 @@ int game(sf::RenderWindow& window)
 
 	//Player
 	std::vector<sf::Texture> playerTextures;
-	playerProjectilesContainer ppc(&explosionPositions);
+	playerProjectilesContainer ppc(&explosionPositions, playerProjectilesColis);
 	ppc.texture.loadFromFile("../img/player_proc.png");
 	ppc.speed = Vector2(0, -8);
 	for (int i = 0; i < 5; i++)
@@ -256,7 +307,7 @@ int game(sf::RenderWindow& window)
 		tex.loadFromFile("../img/hp_bar5.png", sf::IntRect(i * 27, 0, 27, 10));
 		playerHpBarTextures.push_back(tex);
 	}
-	player Player(playerTextures, Vector2(400, 500), vect, playerHpBarTextures);
+	player Player(playerTextures, Vector2(400, 500), vect, playerHpBarTextures, playerColis);
 	for (int j = 2; j < 5; j++)
 	{
 		std::vector<sf::Texture> hpBarTexture;
@@ -338,20 +389,20 @@ int game(sf::RenderWindow& window)
 		case 1:
 			for (int i = 0; i < 5; i++)
 			{
-				enemy *e = new enemy(enemyTextures[0], Vector2(50.0f*i, 100.0f), vect, 1, 2, 0, hpBarsTextures[0]);
+				enemy *e = new enemy(enemyTextures[0], Vector2(50.0f*i, 100.0f), vect, 1, 2, 0, hpBarsTextures[0],enemyColis[0]);
 				evect.push_back(e);
 			}
 			break;
 		case 2:
 			for (int i = 0; i < 5; i++)
 			{
-				enemy *e = new enemy(enemyTextures[0], Vector2(100.0f*i, 150.0f), vect, 1, 2, 0, hpBarsTextures[0]);
+				enemy *e = new enemy(enemyTextures[0], Vector2(100.0f*i, 150.0f), vect, 1, 2, 0, hpBarsTextures[0],enemyColis[0]);
 				evect.push_back(e);
 			}
 			{
-				enemy *e = new enemy(enemyTextures[1], Vector2(200.0f, 70.0f), vect, 0, 3, 1, hpBarsTextures[1]);
+				enemy *e = new enemy(enemyTextures[1], Vector2(200.0f, 70.0f), vect, 0, 3, 1, hpBarsTextures[1], enemyColis[1]);
 				evect.push_back(e);
-				enemy *e2 = new enemy(enemyTextures[1], Vector2(565.0f, 70.0f), vect, 0, 3, 1, hpBarsTextures[1]);
+				enemy *e2 = new enemy(enemyTextures[1], Vector2(565.0f, 70.0f), vect, 0, 3, 1, hpBarsTextures[1], enemyColis[1]);
 				evect.push_back(e2);
 			}
 			break;
@@ -359,27 +410,27 @@ int game(sf::RenderWindow& window)
 			for (int i = 0; i < 3; i++)
 			{
 
-				enemy* e = new enemy(enemyTextures[1], Vector2(272.5f + 85.0f*i, 70.0f), vect, 2, 3, 1, hpBarsTextures[1]);
+				enemy* e = new enemy(enemyTextures[1], Vector2(272.5f + 85.0f*i, 70.0f), vect, 2, 3, 1, hpBarsTextures[1], enemyColis[1]);
 				evect.push_back(e);
 			}
 			for (int i = 0; i < 2; i++)
 			{
-				enemy* e2 = new enemy(enemyTextures[0], Vector2(100 + 100.0f*i, 150.0f), vect, -1, 2, 0, hpBarsTextures[0]);
+				enemy* e2 = new enemy(enemyTextures[0], Vector2(100 + 100.0f*i, 150.0f), vect, -1, 2, 0, hpBarsTextures[0], enemyColis[0]);
 				evect.push_back(e2);
-				enemy* e3 = new enemy(enemyTextures[0], Vector2(565 + 100.0f*i, 150.0f), vect, 1, 2, 0, hpBarsTextures[0]);
+				enemy* e3 = new enemy(enemyTextures[0], Vector2(565 + 100.0f*i, 150.0f), vect, 1, 2, 0, hpBarsTextures[0], enemyColis[0]);
 				evect.push_back(e3);
 			}
 			break;
 		case 4:
 			for (int i = 0; i < 5; i++)
 			{
-				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f+40.0f + 135.0f*i, 50.0f), vect, 6, 4, 0, hpBarsTextures[2]);
+				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f+40.0f + 135.0f*i, 50.0f), vect, 6, 4, 0, hpBarsTextures[2], enemyColis[2]);
 				evect.push_back(e);
 			}
 			for (int i = 0; i < 3; i++)
 			{
 
-				enemy* e = new enemy(enemyTextures[1], Vector2(272.5f + 85.0f*i, 70.0f), vect, 2, 3, 1, hpBarsTextures[1]);
+				enemy* e = new enemy(enemyTextures[1], Vector2(272.5f + 85.0f*i, 70.0f), vect, 2, 3, 1, hpBarsTextures[1], enemyColis[1]);
 				evect.push_back(e);
 			}
 			break;
@@ -387,14 +438,14 @@ int game(sf::RenderWindow& window)
 		{
 			for (int i = 0; i < 5; i++)
 			{
-				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f + 40.0f + 135.0f*i, 50.0f), vect, 5, 4, 0, hpBarsTextures[2]);
+				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f + 40.0f + 135.0f*i, 50.0f), vect, 5, 4, 0, hpBarsTextures[2], enemyColis[2]);
 				evect.push_back(e);
 			}
 			for (int i = 0; i < 2; i++)
 			{
-				enemy* e2 = new enemy(enemyTextures[0], Vector2(100 + 100.0f*i, 150.0f), vect, -1, 2, 0, hpBarsTextures[0]);
+				enemy* e2 = new enemy(enemyTextures[0], Vector2(100 + 100.0f*i, 150.0f), vect, -1, 2, 0, hpBarsTextures[0], enemyColis[0]);
 				evect.push_back(e2);
-				enemy* e3 = new enemy(enemyTextures[0], Vector2(565 + 100.0f*i, 150.0f), vect, 1, 2, 0, hpBarsTextures[0]);
+				enemy* e3 = new enemy(enemyTextures[0], Vector2(565 + 100.0f*i, 150.0f), vect, 1, 2, 0, hpBarsTextures[0], enemyColis[0]);
 				evect.push_back(e3);
 			}
 			break;
@@ -403,19 +454,19 @@ int game(sf::RenderWindow& window)
 		{
 			for (int i = 0; i < 5; i++)
 			{
-				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f + 40.0f + 135.0f*i, 50.0f), vect, 7, 4, 0, hpBarsTextures[2]);
+				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f + 40.0f + 135.0f*i, 50.0f), vect, 7, 4, 0, hpBarsTextures[2], enemyColis[2]);
 				evect.push_back(e);
 			}
 			for (int i = 0; i < 5; i++)
 			{
-				enemy *e = new enemy(enemyTextures[0], Vector2(50.0f*i, 100.0f), vect, 1, 2, 0, hpBarsTextures[0]);
+				enemy *e = new enemy(enemyTextures[0], Vector2(50.0f*i, 100.0f), vect, 1, 2, 0, hpBarsTextures[0], enemyColis[0]);
 				evect.push_back(e);
 			}
 			break;
 		}
 		case 7:
 		{
-			enemy* e = new enemy(enemyTextures[3], Vector2(370.5f, 50.0f), vect, 4, 5, 3, hpBarsTextures[3]);
+			enemy* e = new enemy(enemyTextures[3], Vector2(370.5f, 50.0f), vect, 4, 5, 3, hpBarsTextures[3], enemyColis[3]);
 			evect.push_back(e);
 		}
 		break;
@@ -533,15 +584,15 @@ int game(sf::RenderWindow& window)
 					switch ((*it)->procType)
 					{
 					case 0:
-						epc.addProjectile(epc.textures[0], Vector2((*it)->pos.x + 12, (*it)->pos.y), Vector2(0.0f, 7.0f));
+						epc.addProjectile(epc.textures[0], Vector2((*it)->pos.x + 12, (*it)->pos.y), Vector2(0.0f, 7.0f), enemyProjectileColis[0]);
 						break;
 					case 1:
-						epc.addProjectile(epc.textures[1], Vector2((*it)->pos.x + 12, (*it)->pos.y), Vector2(0.0f, 9.0f));
+						epc.addProjectile(epc.textures[1], Vector2((*it)->pos.x + 12, (*it)->pos.y), Vector2(0.0f, 9.0f), enemyProjectileColis[1]);
 						break;
 						//gdzie jest 2
 					case 3:
-						epc.addProjectile(epc.textures[2], Vector2((*it)->pos.x - 16.5f, (*it)->pos.y), Vector2(0.0f, 9.0f));
-						epc.addProjectile(epc.textures[2], Vector2((*it)->pos.x + 13.5f, (*it)->pos.y), Vector2(0.0f, 9.0f));
+						epc.addProjectile(epc.textures[2], Vector2((*it)->pos.x - 16.5f, (*it)->pos.y), Vector2(0.0f, 9.0f), enemyProjectileColis[2]);
+						epc.addProjectile(epc.textures[2], Vector2((*it)->pos.x + 13.5f, (*it)->pos.y), Vector2(0.0f, 9.0f), enemyProjectileColis[2]);
 						break;
 					}
 				}

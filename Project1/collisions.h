@@ -11,5 +11,6 @@ public:
 	std::vector<std::pair<Vector2, Vector2>> colisionlines;
 	virtual Vector2* getPos();
 	void updateBB();
+	void setBB();
 };
-bool testColision(colidable* a,colidable* b);
+bool testColision(colidable* a, colidable* b);
