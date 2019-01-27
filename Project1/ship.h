@@ -43,7 +43,7 @@ public:
 	void update();
 	void changeSpeed(Vector2 s);
 	void takeDamage(int amount);
-	Vector2 getPos();
+	Vector2* getPos();
 };
 
 class player : public ship

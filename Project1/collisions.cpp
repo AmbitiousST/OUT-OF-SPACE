@@ -2,8 +2,14 @@
 
 bool testColision(colidable* a, colidable* b) 
 {
-	Vector2 apos = a->getPos();
-	Vector2 bpos = b->getPos();
+	Vector2 apos = *(a->posPTR);
+	Vector2 bpos = *(b->posPTR);
+	a->BB.left = apos.x + a->lower.x;
+	a->BB.top = apos.y + a->lower.y;
+	b->BB.left = bpos.x + b->lower.x;
+	b->BB.top = bpos.y + b->lower.y;
+	if (!a->BB.intersects(b->BB))
+		return 0;
 	auto wekt = [](Vector2& p1, Vector2& p2, Vector2& p3) {return (p2.x - p1.x)*(p3.y - p1.y) - (p3.x - p1.x)*(p2.y - p1.y); };
 	for (auto it1 = a->colisionlines.begin(); it1 != a->colisionlines.end(); it1++)
 	{
@@ -29,7 +35,27 @@ bool testColision(colidable* a, colidable* b)
 	}
 	return 0;
 }
-Vector2 colidable::getPos()
+Vector2* colidable::getPos()
 {
-	return Vector2(0, 0);
+	return NULL;
+}
+void colidable::updateBB()
+{
+	Vector2 higher;
+	posPTR = getPos();
+	auto it1 = colisionlines.begin();
+	lower.x = std::min(it1->first.x, it1->second.x);
+	lower.y = std::min(it1->first.y, it1->second.y);
+	higher.x = std::max(it1->first.x, it1->second.x);
+	higher.y = std::max(it1->first.y, it1->second.y);
+	it1++;
+	for (; it1 != colisionlines.end(); it1++)
+	{
+		lower.x = std::min(std::min(it1->first.x, it1->second.x),lower.x);
+		lower.y = std::min(std::min(it1->first.y, it1->second.y),lower.y);
+		higher.x = std::max(std::max(it1->first.x, it1->second.x),higher.x);
+		higher.y = std::max(std::max(it1->first.y, it1->second.y),higher.y);
+	}
+	BB.height = higher.y - lower.y;
+	BB.width = higher.x - lower.x;
 }

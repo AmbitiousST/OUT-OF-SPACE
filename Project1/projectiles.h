@@ -20,7 +20,7 @@ public:
 
 	projectile(sf::Texture tex, Vector2 pos, Vector2 speed);
 	void update();
-	Vector2 getPos();
+	Vector2* getPos();
 };
 class playerProjectilesContainer
 {
