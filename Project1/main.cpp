@@ -236,6 +236,13 @@ int game(sf::RenderWindow& window)
 		enemyColis[4].push_back(lamb(32, 74, 0, 4));
 		enemyColis[4].push_back(lamb(32, 74, 63, 5));
 
+		enemyColis[5].push_back(lamb(10, 0, 84, 0));
+		enemyColis[5].push_back(lamb(94, 25, 84, 0));
+		enemyColis[5].push_back(lamb(94, 25, 68, 75));
+		enemyColis[5].push_back(lamb(26, 75, 68, 75));
+		enemyColis[5].push_back(lamb(26, 75, 0, 25));
+		enemyColis[5].push_back(lamb(0, 25, 10, 0));
+
 		enemyProjectileColis[0].push_back(lamb(6, 7, 6, 25));
 		enemyProjectileColis[0].push_back(lamb(10, 7, 10, 25));
 		enemyProjectileColis[0].push_back(lamb(6, 7, 10, 7));
@@ -250,6 +257,12 @@ int game(sf::RenderWindow& window)
 		enemyProjectileColis[2].push_back(lamb(27, 26, 27, 84));
 		enemyProjectileColis[2].push_back(lamb(34, 26, 34, 84));
 		enemyProjectileColis[2].push_back(lamb(27, 84, 34, 84));
+
+		enemyProjectileColis[3].push_back(lamb(21, 69, 33, 69));
+		enemyProjectileColis[3].push_back(lamb(21, 69, 21, 81));
+		enemyProjectileColis[3].push_back(lamb(21, 81, 33, 81));
+		enemyProjectileColis[3].push_back(lamb(33, 81, 33, 69));
+
 	}
 
 	//Jump
