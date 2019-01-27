@@ -17,7 +17,7 @@ sf::Font font;
 
 const std::string gameName = "Space Gosciniak";
 
-std::vector<sf::Text*> loadText(std::string filename, float offset, float windowSizeX, int size, sf::Color fill, sf::Color outline, float thickness, sf::Text::Style style= sf::Text::Regular)
+std::vector<sf::Text*> loadText(std::string filename, float offset, float windowSizeX, int size, sf::Color fill, sf::Color outline, float thickness, sf::Text::Style style = sf::Text::Regular)
 {
 	std::ifstream creditsFile;
 	creditsFile.open(filename, std::ifstream::in);
@@ -199,57 +199,69 @@ int game(sf::RenderWindow& window)
 	sf::Clock clock;
 	std::vector<sf::Drawable*> vect;
 	//Colisions
-		std::vector<std::pair<Vector2, Vector2>> playerColis;
-		std::vector<std::pair<Vector2, Vector2>> playerProjectilesColis;
-		std::vector<std::pair<Vector2, Vector2>> enemyColis[6];
-		std::vector<std::pair<Vector2, Vector2>> enemyProjectileColis[4];
-		{
-			auto lamb = [](float a, float b, float c, float d) {return std::make_pair(Vector2(a,b), Vector2(c,d)); };
-			playerColis.push_back(lamb(20,0,0,46));
-			playerColis.push_back(lamb(40, 46, 0, 46));
-			playerColis.push_back(lamb(20, 0, 40, 46));
+	std::vector<std::pair<Vector2, Vector2>> playerColis;
+	std::vector<std::pair<Vector2, Vector2>> playerProjectilesColis;
+	std::vector<std::pair<Vector2, Vector2>> enemyColis[6];
+	std::vector<std::pair<Vector2, Vector2>> enemyProjectileColis[4];
+	{
+		auto lamb = [](float a, float b, float c, float d) {return std::make_pair(Vector2(a, b), Vector2(c, d)); };
+		playerColis.push_back(lamb(20, 0, 0, 46));
+		playerColis.push_back(lamb(40, 46, 0, 46));
+		playerColis.push_back(lamb(20, 0, 40, 46));
 
-			playerProjectilesColis.push_back(lamb(6, 7, 6, 25));
-			playerProjectilesColis.push_back(lamb(10, 7, 10, 25));
-			playerProjectilesColis.push_back(lamb(6, 7, 10, 7));
-			playerProjectilesColis.push_back(lamb(6, 25, 10, 25));
+		playerProjectilesColis.push_back(lamb(6, 7, 6, 25));
+		playerProjectilesColis.push_back(lamb(10, 7, 10, 25));
+		playerProjectilesColis.push_back(lamb(6, 7, 10, 7));
+		playerProjectilesColis.push_back(lamb(6, 25, 10, 25));
 
-			enemyColis[0].push_back(lamb(0,14,34,14));
-			enemyColis[0].push_back(lamb(17,47,0,14));
-			enemyColis[0].push_back(lamb(17, 47,34,14));
+		enemyColis[0].push_back(lamb(0, 14, 34, 14));
+		enemyColis[0].push_back(lamb(17, 47, 0, 14));
+		enemyColis[0].push_back(lamb(17, 47, 34, 14));
 
-			enemyColis[1].push_back(lamb(0,9,34,9));
-			enemyColis[1].push_back(lamb(17, 49, 0, 9));
-			enemyColis[1].push_back(lamb(17,49,34,9));
+		enemyColis[1].push_back(lamb(0, 9, 34, 9));
+		enemyColis[1].push_back(lamb(17, 49, 0, 9));
+		enemyColis[1].push_back(lamb(17, 49, 34, 9));
 
-			enemyColis[2].push_back(lamb(0, 15, 34, 15));
-			enemyColis[2].push_back(lamb(17, 44, 34, 15));
-			enemyColis[2].push_back(lamb(0, 15, 17, 44));
+		enemyColis[2].push_back(lamb(0, 15, 34, 15));
+		enemyColis[2].push_back(lamb(17, 44, 34, 15));
+		enemyColis[2].push_back(lamb(0, 15, 17, 44));
 
-			enemyColis[3].push_back(lamb(0,12,58,12));
-			enemyColis[3].push_back(lamb(24,53,34,53));
-			enemyColis[3].push_back(lamb(24, 53, 0, 12));
-			enemyColis[3].push_back(lamb(58, 12, 34, 53));
+		enemyColis[3].push_back(lamb(0, 12, 58, 12));
+		enemyColis[3].push_back(lamb(24, 53, 34, 53));
+		enemyColis[3].push_back(lamb(24, 53, 0, 12));
+		enemyColis[3].push_back(lamb(58, 12, 34, 53));
 
-			enemyColis[4].push_back(lamb(0,4,63,5));
-			enemyColis[4].push_back(lamb(32,74,0,4));
-			enemyColis[4].push_back(lamb(32, 74, 63, 5));
-	
-			enemyProjectileColis[0].push_back(lamb(6, 7, 6, 25));
-			enemyProjectileColis[0].push_back(lamb(10, 7, 10, 25));
-			enemyProjectileColis[0].push_back(lamb(6, 7, 10, 7));
-			enemyProjectileColis[0].push_back(lamb(6, 25, 10, 25));
+		enemyColis[4].push_back(lamb(0, 4, 63, 5));
+		enemyColis[4].push_back(lamb(32, 74, 0, 4));
+		enemyColis[4].push_back(lamb(32, 74, 63, 5));
 
-			enemyProjectileColis[1].push_back(lamb(4, 8, 9, 8));
-			enemyProjectileColis[1].push_back(lamb(4, 8, 4, 18));
-			enemyProjectileColis[1].push_back(lamb(9, 8, 9, 18));
-			enemyProjectileColis[1].push_back(lamb(4, 18, 9, 18));
+		enemyColis[5].push_back(lamb(10, 0, 84, 0));
+		enemyColis[5].push_back(lamb(94, 25, 84, 0));
+		enemyColis[5].push_back(lamb(94, 25, 68, 75));
+		enemyColis[5].push_back(lamb(26, 75, 68, 75));
+		enemyColis[5].push_back(lamb(26, 75, 0, 25));
+		enemyColis[5].push_back(lamb(0, 25, 10, 0));
 
-			enemyProjectileColis[2].push_back(lamb(27, 26, 34, 26));
-			enemyProjectileColis[2].push_back(lamb(27, 26, 27, 84));
-			enemyProjectileColis[2].push_back(lamb(34, 26, 34, 84));
-			enemyProjectileColis[2].push_back(lamb(27, 84, 34, 84));
-		}
+		enemyProjectileColis[0].push_back(lamb(6, 7, 6, 25));
+		enemyProjectileColis[0].push_back(lamb(10, 7, 10, 25));
+		enemyProjectileColis[0].push_back(lamb(6, 7, 10, 7));
+		enemyProjectileColis[0].push_back(lamb(6, 25, 10, 25));
+
+		enemyProjectileColis[1].push_back(lamb(4, 8, 9, 8));
+		enemyProjectileColis[1].push_back(lamb(4, 8, 4, 18));
+		enemyProjectileColis[1].push_back(lamb(9, 8, 9, 18));
+		enemyProjectileColis[1].push_back(lamb(4, 18, 9, 18));
+
+		enemyProjectileColis[2].push_back(lamb(27, 26, 34, 26));
+		enemyProjectileColis[2].push_back(lamb(27, 26, 27, 84));
+		enemyProjectileColis[2].push_back(lamb(34, 26, 34, 84));
+		enemyProjectileColis[2].push_back(lamb(27, 84, 34, 84));
+
+		enemyProjectileColis[3].push_back(lamb(21, 69, 33, 69));
+		enemyProjectileColis[3].push_back(lamb(21, 69, 21, 81));
+		enemyProjectileColis[3].push_back(lamb(21, 81, 33, 81));
+		enemyProjectileColis[3].push_back(lamb(33, 81, 33, 69));
+	}
 	//Explosions
 	std::vector <Vector2> explosionPositions;
 	std::vector <explosion*> explosions;
@@ -276,9 +288,9 @@ int game(sf::RenderWindow& window)
 		names.push_back("../sound/Cyberpunk Moonlight Sonata.wav");
 		names.push_back("../sound/through space.ogg");
 		names.push_back("../sound/high tech lab.flac");
-		for (auto it=names.begin();it!=names.end();it++)
+		for (auto it = names.begin(); it != names.end(); it++)
 		{
-			sf::Music* tmp=new sf::Music;
+			sf::Music* tmp = new sf::Music;
 			tmp->openFromFile(*it);
 			tmp->setVolume(5);
 			MusicVector.push_back(tmp);
@@ -397,7 +409,7 @@ int game(sf::RenderWindow& window)
 	std::vector<sf::Text*> Tvictory = loadText("../victory.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 	std::vector<sf::Text*> Tfailure = loadText("../failure.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 
-	for (int level = 7; level <= levelNum; level++)
+	for (int level = 1; level <= levelNum; level++)
 	{
 
 		switch (level)
@@ -405,14 +417,14 @@ int game(sf::RenderWindow& window)
 		case 1:
 			for (int i = 0; i < 5; i++)
 			{
-				enemy *e = new enemy(enemyTextures[0], Vector2(50.0f*i, 100.0f), vect, 1, 2, 0, hpBarsTextures[0],enemyColis[0]);
+				enemy *e = new enemy(enemyTextures[0], Vector2(50.0f*i, 100.0f), vect, 1, 2, 0, hpBarsTextures[0], enemyColis[0]);
 				evect.push_back(e);
 			}
 			break;
 		case 2:
 			for (int i = 0; i < 5; i++)
 			{
-				enemy *e = new enemy(enemyTextures[0], Vector2(100.0f*i, 150.0f), vect, 1, 2, 0, hpBarsTextures[0],enemyColis[0]);
+				enemy *e = new enemy(enemyTextures[0], Vector2(100.0f*i, 150.0f), vect, 1, 2, 0, hpBarsTextures[0], enemyColis[0]);
 				evect.push_back(e);
 			}
 			{
@@ -440,7 +452,7 @@ int game(sf::RenderWindow& window)
 		case 4:
 			for (int i = 0; i < 5; i++)
 			{
-				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f+40.0f + 135.0f*i, 50.0f), vect, 6, 4, 0, hpBarsTextures[2], enemyColis[2]);
+				enemy* e = new enemy(enemyTextures[2], Vector2(62.5f + 40.0f + 135.0f*i, 50.0f), vect, 6, 4, 0, hpBarsTextures[2], enemyColis[2]);
 				evect.push_back(e);
 			}
 			for (int i = 0; i < 3; i++)
@@ -488,7 +500,7 @@ int game(sf::RenderWindow& window)
 		break;
 		case 8:
 		{
-			enemy* e = new enemy(enemyTextures[4], Vector2(370.5f, 50.0f), vect, 8, 5, 3, hpBarsTextures[3],enemyColis[4]);
+			enemy* e = new enemy(enemyTextures[4], Vector2(370.5f, 50.0f), vect, 8, 5, 3, hpBarsTextures[3], enemyColis[4]);
 			evect.push_back(e);
 		}
 		break;
@@ -525,7 +537,7 @@ int game(sf::RenderWindow& window)
 		window.display();
 		while (clock.getElapsedTime().asMilliseconds() < 500);
 		delete levelText;
-		
+
 		//Loop
 		while (evect.size() > 0 && window.isOpen())
 		{
@@ -619,7 +631,7 @@ int game(sf::RenderWindow& window)
 					}
 				}
 			}
-			while(!explosionPositions.empty())
+			while (!explosionPositions.empty())
 			{
 				std::vector<Vector2>::iterator it = explosionPositions.begin();
 				explosion* e = new explosion(*it, exp1, vect);
