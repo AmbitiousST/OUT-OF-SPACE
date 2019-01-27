@@ -195,7 +195,7 @@ int game(sf::RenderWindow& window)
 {
 	const int fps = 60;
 	const float speedChange = 3;
-	const int levelNum = 8;
+	const int levelNum = 10;
 	sf::Clock clock;
 	std::vector<sf::Drawable*> vect;
 
@@ -340,7 +340,7 @@ int game(sf::RenderWindow& window)
 	hpBarsTextures[3] = playerHpBarTextures;
 
 	//Background
-	sf::Texture bgGameTex[8];
+	sf::Texture bgGameTex[10];
 	bgGameTex[0].loadFromFile("../img/bg_game1.jpg");
 	bgGameTex[1].loadFromFile("../img/bg_game2.png");
 	bgGameTex[2].loadFromFile("../img/bg_game3.jpg");
@@ -349,6 +349,8 @@ int game(sf::RenderWindow& window)
 	bgGameTex[5].loadFromFile("../img/bg_game6.png");
 	bgGameTex[6].loadFromFile("../img/bg_game7.png");
 	bgGameTex[7].loadFromFile("../img/bg_game8.png");
+	bgGameTex[8].loadFromFile("../img/bg_game9.png");
+	bgGameTex[9].loadFromFile("../img/bg_game10.png");
 
 	//Enemy
 	std::list<enemy*> evect;
@@ -416,7 +418,7 @@ int game(sf::RenderWindow& window)
 
 	(*musicIterator)->play();
 
-	for (int level = 1; level <= levelNum; level++)
+	for (int level = 9; level <= levelNum; level++)
 	{
 
 		switch (level)
@@ -508,6 +510,23 @@ int game(sf::RenderWindow& window)
 		case 8:
 		{
 			enemy* e = new enemy(enemyTextures[4], Vector2(370.5f, 50.0f), vect, 8, 5, 3, hpBarsTextures[3], enemyColis[4]);
+			evect.push_back(e);
+		}
+		break;
+		case 9:
+		{
+			for (int i = 0; i < 6; i++)
+			{
+				enemy* e2 = new enemy(enemyTextures[0], Vector2(100 + 50.0f*i, 75.0f), vect, -1, 2, 0, hpBarsTextures[0], enemyColis[0]);
+				evect.push_back(e2);
+				enemy* e3 = new enemy(enemyTextures[0], Vector2(400 + 50.0f*i, 75.0f), vect, 1, 2, 0, hpBarsTextures[0], enemyColis[0]);
+				evect.push_back(e3);
+			}
+		}
+		break;
+		case 10:
+		{
+			enemy* e = new enemy(enemyTextures[5], Vector2(370.5f, 50.0f), vect, 8, 5, 3, hpBarsTextures[3], enemyColis[4]);
 			evect.push_back(e);
 		}
 		break;
@@ -729,7 +748,7 @@ int game(sf::RenderWindow& window)
 			for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
 				window.draw(**it);
 			window.display();
-			while (clock.getElapsedTime().asMilliseconds() < 1000 / fps);
+			while (clock.getElapsedTime().asMilliseconds() < 1000 / 45);
 		}
 		Player.visible(true);
 	}
