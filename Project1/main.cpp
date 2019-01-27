@@ -199,6 +199,18 @@ int game(sf::RenderWindow& window)
 	sf::Clock clock;
 	std::vector<sf::Drawable*> vect;
 
+	//Jump
+	std::vector <sf::Texture> jumpTex;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			sf::Texture a;
+			a.loadFromFile("../img/jump_animation.png", sf::IntRect(128*j, 128*i, 128, 128));
+			jumpTex.push_back(a);
+		}
+	}
+
 	//Explosions
 	std::vector <Vector2> explosionPositions;
 	std::vector <explosion*> explosions;
@@ -210,7 +222,8 @@ int game(sf::RenderWindow& window)
 		a.loadFromFile("../img/explosion1.png", sf::IntRect(1 + 92 * i, 1, 89, 89));
 		exp1.push_back(a);
 	}
-	//sound and music
+
+	//Sound and music
 	sf::SoundBuffer bigBoom;
 	bigBoom.loadFromFile("../sound/DeathFlash.flac");
 
@@ -234,7 +247,6 @@ int game(sf::RenderWindow& window)
 		}
 	}
 	auto musicIterator = MusicVector.begin();
-	(*musicIterator)->play();
 
 	//Player
 	std::vector<sf::Texture> playerTextures;
@@ -345,8 +357,10 @@ int game(sf::RenderWindow& window)
 	sf::Sprite bgGame;
 	std::vector<sf::Text*> Tvictory = loadText("../victory.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 	std::vector<sf::Text*> Tfailure = loadText("../failure.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
+	
+	(*musicIterator)->play();
 
-	for (int level = 7; level <= levelNum; level++)
+	for (int level = 1; level <= levelNum; level++)
 	{
 
 		switch (level)
@@ -588,7 +602,7 @@ int game(sf::RenderWindow& window)
 						explosions.clear();
 						break;
 					}
-					explosions.erase(it);
+					it = explosions.erase(it);
 				}
 			}
 			epc.update(window, Player);
@@ -629,7 +643,36 @@ int game(sf::RenderWindow& window)
 			}
 			while (clock.getElapsedTime().asMilliseconds() < 1000 / fps);	//Fps limiter
 		}
-
+		explosion* jump;
+		auto bounds = Player.sprite.getGlobalBounds();
+		Vector2 x = Vector2(Player.pos.x + bounds.width / 2 - 64, Player.pos.y + bounds.height / 2 - 100);
+		jump = new explosion(x, jumpTex, vect);
+		explosions.push_back(jump);
+		Player.visible(false);
+		while (!explosions.empty())
+		{
+			clock.restart();
+			window.clear();
+			window.draw(bgGame);
+			for (auto it = explosions.begin(); it != explosions.end(); it++)
+			{
+				if (!(*it)->update())
+				{
+					delete *it;
+					if (explosions.size() == 1)
+					{
+						explosions.clear();
+						break;
+					}
+					it = explosions.erase(it);
+				}
+			}
+			for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
+				window.draw(**it);
+			window.display();
+			while (clock.getElapsedTime().asMilliseconds() < 1000 / fps);
+		}
+		Player.visible(true);
 	}
 	bgGame.setTexture(bgGameTex[levelNum - 1]);
 	(*musicIterator)->stop();
