@@ -352,6 +352,14 @@ int game(sf::RenderWindow& window)
 	}
 	hpBarsTextures[3] = playerHpBarTextures;
 
+	std::vector<sf::Texture> hpBarBossTexture;
+	for (int i = 0; i < 19; i++)
+	{
+		sf::Texture tex;
+		tex.loadFromFile("../img/hp_bar_boss.png", sf::IntRect(0, i*10, 96, 10));
+		hpBarBossTexture.push_back(tex);
+	}
+
 	//Background
 	sf::Texture bgGameTex[10];
 	bgGameTex[0].loadFromFile("../img/bg_game1.jpg");
@@ -431,7 +439,7 @@ int game(sf::RenderWindow& window)
 
 	(*musicIterator)->play();
 
-	for (int level = 9; level <= levelNum; level++)
+	for (int level = 10; level <= levelNum; level++)
 	{
 
 		switch (level)
@@ -539,7 +547,7 @@ int game(sf::RenderWindow& window)
 		break;
 		case 10:
 		{
-			enemy* e = new enemy(enemyTextures[5], Vector2(370.5f, 50.0f), vect, 8, 5, 3, hpBarsTextures[3], enemyColis[4]);
+			enemy* e = new enemy(enemyTextures[5], Vector2(370.5f, 50.0f), vect, 8, 19, 3, hpBarBossTexture, enemyColis[4]);
 			evect.push_back(e);
 		}
 		break;
@@ -577,11 +585,30 @@ int game(sf::RenderWindow& window)
 		while (clock.getElapsedTime().asMilliseconds() < 500);
 		delete levelText;
 
+		unsigned int uglyTimer = 3000;
+
 		//Loop
 		while (evect.size() > 0 && window.isOpen())
 		{
 			clock.restart();
 			sf::Event event;
+			
+			if (level == 10)	//Boss' support spawner
+			{
+				uglyTimer++;
+				if (uglyTimer == 3600)
+				{
+					uglyTimer = 0;
+					explosion* e = new explosion(Vector2(100.0f, 25.0f), jumpTex, vect);
+					explosions.push_back(e);
+					explosion* e1 = new explosion(Vector2(572.0f, 25.0f), jumpTex, vect);
+					explosions.push_back(e1);
+					SoundVector.push_back(sf::Sound(jumpSound));
+					SoundVector.back().setVolume(25);
+					SoundVector.back().play();
+				}
+			}
+
 			while (window.pollEvent(event))
 			{
 				if (event.type == sf::Event::Closed)
