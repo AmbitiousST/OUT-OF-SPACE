@@ -23,15 +23,14 @@ Vector2* projectile::getPos()
 void projectile::setRotation(float ang)
 {
 	rotation = ang;
-	float xo= _sprite.getLocalBounds().width / 2, yo=_sprite.getLocalBounds().height / 2;
-	auto lamb = [&xo, &yo, &ang](Vector2 point) {return(Vector2(cos(ang)*(point.x - xo) + (point.y - yo)*sin(ang) + xo, cos(ang)*(point.y - yo) - sin(ang)*(point.x - xo) + yo)); };
+	float xo = _sprite.getLocalBounds().width / 2, yo=_sprite.getLocalBounds().height / 2;
 	_sprite.setOrigin(xo, yo);
-	_sprite.setRotation(ang * 45 / atan(1));
+	_sprite.setRotation(ang * 45.0f / atan(1));
 	_sprite.setOrigin(0, 0);
 	for (auto it = colisionlines.begin(); it != colisionlines.end(); it++)
 	{
-		it->first = lamb(it->first);
-		it->second = lamb(it->second);
+		it->first = Vector2(cos(ang)*(it->first.x - xo) + (it->first.y - yo)*sin(ang) + xo, cos(ang)*(it->first.y - yo) - sin(ang)*(it->first.x - xo) + yo);
+		it->second = Vector2(cos(ang)*(it->second.x - xo) + (it->second.y - yo)*sin(ang) + xo, cos(ang)*(it->second.y - yo) - sin(ang)*(it->second.x - xo) + yo);
 	}
 }
 void projectile::rotate(float ang)
