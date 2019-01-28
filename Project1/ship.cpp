@@ -344,8 +344,17 @@ void boss::move()
 		}
 		break;
 	case 3:
-		if (!(flags &= 1))
+		if (!(flags & 1))
 			_aiType = 0;
+		break;
+	case 4:
+		goTo(Vector2(370.5f, 50.0f), 2.0f);
+		if (fabs(pos.x - 370.5f) < 1.0f && fabs(pos.y - 50.0f) < 1.0f)
+		{
+			_aiType = 3;
+			flags |= 2;
+		}
+		break;
 	}
 }
 void boss::goTo(Vector2 to,float speed)

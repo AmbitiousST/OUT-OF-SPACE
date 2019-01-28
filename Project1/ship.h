@@ -94,7 +94,7 @@ class boss : public enemy
 	hpBar *_bar;
 	int _aiType;
 public:
-	int flags;
+	unsigned int flags;
 	boss(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis);
 	void update();
 	void move();

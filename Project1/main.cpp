@@ -598,7 +598,7 @@ int game(sf::RenderWindow& window)
 			if (level == 10)	//Boss' support spawner
 			{
 				
-				if (Boss->flags&=1)
+				if (Boss->flags&1)
 				{
 					enemy* e2 = new enemy(enemyTextures[0], Vector2(150.0f, 85.0f), vect, -1, 2, 0, hpBarsTextures[0], enemyColis[0]);
 					evect.push_back(e2);
