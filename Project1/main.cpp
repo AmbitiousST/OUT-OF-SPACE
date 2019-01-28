@@ -547,7 +547,7 @@ int game(sf::RenderWindow& window)
 		break;
 		case 10:
 		{
-			enemy* e = new enemy(enemyTextures[5], Vector2(370.5f, 50.0f), vect, 8, 19, 3, hpBarBossTexture, enemyColis[4]);
+			enemy* e = new enemy(enemyTextures[5], Vector2(370.5f, 50.0f), vect, 8, 19, 3, hpBarBossTexture, enemyColis[5]);
 			evect.push_back(e);
 		}
 		break;
@@ -559,6 +559,7 @@ int game(sf::RenderWindow& window)
 		for (auto it = explosions.begin(); it != explosions.end(); it++)
 			delete *it;
 		explosions.clear();
+
 		//Level text
 		sf::Text* levelText = new sf::Text;
 		const std::string levelStr = "Level " + std::to_string(level);
@@ -585,7 +586,7 @@ int game(sf::RenderWindow& window)
 		while (clock.getElapsedTime().asMilliseconds() < 500);
 		delete levelText;
 
-		unsigned int uglyTimer = 3000;
+		unsigned int uglyTimer = 1700;
 
 		//Loop
 		while (evect.size() > 0 && window.isOpen())
@@ -596,9 +597,13 @@ int game(sf::RenderWindow& window)
 			if (level == 10)	//Boss' support spawner
 			{
 				uglyTimer++;
-				if (uglyTimer == 3600)
+				if (uglyTimer == 1800)
 				{
 					uglyTimer = 0;
+					enemy* e2 = new enemy(enemyTextures[0], Vector2(150.0f, 85.0f), vect, -1, 2, 0, hpBarsTextures[0], enemyColis[0]);
+					evect.push_back(e2);
+					enemy* e3 = new enemy(enemyTextures[0], Vector2(612.0f, 85.0f), vect, 1, 2, 0, hpBarsTextures[0], enemyColis[0]);
+					evect.push_back(e3);
 					explosion* e = new explosion(Vector2(100.0f, 25.0f), jumpTex, vect);
 					explosions.push_back(e);
 					explosion* e1 = new explosion(Vector2(572.0f, 25.0f), jumpTex, vect);
