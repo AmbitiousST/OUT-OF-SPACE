@@ -1,5 +1,5 @@
 #include "ship.h"
-
+#include <iostream>
 hpBar::hpBar(std::vector<sf::Texture> &tex, std::vector<sf::Drawable*>& vect, int hp, Vector2 p) : _textures(tex), _vectPtr(&vect), _maxHp(hp)
 {
 	update(p, hp);
@@ -137,9 +137,6 @@ enemy::enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawabl
 void enemy::update()
 {
 	ship::update();
-	shot += rand() % 3 + 1;
-	if (shot >= 100)
-		shot = 1;
 	_bar->update(Vector2(pos.x + (sprite.getGlobalBounds().width - _bar->width) / 2, pos.y - 10), health);
 }
 
@@ -151,6 +148,9 @@ enemy::~enemy()			//Dok³adzie to samo, co destruktor gracza
 
 void enemy::move()		//ai przeciwnika
 {
+	shot += rand() % 3 + 1;
+	if (shot >= 100)
+		shot = 1;
 	switch (_aiType)
 	{
 	case(1):
@@ -249,7 +249,7 @@ void enemy::move()		//ai przeciwnika
 		_aiVar += 0.01f;
 		_aiVar2 += 0.01f;
 		if (_aiVar > 1.9)
-			_aiVar = -2.3;
+			_aiVar = -2.3f;
 		break;
 	default:
 		if (collision.x == 1)
@@ -309,5 +309,42 @@ boss::boss(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*
 }
 void boss::move() 
 {
-
+	static int dist = 0;
+	switch (_aiType)
+	{
+	case 0:
+		goTo(Vector2(0.05f, 75), 2.0f);
+		if (collision.x==-1)
+		{
+			_aiType = 1;
+			enemy::procType = 3;
+		}
+		break;
+	case 1:
+		changeSpeed(Vector2(4.0f,0));
+		shot += 1;
+		shot %= 25;
+		if (collision.x == 1)
+		{
+			_aiType = 2;
+			enemy::procType = 0;
+		}
+		break;
+	case 2:
+		goTo(Vector2(370.5f, 50.0f),2.0f);
+		if (fabs(pos.x - 370.5f) < 1.0f && fabs(pos.y - 50.0f) < 1.0f)
+		{
+			_aiType = 3;
+			flags |= 1;
+		}
+		break;
+	case 3:
+		if (!(flags &= 1))
+			_aiType = 0;
+	}
+}
+void boss::goTo(Vector2 to,float speed)
+{
+	float ang = atan2(pos.y-to.y,pos.x-to.x);
+	changeSpeed(Vector2(speed*cos(ang)*-1, speed*sin(ang)*-1));
 }

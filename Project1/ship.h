@@ -70,7 +70,7 @@ public:
 		int aiType, int hp, int type, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis);
 	~enemy();
 	void update();
-	void move();
+	virtual void move();
 };
 
 class explosion
@@ -90,8 +90,11 @@ public:
 class boss : public enemy
 {
 	hpBar *_bar;
+	int _aiType;
 public:
+	int flags;
 	boss(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis);
 	void update();
 	void move();
+	void goTo(Vector2 to, float speed);
 };
