@@ -444,8 +444,12 @@ int game(sf::RenderWindow& window)
 	std::vector<sf::Text*> Tfailure = loadText("../failure.txt", 75, window.getSize().x, 70, sf::Color(0, 0, 0, 255), sf::Color(255, 255, 255, 255), 4, sf::Text::Bold);
 
 	(*musicIterator)->play();
-	boss* Boss = new boss(enemyTextures[5], Vector2(370.5f, 50.0f), vect, hpBarBossTexture, enemyColis[5]);
+
+	//Boss
+	Vector2 bossLastPos = Vector2(-INFINITY, -INFINITY);
+	boss* Boss = new boss(enemyTextures[5], Vector2(370.5f, 50.0f), vect, hpBarBossTexture, enemyColis[5], &bossLastPos);
 	std::pair<explosion*, explosion*> portal;
+
 	for (int level = 10; level <= levelNum; level++)
 	{
 
@@ -558,6 +562,7 @@ int game(sf::RenderWindow& window)
 		}
 		break;
 		}
+
 		bgGame.setTexture(bgGameTex[level - 1]);
 		epc.clear();
 		ppc.clear();
@@ -601,6 +606,12 @@ int game(sf::RenderWindow& window)
 
 			if (level == 10)	//Boss' logic
 			{
+				if (bossLastPos != Vector2(-INFINITY, -INFINITY))
+				{
+					for (auto it = evect.begin(); it != evect.end(); it++)
+						delete *it;
+					evect.clear();
+				}
 				if (Boss->flags & 1)
 				{
 					enemy* e2 = new enemy(enemyTextures[0], Vector2(150.0f, 85.0f), vect, -1, 2, 0, hpBarsTextures[0], enemyColis[0]);
@@ -653,8 +664,8 @@ int game(sf::RenderWindow& window)
 						SoundVector.push_back(sf::Sound(shootSoundVector[3]));
 						SoundVector.back().setVolume(12);
 						SoundVector.back().play();
-						epc.addProjectile(epc.textures[2], Vector2(portal.first->_pos.x - 16.5f, portal.first->_pos.y-120.0f), Vector2(15.0f, 0.0f), enemyProjectileColis[2]);
-						epc.addProjectile(epc.textures[2], Vector2(portal.second->_pos.x, portal.second->_pos.y+10.0f), Vector2(-15.0f, 0.0f), enemyProjectileColis[2]);
+						epc.addProjectile(epc.textures[2], Vector2(portal.first->_pos.x - 16.5f, portal.first->_pos.y - 120.0f), Vector2(15.0f, 0.0f), enemyProjectileColis[2]);
+						epc.addProjectile(epc.textures[2], Vector2(portal.second->_pos.x, portal.second->_pos.y + 10.0f), Vector2(-15.0f, 0.0f), enemyProjectileColis[2]);
 						Boss->portalState = 11;
 					}
 					if (Boss->portalState > 10 && Boss->portalState < 80)
@@ -829,41 +840,115 @@ int game(sf::RenderWindow& window)
 			}
 			while (clock.getElapsedTime().asMilliseconds() < 1000 / fps);	//Fps limiter
 		}
-		Player._bar->visible(false);
-		explosion* jump;
-		auto bounds = Player.sprite.getGlobalBounds();
-		Vector2 x = Vector2(Player.pos.x + bounds.width / 2 - 64, Player.pos.y + bounds.height / 2 - 100);
-		jump = new explosion(x, jumpTex, vect);
-		explosions.push_back(jump);
-		Player.visible(false);
-		SoundVector.push_back(sf::Sound(jumpSound));
-		SoundVector.back().setVolume(25);
-		SoundVector.back().play();
-		while (!explosions.empty())
+		if (level != 10)
 		{
-			clock.restart();
-			window.clear();
-			window.draw(bgGame);
-			for (auto it = explosions.begin(); it != explosions.end(); it++)
+			Player._bar->visible(false);
+			explosion* jump;
+			auto bounds = Player.sprite.getGlobalBounds();
+			Vector2 x = Vector2(Player.pos.x + bounds.width / 2 - 64, Player.pos.y + bounds.height / 2 - 100);
+			jump = new explosion(x, jumpTex, vect);
+			explosions.push_back(jump);
+			Player.visible(false);
+			SoundVector.push_back(sf::Sound(jumpSound));
+			SoundVector.back().setVolume(25);
+			SoundVector.back().play();
+			while (!explosions.empty())
 			{
-				if (!(*it)->update())
+				clock.restart();
+				window.clear();
+				window.draw(bgGame);
+				for (auto it = explosions.begin(); it != explosions.end(); it++)
 				{
-					delete *it;
-					if (explosions.size() == 1)
+					if (!(*it)->update())
 					{
-						explosions.clear();
-						break;
+						delete *it;
+						if (explosions.size() == 1)
+						{
+							explosions.clear();
+							break;
+						}
+						it = explosions.erase(it);
 					}
-					it = explosions.erase(it);
 				}
+				for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
+					window.draw(**it);
+				window.display();
+				while (clock.getElapsedTime().asMilliseconds() < 1000 / 45);
 			}
-			for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
-				window.draw(**it);
-			window.display();
-			while (clock.getElapsedTime().asMilliseconds() < 1000 / 45);
+			Player.visible(true);
+			Player._bar->visible(true);
 		}
-		Player.visible(true);
-		Player._bar->visible(true);
+		else
+		{
+			explosion* e = new explosion(Vector2(bossLastPos.x + 10, bossLastPos.y + 10), exp1, vect);
+			SoundVector.push_back(sf::Sound(bigBoom));
+			SoundVector.back().setVolume(50);
+			SoundVector.back().play();
+			explosions.push_back(e);
+			int uglyTimer = 0;
+			while (!explosions.empty())
+			{
+				switch (uglyTimer++)
+				{
+				case 5:
+				{
+					explosion* e = new explosion(Vector2(bossLastPos.x + 20, bossLastPos.y + 10), exp1, vect);
+					SoundVector.push_back(sf::Sound(bigBoom));
+					SoundVector.back().setVolume(50);
+					SoundVector.back().play();
+					explosions.push_back(e);
+				}
+				break;
+				case 10:
+				{
+					explosion* e = new explosion(Vector2(bossLastPos.x + 10, bossLastPos.y + 7), exp1, vect);
+					SoundVector.push_back(sf::Sound(bigBoom));
+					SoundVector.back().setVolume(50);
+					SoundVector.back().play();
+					explosions.push_back(e);
+				}
+				break;
+				case 15:
+				{
+					explosion* e = new explosion(Vector2(bossLastPos.x, bossLastPos.y + 45), exp1, vect);
+					SoundVector.push_back(sf::Sound(bigBoom));
+					SoundVector.back().setVolume(50);
+					SoundVector.back().play();
+					explosions.push_back(e);
+				}
+				break;
+				case 20:
+				{
+					explosion* e = new explosion(Vector2(bossLastPos.x + 40, bossLastPos.y), exp1, vect);
+					SoundVector.push_back(sf::Sound(bigBoom));
+					SoundVector.back().setVolume(50);
+					SoundVector.back().play();
+					explosions.push_back(e);
+				}
+				break;
+				}
+				clock.restart();
+				window.clear();
+				window.draw(bgGame);
+				for (auto it = explosions.begin(); it != explosions.end(); it++)
+				{
+					if (!(*it)->update())
+					{
+						delete *it;
+						if (explosions.size() == 1)
+						{
+							explosions.clear();
+							break;
+						}
+						it = explosions.erase(it);
+					}
+				}
+				for (std::vector<sf::Drawable*>::iterator it = vect.begin(); it != vect.end(); it++)
+					window.draw(**it);
+				window.display();
+				while (clock.getElapsedTime().asMilliseconds() < 1000 / 45);
+			}
+		}
 	}
 	bgGame.setTexture(bgGameTex[levelNum - 1]);
 	(*musicIterator)->stop();

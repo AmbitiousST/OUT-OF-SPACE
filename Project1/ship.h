@@ -90,16 +90,19 @@ public:
 	bool update();
 	void move(Vector2 p);
 };
+
 class boss : public enemy
 {
 	hpBar *_bar;
 	int _aiType;
+	Vector2* lastPos;
 
 public:
 	unsigned int flags;
 	volatile int portalState;
-	boss(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis);
+	boss(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis, Vector2 *lastP);
 	void update();
 	void move();
 	void goTo(Vector2 to, float speed);
+	~boss();
 };
