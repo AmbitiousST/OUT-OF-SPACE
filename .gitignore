@@ -13,3 +13,5 @@
 /.vs
 /Project1/.vs
 /Project1/x64/Debug
+/Project1/Release
+/Release
