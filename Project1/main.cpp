@@ -16,7 +16,7 @@ typedef sf::Vector2<float> Vector2;
 
 sf::Font font;
 
-const std::string gameName = "Space Gosciniak";
+const std::string gameName = "OUT OF SPACE!";
 
 std::vector<sf::Text*> loadText(std::string filename, float offset, float windowSizeX, int size, sf::Color fill, sf::Color outline, float thickness, sf::Text::Style style = sf::Text::Regular)
 {
@@ -451,6 +451,7 @@ int game(sf::RenderWindow& window)
 	Vector2 bossLastPos = Vector2(-INFINITY, -INFINITY);
 	boss* Boss=new boss();
 	std::pair<explosion*, explosion*> portal;
+
 	for (int level = 1; level <= levelNum; level++)
 	{
 		switch (level)
@@ -535,8 +536,10 @@ int game(sf::RenderWindow& window)
 		}
 		case 7:
 		{
-			enemy* e = new enemy(enemyTextures[3], Vector2(370.5f, 50.0f), vect, 4, 5, 3, hpBarsTextures[3], enemyColis[3]);
+			enemy* e = new enemy(enemyTextures[3], Vector2(200.0f, 50.0f), vect, 4, 5, 3, hpBarsTextures[3], enemyColis[3]);
 			evect.push_back(e);
+			enemy* e1 = new enemy(enemyTextures[3], Vector2(541.0f, 50.0f), vect, 4, 5, 3, hpBarsTextures[3], enemyColis[3]);
+			evect.push_back(e1);
 		}
 		break;
 		case 8:
@@ -665,17 +668,27 @@ int game(sf::RenderWindow& window)
 						SoundVector.push_back(sf::Sound(shootSoundVector[3]));
 						SoundVector.back().setVolume(12);
 						SoundVector.back().play();
-						epc.addProjectile(epc.textures[2], Vector2(portal.first->_pos.x - 16.5f, portal.first->_pos.y - 120.0f), Vector2(15.0f, 0.0f), enemyProjectileColis[2]);
-						epc.addProjectile(epc.textures[2], Vector2(portal.second->_pos.x, portal.second->_pos.y + 10.0f), Vector2(-15.0f, 0.0f), enemyProjectileColis[2]);
+						projectile* p = new projectile(epc.textures[2], Vector2(portal.first->_pos.x - 16.5f, portal.first->_pos.y - 100.0f), Vector2(15.0f, 0.0f), enemyProjectileColis[2]);
+						p->rotate(atan(1)*2);
+						epc.addProjectile(p);
+						projectile* p2 = new projectile(epc.textures[2], Vector2(portal.second->_pos.x, portal.second->_pos.y + 30.0f), Vector2(-15.0f, 0.0f), enemyProjectileColis[2]);
+						p2->rotate(atan(1) * 2);
+						epc.addProjectile(p2);
 						Boss->portalState = 11;
 					}
-					if (Boss->portalState > 10 && Boss->portalState < 80)
+					if (Boss->portalState > 10 && Boss->portalState < 60)
 					{
+						projectile* p = new projectile(epc.textures[2], Vector2(portal.first->_pos.x - 16.5f, portal.first->_pos.y - 100.0f), Vector2(15.0f, 0.0f), enemyProjectileColis[2]);
+						p->rotate(atan(1) * 2);
+						epc.addProjectile(p);
+						projectile* p2 = new projectile(epc.textures[2], Vector2(portal.second->_pos.x, portal.second->_pos.y + 32.0f), Vector2(-15.0f, 0.0f), enemyProjectileColis[2]);
+						p2->rotate(atan(1) * 2);
+						epc.addProjectile(p2);
 						portal.first->update();
 						portal.second->update();
 						Boss->portalState++;
 					}
-					if (Boss->portalState == 80)
+					if (Boss->portalState == 60)
 					{
 						delete portal.first;
 						delete portal.second;
