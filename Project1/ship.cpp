@@ -327,6 +327,7 @@ void boss::move()
 	switch (_aiType)
 	{
 	case 0:
+		shot = 0;
 		goTo(Vector2(0.05f, 75), 2.0f);
 		if (collision.x==-1)
 		{

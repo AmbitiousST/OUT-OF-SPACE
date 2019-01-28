@@ -13,6 +13,7 @@ class projectile : public colidable
 {
 	sf::Texture _texture;
 	Vector2 _speed;
+	float rotation = 0;
 
 public:
 	Vector2 _pos;
@@ -21,6 +22,8 @@ public:
 	projectile(sf::Texture tex, Vector2 pos, Vector2 speed, std::vector<std::pair<Vector2, Vector2>>& colis);
 	void update();
 	Vector2* getPos();
+	void rotate(float ang);
+	void setRotation(float ang);
 };
 class playerProjectilesContainer
 {
@@ -44,6 +47,7 @@ class enemyProjectilesContainer
 public:
 	std::vector<sf::Texture> textures;
 	enemyProjectilesContainer(std::vector<sf::Texture> &tex);
+	void addProjectile(projectile* pointer);
 	void addProjectile(sf::Texture tex, Vector2 pos, Vector2 speed, std::vector<std::pair<Vector2, Vector2>>& colis);
 	void update(sf::RenderWindow& window, player& Player);
 	void clear();
