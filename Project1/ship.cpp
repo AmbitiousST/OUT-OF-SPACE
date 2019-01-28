@@ -32,6 +32,10 @@ void hpBar::visible(bool a)
 }
 
 
+ship::ship()
+{
+}
+
 ship::ship(std::vector<sf::Texture> &tex, Vector2 p, std::vector<sf::Drawable*>& vect,std::vector<std::pair<Vector2,Vector2>>& colis) : _textures(tex), pos(p)
 {
 	colisionlines = colis;
@@ -381,15 +385,18 @@ void boss::move()
 		_aiType = 0;
 		break;
 	}
+	*lastPos = pos;
 }
+
 void boss::goTo(Vector2 to,float speed)
 {
 	float ang = atan2(pos.y-to.y,pos.x-to.x);
 	changeSpeed(Vector2(speed*cos(ang)*-1, speed*sin(ang)*-1));
 }
-
-boss::~boss()
+boss::boss()
 {
-	*lastPos = ship::pos;
-	enemy::~enemy();
+}
+enemy::enemy()
+{
+
 }

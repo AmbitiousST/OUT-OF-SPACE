@@ -41,6 +41,7 @@ public:
 	Vector2i collision;
 	sf::Sprite sprite;
 
+	ship();
 	ship(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<std::pair<Vector2, Vector2>>& colis);
 	~ship();
 	void visible(bool a);
@@ -71,6 +72,7 @@ public:
 	int shot, procType;
 	enemy(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect,
 		int aiType, int hp, int type, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis);
+	enemy();
 	~enemy();
 	void update();
 	virtual void move();
@@ -101,8 +103,8 @@ public:
 	unsigned int flags;
 	volatile int portalState;
 	boss(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis, Vector2 *lastP);
+	boss();
 	void update();
 	void move();
 	void goTo(Vector2 to, float speed);
-	~boss();
 };
