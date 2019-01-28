@@ -449,12 +449,10 @@ int game(sf::RenderWindow& window)
 
 	//Boss
 	Vector2 bossLastPos = Vector2(-INFINITY, -INFINITY);
-	boss* Boss = new boss(enemyTextures[5], Vector2(370.5f, 50.0f), vect, hpBarBossTexture, enemyColis[5], &bossLastPos);
+	boss* Boss=new boss();
 	std::pair<explosion*, explosion*> portal;
-
-	for (int level = 10; level <= levelNum; level++)
+	for (int level = 1; level <= levelNum; level++)
 	{
-
 		switch (level)
 		{
 		case 1:
@@ -560,6 +558,7 @@ int game(sf::RenderWindow& window)
 		break;
 		case 10:
 		{
+			Boss = new boss(enemyTextures[5], Vector2(370.5f, 50.0f), vect, hpBarBossTexture, enemyColis[5], &bossLastPos);;
 			evect.push_back(Boss);
 		}
 		break;
@@ -608,7 +607,7 @@ int game(sf::RenderWindow& window)
 
 			if (level == 10)	//Boss' logic
 			{
-				if (bossLastPos != Vector2(-INFINITY, -INFINITY))
+				if (evect.front() != Boss)
 				{
 					for (auto it = evect.begin(); it != evect.end(); it++)
 						delete *it;
@@ -744,7 +743,7 @@ int game(sf::RenderWindow& window)
 				return 0;
 			}
 			window.clear();
-
+		
 			//Render
 			window.draw(bgGame);
 			Player.update();
