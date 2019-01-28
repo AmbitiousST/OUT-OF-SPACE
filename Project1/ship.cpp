@@ -315,8 +315,9 @@ void boss::update()
 	_bar->update(Vector2(pos.x + (sprite.getGlobalBounds().width - _bar->width) / 2, pos.y + 50), health);
 }
 
-boss::boss(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis) : enemy(tex, pos, vect,0,19,0,barTex,colis)
+boss::boss(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis, Vector2* lastP) : enemy(tex, pos, vect, 0, 19, 0, barTex, colis)
 {
+	lastPos = lastP;
 	portalState = 0;
 	_aiType = 4;
 }
@@ -328,7 +329,7 @@ void boss::move()
 	{
 	case 0:
 		shot = 0;
-		goTo(Vector2(0, 75), 2.0f);
+		goTo(Vector2(0.0f, 75), 2.0f);
 		if (collision.x==-1)
 		{
 			_aiType = 1;
@@ -385,4 +386,10 @@ void boss::goTo(Vector2 to,float speed)
 {
 	float ang = atan2(pos.y-to.y,pos.x-to.x);
 	changeSpeed(Vector2(speed*cos(ang)*-1, speed*sin(ang)*-1));
+}
+
+boss::~boss()
+{
+	*lastPos = ship::pos;
+	enemy::~enemy();
 }
