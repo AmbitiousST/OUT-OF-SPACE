@@ -26,6 +26,11 @@ hpBar::~hpBar()
 		}
 	}
 }
+void hpBar::visible(bool a)
+{
+	_sprite.setColor(sf::Color(255, 255, 255, a ? 255 : 0));
+}
+
 
 ship::ship(std::vector<sf::Texture> &tex, Vector2 p, std::vector<sf::Drawable*>& vect,std::vector<std::pair<Vector2,Vector2>>& colis) : _textures(tex), pos(p)
 {

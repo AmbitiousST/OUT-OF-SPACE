@@ -1,4 +1,5 @@
 #pragma once
+
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <vector>
@@ -24,6 +25,7 @@ public:
 
 	hpBar(std::vector<sf::Texture> &tex, std::vector<sf::Drawable*>& vect, int hp, Vector2 p);
 	~hpBar();
+	void visible(bool a);
 	void update(Vector2 p, int hp);
 };
 
@@ -50,9 +52,9 @@ public:
 
 class player : public ship
 {
-	hpBar *_bar;
 
 public:
+	hpBar *_bar;
 	player(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis);
 	void update();
 	~player();

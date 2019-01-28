@@ -5,6 +5,7 @@
 #include <list>
 #include "ship.h"
 #include "collisions.h"
+
 typedef sf::Vector2f Vector2;
 typedef sf::Vector2i Vector2i;
 

@@ -361,16 +361,20 @@ int game(sf::RenderWindow& window)
 
 	//Background
 	sf::Texture bgGameTex[10];
-	bgGameTex[0].loadFromFile("../img/bg_game1.jpg");
-	bgGameTex[1].loadFromFile("../img/bg_game2.png");
-	bgGameTex[2].loadFromFile("../img/bg_game3.jpg");
-	bgGameTex[3].loadFromFile("../img/bg_game4.jpg");
-	bgGameTex[4].loadFromFile("../img/bg_game5.png");
-	bgGameTex[5].loadFromFile("../img/bg_game6.png");
-	bgGameTex[6].loadFromFile("../img/bg_game7.png");
-	bgGameTex[7].loadFromFile("../img/bg_game8.png");
-	bgGameTex[8].loadFromFile("../img/bg_game9.png");
-	bgGameTex[9].loadFromFile("../img/bg_game10.png");
+	for(int i = 0; i < 10; i++)
+		bgGameTex[i].loadFromFile("../img/bg_game"+std::to_string(i+1)+".png");
+
+	//Portal
+	std::vector<sf::Texture> portalTex;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 8; j++)
+		{
+			sf::Texture a;
+			a.loadFromFile("../img/portal.png", sf::IntRect(128 * j, 128 * i, 128, 128));
+			portalTex.push_back(a);
+		}
+	}
 
 	//Enemy
 	std::list<enemy*> evect;
@@ -557,6 +561,7 @@ int game(sf::RenderWindow& window)
 		for (auto it = explosions.begin(); it != explosions.end(); it++)
 			delete *it;
 		explosions.clear();
+
 		//Level text
 		sf::Text* levelText = new sf::Text;
 		const std::string levelStr = "Level " + std::to_string(level);
@@ -595,6 +600,10 @@ int game(sf::RenderWindow& window)
 				
 				if (Boss->flags&=1)
 				{
+					enemy* e2 = new enemy(enemyTextures[0], Vector2(150.0f, 85.0f), vect, -1, 2, 0, hpBarsTextures[0], enemyColis[0]);
+					evect.push_back(e2);
+					enemy* e3 = new enemy(enemyTextures[0], Vector2(612.0f, 85.0f), vect, 1, 2, 0, hpBarsTextures[0], enemyColis[0]);
+					evect.push_back(e3);
 					Boss->flags &= ~1;
 					explosion* e = new explosion(Vector2(100.0f, 25.0f), jumpTex, vect);
 					explosions.push_back(e);
@@ -755,6 +764,7 @@ int game(sf::RenderWindow& window)
 			}
 			while (clock.getElapsedTime().asMilliseconds() < 1000 / fps);	//Fps limiter
 		}
+		Player._bar->visible(false);
 		explosion* jump;
 		auto bounds = Player.sprite.getGlobalBounds();
 		Vector2 x = Vector2(Player.pos.x + bounds.width / 2 - 64, Player.pos.y + bounds.height / 2 - 100);
@@ -788,6 +798,7 @@ int game(sf::RenderWindow& window)
 			while (clock.getElapsedTime().asMilliseconds() < 1000 / 45);
 		}
 		Player.visible(true);
+		Player._bar->visible(true);
 	}
 	bgGame.setTexture(bgGameTex[levelNum - 1]);
 	(*musicIterator)->stop();
