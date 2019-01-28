@@ -776,7 +776,7 @@ int game(sf::RenderWindow& window)
 				explosionPositions.erase(it);
 				explosions.push_back(e);
 			}
-			for (auto it = explosions.begin(); it != explosions.end(); it++)
+			for (auto it = explosions.begin(); it != explosions.end();)
 			{
 				if (!(*it)->update())
 				{
@@ -788,6 +788,8 @@ int game(sf::RenderWindow& window)
 					}
 					it = explosions.erase(it);
 				}
+				else
+					it++;
 			}
 			epc.update(window, Player);
 			if (Player.health < 1)
