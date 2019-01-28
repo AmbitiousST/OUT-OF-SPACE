@@ -16,7 +16,7 @@ typedef sf::Vector2<float> Vector2;
 
 sf::Font font;
 
-const std::string gameName = "Space Gosciniak";
+const std::string gameName = "OUT OF SPACE!";
 
 std::vector<sf::Text*> loadText(std::string filename, float offset, float windowSizeX, int size, sf::Color fill, sf::Color outline, float thickness, sf::Text::Style style = sf::Text::Regular)
 {
