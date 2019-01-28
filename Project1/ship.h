@@ -62,6 +62,7 @@ public:
 
 class enemy : public ship
 {
+protected:
 	float _dist, _baseSpeed, _aiVar, _aiVar2;
 	int _side, _aiType;
 	hpBar *_bar;
@@ -77,24 +78,26 @@ public:
 
 class explosion
 {
-	Vector2 _pos;
 	std::vector <sf::Texture> _textures;
 	std::vector <sf::Texture>::iterator _it;
 	std::vector<sf::Drawable*>* _vectPtr;
 
 public:
 	sf::Sprite sprite;
-
+	Vector2 _pos;
 	explosion(Vector2 p, std::vector <sf::Texture>& tex, std::vector<sf::Drawable*>& vect);
 	~explosion();
 	bool update();
+	void move(Vector2 p);
 };
 class boss : public enemy
 {
 	hpBar *_bar;
 	int _aiType;
+
 public:
-	int flags;
+	unsigned int flags;
+	volatile int portalState;
 	boss(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis);
 	void update();
 	void move();

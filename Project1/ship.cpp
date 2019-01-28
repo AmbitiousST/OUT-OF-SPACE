@@ -290,6 +290,12 @@ bool explosion::update()
 	}
 	return true;
 }
+void explosion::move(Vector2 p)
+{
+	_pos += p;
+	sprite.setPosition(_pos);
+}
+
 
 explosion::~explosion()
 {
@@ -311,7 +317,10 @@ void boss::update()
 
 boss::boss(std::vector<sf::Texture> &tex, Vector2 pos, std::vector<sf::Drawable*>& vect, std::vector<sf::Texture> &barTex, std::vector<std::pair<Vector2, Vector2>>& colis) : enemy(tex, pos, vect,0,19,0,barTex,colis)
 {
+	portalState = 0;
+	_aiType = 4;
 }
+
 void boss::move() 
 {
 	static int dist = 0;
@@ -345,7 +354,30 @@ void boss::move()
 		break;
 	case 3:
 		if (!(flags &= 1))
-			_aiType = 0;
+			_aiType = 4;
+		break;
+	case 4:
+		flags = 2;
+		portalState = 0;
+		if (portalState != -1)
+		{
+			if (collision.x == 1 && _side == 1)
+			{
+				_side = -1;
+			}
+			if (collision.x == -1 && _side == -1)
+			{
+				_side = 1;
+			}
+			changeSpeed(Vector2((_aiVar + 2)*(_aiVar + 1)*(_aiVar - 0.5)*(_aiVar - 1.5)*_side, cos(_aiVar2)));
+			_aiVar += 0.01f;
+			_aiVar2 += 0.01f;
+			if (_aiVar > 1.9)
+				_aiVar = -2.3f;
+		}
+		portalState = 0;
+		_aiType = 0;
+		break;
 	}
 }
 void boss::goTo(Vector2 to,float speed)

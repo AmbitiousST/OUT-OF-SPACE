@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <utility>
 #include "ship.h"
 #include "utility.h"
 #include "projectiles.h"
@@ -355,14 +356,14 @@ int game(sf::RenderWindow& window)
 	for (int i = 0; i < 19; i++)
 	{
 		sf::Texture tex;
-		tex.loadFromFile("../img/hp_bar_boss.png", sf::IntRect(0, i*10, 96, 10));
+		tex.loadFromFile("../img/hp_bar_boss.png", sf::IntRect(0, i * 10, 96, 10));
 		hpBarBossTexture.push_back(tex);
 	}
 
 	//Background
 	sf::Texture bgGameTex[10];
-	for(int i = 0; i < 10; i++)
-		bgGameTex[i].loadFromFile("../img/bg_game"+std::to_string(i+1)+".png");
+	for (int i = 0; i < 10; i++)
+		bgGameTex[i].loadFromFile("../img/bg_game" + std::to_string(i + 1) + ".png");
 
 	//Portal
 	std::vector<sf::Texture> portalTex;
@@ -442,6 +443,7 @@ int game(sf::RenderWindow& window)
 
 	(*musicIterator)->play();
 	boss* Boss = new boss(enemyTextures[5], Vector2(370.5f, 50.0f), vect, hpBarBossTexture, enemyColis[5]);
+	std::pair<explosion*, explosion*> portal;
 	for (int level = 10; level <= levelNum; level++)
 	{
 
@@ -594,11 +596,11 @@ int game(sf::RenderWindow& window)
 		{
 			clock.restart();
 			sf::Event event;
-			
-			if (level == 10)	//Boss' support spawner
+
+			if (level == 10)	//Boss' logic
 			{
-				
-				if (Boss->flags&=1)
+
+				if (Boss->flags & 1)
 				{
 					enemy* e2 = new enemy(enemyTextures[0], Vector2(150.0f, 85.0f), vect, -1, 2, 0, hpBarsTextures[0], enemyColis[0]);
 					evect.push_back(e2);
@@ -612,6 +614,61 @@ int game(sf::RenderWindow& window)
 					SoundVector.push_back(sf::Sound(jumpSound));
 					SoundVector.back().setVolume(25);
 					SoundVector.back().play();
+				}
+				if (Boss->flags & 2)
+				{
+					if (Boss->portalState == 0)
+					{
+						portal.first = new explosion(Vector2(-50.0f, 30.0f), portalTex, vect);
+						portal.second = new explosion(Vector2(860.0f, -103.0f), portalTex, vect);
+						portal.first->sprite.setRotation(270.0f);
+						portal.second->sprite.setRotation(90.0f);
+						explosion* e = new explosion(Vector2(-20.0f, -90.0f), jumpTex, vect);
+						explosions.push_back(e);
+						explosion* e1 = new explosion(Vector2(692.0f, -90.0f), jumpTex, vect);
+						explosions.push_back(e1);
+						SoundVector.push_back(sf::Sound(jumpSound));
+						SoundVector.back().setVolume(25);
+						SoundVector.back().play();
+						Boss->portalState = 1;
+					}
+					if (Boss->portalState == 1)
+					{
+						portal.first->move(Vector2(0.0f, 3.0f));
+						portal.second->move(Vector2(0.0f, 3.0f));
+						portal.first->update();
+						portal.second->update();
+						if (Player.pos.y < portal.first->_pos.y - 90 && Player.pos.y > portal.first->_pos.y - 140)
+							Boss->portalState = 2;
+					}
+					if (Boss->portalState > 1 && Boss->portalState < 10)
+					{
+						portal.first->update();
+						portal.second->update();
+						Boss->portalState++;
+					}
+					if (Boss->portalState == 10)
+					{
+						SoundVector.push_back(sf::Sound(shootSoundVector[3]));
+						SoundVector.back().setVolume(12);
+						SoundVector.back().play();
+						epc.addProjectile(epc.textures[2], Vector2(portal.first->_pos.x - 16.5f, portal.first->_pos.y-120.0f), Vector2(15.0f, 0.0f), enemyProjectileColis[2]);
+						epc.addProjectile(epc.textures[2], Vector2(portal.second->_pos.x, portal.second->_pos.y+10.0f), Vector2(-15.0f, 0.0f), enemyProjectileColis[2]);
+						Boss->portalState = 11;
+					}
+					if (Boss->portalState > 10 && Boss->portalState < 80)
+					{
+						portal.first->update();
+						portal.second->update();
+						Boss->portalState++;
+					}
+					if (Boss->portalState == 80)
+					{
+						delete portal.first;
+						delete portal.second;
+						Boss->flags &= ~2;
+						Boss->portalState = -1;
+					}
 				}
 			}
 
