@@ -318,6 +318,7 @@ void boss::move()
 	switch (_aiType)
 	{
 	case 0:
+		shot = 0;
 		goTo(Vector2(0.05f, 75), 2.0f);
 		if (collision.x==-1)
 		{
@@ -345,7 +346,11 @@ void boss::move()
 		break;
 	case 3:
 		if (!(flags & 1))
+		{
+			shot = 1;
+			enemy::procType = 4;
 			_aiType = 0;
+		}
 		break;
 	case 4:
 		goTo(Vector2(370.5f, 50.0f), 2.0f);

@@ -10,6 +10,7 @@
 #include "utility.h"
 #include "projectiles.h"
 
+
 typedef sf::Vector2<float> Vector2;
 
 sf::Font font;
@@ -295,10 +296,11 @@ int game(sf::RenderWindow& window)
 	sf::SoundBuffer jumpSound;
 	jumpSound.loadFromFile("../sound/jump.wav");
 
-	sf::SoundBuffer shootSoundVector[4];
+	sf::SoundBuffer shootSoundVector[5];
 	shootSoundVector[0].loadFromFile("../sound/laser3.wav");
 	shootSoundVector[1].loadFromFile("../sound/laser5.wav");
 	shootSoundVector[3].loadFromFile("../sound/space laser.wav");
+	shootSoundVector[4].loadFromFile("../sound/space laser.wav");
 	std::list<sf::Sound> SoundVector;
 	std::vector<sf::Music*> MusicVector;
 	{
@@ -700,6 +702,11 @@ int game(sf::RenderWindow& window)
 						epc.addProjectile(epc.textures[2], Vector2((*it)->pos.x - 16.5f, (*it)->pos.y), Vector2(0.0f, 9.0f), enemyProjectileColis[2]);
 						epc.addProjectile(epc.textures[2], Vector2((*it)->pos.x + 13.5f, (*it)->pos.y), Vector2(0.0f, 9.0f), enemyProjectileColis[2]);
 						break;
+					case 4:
+						float ang = atan2((*it)->pos.y - Player.pos.y, (*it)->pos.x - Player.pos.x);
+						projectile* n = new projectile(epc.textures[2], Vector2((*it)->pos.x + 15.0f, (*it)->pos.y), Vector2(-9.0f*cos(ang), -9.0f*sin(ang)), enemyProjectileColis[2]);
+						n->rotate(ang);
+						epc.addProjectile(n);
 					}
 				}
 			}

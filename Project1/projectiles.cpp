@@ -20,6 +20,25 @@ Vector2* projectile::getPos()
 	return &_pos;
 }
 
+void projectile::setRotation(float ang)
+{
+	rotation = ang;
+	float xo= _sprite.getLocalBounds().width / 2, yo=_sprite.getLocalBounds().height / 2;
+	auto lamb = [&xo, &yo, &ang](Vector2 point) {return(Vector2(cos(ang)*(point.x - xo) + (point.y - yo)*sin(ang) + xo, cos(ang)*(point.y - yo) - sin(ang)*(point.x - xo) + yo)); };
+	_sprite.setOrigin(xo, yo);
+	_sprite.setRotation(ang * 45 / atan(1));
+	_sprite.setOrigin(0, 0);
+	for (auto it = colisionlines.begin(); it != colisionlines.end(); it++)
+	{
+		it->first = lamb(it->first);
+		it->second = lamb(it->second);
+	}
+}
+void projectile::rotate(float ang)
+{
+	rotation += ang;
+	setRotation(rotation);
+}
 playerProjectilesContainer::playerProjectilesContainer(std::vector <Vector2>* expPos, std::vector<std::pair<Vector2, Vector2>>& _colis) : _expPos(expPos),colis(_colis)
 {
 
@@ -94,6 +113,10 @@ enemyProjectilesContainer::enemyProjectilesContainer(std::vector<sf::Texture> &t
 {
 
 }
+void enemyProjectilesContainer::addProjectile(projectile * pointer)
+{
+	pvect.push_back(pointer);
+}
 void enemyProjectilesContainer::clear()
 {
 	for (auto it = pvect.begin(); it != pvect.end(); it++)
@@ -103,7 +126,7 @@ void enemyProjectilesContainer::clear()
 
 void enemyProjectilesContainer::addProjectile(sf::Texture tex, Vector2 pos, Vector2 speed, std::vector<std::pair<Vector2, Vector2>>& colis)
 {
-	pvect.push_back(new projectile(tex, pos, speed,colis));
+	pvect.push_back(new projectile(tex,pos,speed,colis));
 }
 
 void enemyProjectilesContainer::update(sf::RenderWindow& window, player& Player)
