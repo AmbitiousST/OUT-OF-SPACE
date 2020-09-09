@@ -13,7 +13,7 @@ A small space shooter made for IT classes.
 - SFML 2
 
 ## Screenshots
-![Main menu](docs/oos1.png)
+![Main menu](docs/oos1.jpg)
 ![Level 1](docs/oos2.png)
 
 ## Authors
