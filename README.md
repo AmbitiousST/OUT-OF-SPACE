@@ -7,16 +7,16 @@ A small space shooter made for IT classes.
 - Pixel art graphics
 - 10 levels
 - 9 different enemy types
-- Poweful boss at the end
+- Powerful boss at the end
 
 ## Technology
 - SFML 2
 
 ## Screenshots
-![Main menu](docs/oos1.jpg)
 ![Level 1](docs/oos2.png)
+![Main menu](docs/oos1.jpg)
 
 ## Authors
 - [AmbtiousST](https://github.com/AmbitiousST)
-- [Pojemnik](https://github.com/AmbitiousST)
+- [Pojemnik](https://github.com/Pojemnik)
 - Graphics and sounds from [opengameart.org](https://opengameart.org/), see credits.txt
